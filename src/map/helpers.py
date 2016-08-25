@@ -1,7 +1,11 @@
 import gameconfig
 import components
 import libtcodpy as libtcod
-from objects.Objects import Object, Item, BaseNPC
+from map.components import Tile, RectRoom
+#from interface.helpers import clear_interface
+#from objects.Objects import Fighter, Item
+from objects.classes import Object, Fighter, Item, BaseNPC
+from objects.actions import *
 
 def random_choice_index(chances):
     # returns a random index
@@ -21,12 +25,13 @@ def random_choice(chances_dict):
     return strings[random_choice_index(chances)]
 
 def is_blocked(x, y):
+    global objects
     # test if tile is blocked
     if level_map[x][y].blocked:
         return True
     # now check for any blocking objects
-    for object in objects:
-        if object.blocks and object.x == x and object.y == y:
+    for obj in objects:
+        if obj.blocks and obj.x == x and obj.y == y:
             return True
     return False
 
@@ -52,16 +57,6 @@ def create_v_tunnel(y1, y2, x):
         level_map[x][y].blocked = False
         level_map[x][y].block_sight = False
 
-def initialize_fov():
-    global fov_recompute, fov_map
-    # set initial FOV condition
-    libtcod.console_clear(con)
-    fov_recompute = True
-    fov_map = libtcod.map_new(gameconfig.MAP_WIDTH, gameconfig.MAP_HEIGHT)
-    for y in range(gameconfig.MAP_HEIGHT):
-        for x in range(gameconfig.MAP_WIDTH):
-            libtcod.map_set_properties(fov_map, x, y, not level_map[x][y].block_sight, not level_map[x][y].blocked)
-
 def get_leveldata():
     global start_npc_count, npc_count, start_item_count, item_count
     # returns counts of NPCs and Items --todo return instead of assignment
@@ -75,6 +70,20 @@ def get_leveldata():
     npc_count = start_npc_count
     item_count = start_item_count
 
+def initialize_fov():
+    global fov_recompute, fov_map
+    # set initial FOV condition
+    #clear_interface()
+    fov_recompute = True
+    fov_map = libtcod.map_new(gameconfig.MAP_WIDTH, gameconfig.MAP_HEIGHT)
+    for y in range(gameconfig.MAP_HEIGHT):
+        for x in range(gameconfig.MAP_WIDTH):
+            libtcod.map_set_properties(fov_map, x, y, not level_map[x][y].block_sight, not level_map[x][y].blocked)
+    return fov_map
+
+def in_fov(x, y):
+    return libtcod.map_is_in_fov(fov_map, x, y)
+
 def place_objects(room):
     # random number of NPCS per room
     num_npcs = libtcod.random_get_int(0, 0, gameconfig.MAX_ROOM_NPCS)
@@ -86,7 +95,7 @@ def place_objects(room):
         y = libtcod.random_get_int(0, room.y1+1, room.y2-1)
 
         if not is_blocked(x, y):
-            npc_ai = BaseNPC()
+            npc_ai = BaseNPC
             npc_chances = {'dave': 80, 'deb': 20}
             dice = random_choice(npc_chances)
             if dice == 'dave':  #80% chance of getting a Dave
@@ -120,10 +129,10 @@ def place_objects(room):
                 item_component = Item(use_function = cast_confusion)
                 item = Object(x, y, '*', 'scroll of confusion', libtcod.light_orange, item=item_component)
             objects.append(item)
-            item.send_to_back()
+            item.send_to_back(objects)
 
-def make_map():
-    global level_map, objects, stairs
+def make_map(player):
+    global level_map, objects
     # generate the level map
 
     objects = [player]
@@ -180,4 +189,5 @@ def make_map():
     # create stairs in the last room
     stairs = Object(new_x, new_y, '<', 'stairs', libtcod.black)
     objects.append(stairs)
-    stairs.send_to_back()
+    stairs.send_to_back(objects)
+    return objects, level_map

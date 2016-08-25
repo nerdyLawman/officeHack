@@ -2,6 +2,30 @@ import libtcodpy as libtcod
 import gameconfig
 import textwrap
 from interface import interfaceconfig
+from objects.classes import Object
+from map.helpers import in_fov
+
+def initialize_interface():
+    global con, selected, game_msgs
+    # here we go!
+    libtcod.console_set_custom_font('data/fonts/arial10x10.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
+    libtcod.console_init_root(gameconfig.SCREEN_WIDTH, gameconfig.SCREEN_HEIGHT, 'Office_Hack', False)
+    con = libtcod.console_new(gameconfig.MAP_WIDTH, gameconfig.MAP_HEIGHT)
+    selected = 0
+    game_msgs = []
+
+    libtcod.sys_set_fps(gameconfig.LIMIT_FPS)
+
+    libtcod.console_set_default_foreground(0, libtcod.light_yellow)
+    libtcod.console_print_ex(0, gameconfig.SCREEN_WIDTH/2, gameconfig.SCREEN_HEIGHT/2-4, libtcod.BKGND_NONE, libtcod.CENTER,
+        'OFFICE_HACK')
+    libtcod.console_print_ex(0, gameconfig.SCREEN_WIDTH/2, gameconfig.SCREEN_HEIGHT/2-3, libtcod.BKGND_NONE, libtcod.CENTER,
+        'by Norf Launmen')
+    return con
+
+def clear_interface():
+    global con
+    libtcod.console_clear(con)
 
 def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color):
     # render a status bar
@@ -23,9 +47,9 @@ def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color):
         libtcod.console_print_ex(panel, gameconfig.MSG_X, y, libtcod.BKGND_NONE, libtcod.LEFT, line)
         y += 1
 
-def menu(con, header, options, width):
+def menu(header, options, width):
+    global selected, con
     # general selection menu
-    selected = 0
     if len(options) > 26: raise ValueError('Cannot have a menu with more than 26 options!')
 
     # calculate total height for the header (after auto-wrap) and one line per option
@@ -80,36 +104,6 @@ def menu(con, header, options, width):
     if index >= 0 and index < len(options): return index
     return 'no selection'
 
-def main_menu(con):
-    #img = libtcod.image_load('bgk.png')
-    while not libtcod.console_is_window_closed():
-        choice = menu(con, '', ['New Game', 'Continue', 'Quit'], 24)
-        if choice == 0:
-            new_game()
-            play_game()
-        if choice == 1:
-            try:
-                load_game()
-            except:
-                message_box('\n No saved gamedata to load.\n', 24)
-                continue
-            play_game()
-        elif choice == 2:
-            break
-
-def inventory_menu(header):
-    # inventory
-    if len(inventory) == 0:
-        options = ['Inventory is empty']
-    else:
-        options = [item.name for item in inventory]
-    index = 'no selection'
-    #return selected item
-    while index == 'no selection':
-        index = menu(header, options, INVENTORY_WIDTH)
-    if index is None or len(inventory) == 0: return None
-    return inventory[index].item
-
 def message(new_msg, color=libtcod.white):
     # play by play message display
     new_msg_lines = textwrap.wrap(new_msg, gameconfig.MSG_WIDTH)
@@ -122,3 +116,12 @@ def message(new_msg, color=libtcod.white):
 def message_box(text, width=50):
     # popup message box
     menu(text, [], width)
+
+def draw_object(obj):
+    if in_fov(obj.x, obj.y):
+        libtcod.console_set_default_foreground(con, obj.color)
+        libtcod.console_set_char_background(con, obj.x, obj.y, obj.color, libtcod.BKGND_SET)
+        libtcod.console_put_char(con, obj.x, obj.y, obj.char,libtcod.BKGND_NONE)
+
+def clear_boject(obj):
+    libtcod.console_put_char(con, obj.x, obj.y, ' ', libtcod.BKGND_NONE)

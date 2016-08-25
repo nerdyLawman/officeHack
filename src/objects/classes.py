@@ -1,6 +1,7 @@
 import libtcodpy as libtcod
 import math
 import gameconfig
+#from map.helpers import in_fov
 
 class Object:
     # generic object
@@ -43,22 +44,9 @@ class Object:
       dy = other.y - self.y
       return math.sqrt(dx ** 2 + dy ** 2)
 
-    def send_to_back(self):
-        gameconfig.ACTIVE_OBJECTS.remove(self)
-        gameconfig.ACTIVE_OBJECTS.insert(0, self)
-
-    def draw(self):
-        if libtcod.map_is_in_fov(gameconfig.FOV_MAP, self.x, self.y):
-            libtcod.console_set_default_foreground(self.con, self.color)
-            libtcod.console_set_char_background(self.con, self.x, self.y,
-                                                self.color, libtcod.BKGND_SET)
-            libtcod.console_put_char(self.con, self.x, self.y, self.char,
-                                     libtcod.BKGND_NONE)
-
-    def clear(self):
-        libtcod.console_put_char(self.con, self.x, self.y, ' ',
-                                 libtcod.BKGND_NONE)
-
+    def send_to_back(self, objects):
+        objects.remove(self)
+        objects.insert(0, self)
 
 class Item:
     # an Object that can be picked up and used
