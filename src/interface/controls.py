@@ -1,6 +1,12 @@
 import libtcodpy as libtcod
 import gameconfig
 
+def initialize_controls():
+    global key, mouse
+    key = libtcod.Key()
+    mouse = libtcod.Mouse()
+    return key, mouse
+
 def target_tile(max_range=None):
     global key, mouse
     # returns x, y of a tile selected by a mouseclick
@@ -27,7 +33,7 @@ def target_npc(max_range=None):
             if obj.x == x and obj.y == y and obj.fighter and obj != player:
                 return obj
 
-def get_names_under_mouse():
+def get_names_under_mouse(objects):
     # return name of object under mouse pointer
     global mouse
     (x, y) = (mouse.cx, mouse.cy)

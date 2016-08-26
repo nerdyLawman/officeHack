@@ -3,8 +3,9 @@ import shelve
 import gameconfig
 from objects.classes import Object, Fighter
 from objects.actions import player_death
-from interface.helpers import message, draw_object, initialize_interface
-from map.helpers import make_map, initialize_fov, get_leveldata
+from interface.helpers import message, draw_object, clear_object, initialize_interface, render_hud
+from maps.helpers import make_map, initialize_fov, get_leveldata
+from interface.controls import get_names_under_mouse, initialize_controls, handle_keys
 
 def render_all():
     # main fucntion which draws all objects on the screen every cycle
@@ -44,40 +45,40 @@ def render_all():
     libtcod.console_set_default_background(panel, libtcod.black)
     libtcod.console_clear(panel)
 
-    # interface shit maybe cleanup later as render_interface()
-    # dungeon level
-    libtcod.console_print_ex(panel, 1, 0, libtcod.BKGND_NONE, libtcod.LEFT, 'Dungeon level: ' + str(dungeon_level))
-    # health bar
-    render_bar(1, 1, gameconfig.BAR_WIDTH, 'HP', player.fighter.hp, player.fighter.max_hp,
-        libtcod.light_red, libtcod.darker_red)
-    # NPCs bar
-    render_bar(1, 3, gameconfig.BAR_WIDTH, 'NPCS', npc_count, start_npc_count, libtcod.light_blue, libtcod.darker_blue)
-    # items bar
-    render_bar(1, 5, gameconfig.BAR_WIDTH, 'ITEMS', item_count, start_item_count, libtcod.light_violet, libtcod.darker_violet)
+    # hud info render
+    #render_hud()
+    
     # mouse look
     libtcod.console_set_default_foreground(panel, libtcod.light_gray)
-    libtcod.console_print_ex(panel, SCREEN_WIDTH/4, 0, libtcod.BKGND_NONE, libtcod.LEFT, get_names_under_mouse())
+    libtcod.console_print_ex(panel, gameconfig.SCREEN_WIDTH/4, 0, libtcod.BKGND_NONE, libtcod.LEFT, get_names_under_mouse(objects))
     libtcod.console_blit(panel, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.PANEL_HEIGHT, 0, 0, gameconfig.PANEL_Y)
 
-def new_game():
+def new_game(new_cons, new_panel):
     global player, panel, con, objects, inventory, game_state, dungeon_level, player_level, level_map, fov_map, fov_recompute
     # interface
-    con = initialize_interface()
-
+    con = new_cons
+    
+    #gui
+    panel = new_panel
+    
+    # controls
+    key, mouse = initialize_controls()
+    
     # player
     fighter_component = Fighter(hp=30, defense=1, power=5, xp=0, death_function=player_death)
     player = Object(0, 0, '@', 'Hero', libtcod.white, blocks=True, fighter=fighter_component)
-    dungeon_level = 1
     player.level = 1
+    
+    # level
+    dungeon_level = 1
     objects, level_map = make_map(player)
-
-    #gui
-    panel = libtcod.console_new(gameconfig.SCREEN_WIDTH, gameconfig.PANEL_HEIGHT)
-
-    game_state = 'playing'
     inventory = []
-
     get_leveldata()
+
+    # game
+    game_state = 'playing'
+    
+    # fov
     fov_map = initialize_fov()
     fov_recompute = False
 
@@ -127,7 +128,7 @@ def play_game():
         render_all()
         libtcod.console_flush()
         for obj in objects:
-            obj.clear()
+            clear_object(obj)
 
         player_action = handle_keys()
         if player_action == 'exit':

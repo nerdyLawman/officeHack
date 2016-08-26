@@ -1,9 +1,6 @@
 import gameconfig
-import components
 import libtcodpy as libtcod
-from map.components import Tile, RectRoom
-#from interface.helpers import clear_interface
-#from objects.Objects import Fighter, Item
+from maps.components import Tile, RectRoom
 from objects.classes import Object, Fighter, Item, BaseNPC
 from objects.actions import *
 

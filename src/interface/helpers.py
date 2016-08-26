@@ -3,14 +3,15 @@ import gameconfig
 import textwrap
 from interface import interfaceconfig
 from objects.classes import Object
-from map.helpers import in_fov
+from maps.helpers import in_fov
 
 def initialize_interface():
-    global con, selected, game_msgs
+    global con, panel, selected, game_msgs
     # here we go!
     libtcod.console_set_custom_font('data/fonts/arial10x10.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
     libtcod.console_init_root(gameconfig.SCREEN_WIDTH, gameconfig.SCREEN_HEIGHT, 'Office_Hack', False)
     con = libtcod.console_new(gameconfig.MAP_WIDTH, gameconfig.MAP_HEIGHT)
+    panel = libtcod.console_new(gameconfig.SCREEN_WIDTH, gameconfig.PANEL_HEIGHT)
     selected = 0
     game_msgs = []
 
@@ -21,11 +22,22 @@ def initialize_interface():
         'OFFICE_HACK')
     libtcod.console_print_ex(0, gameconfig.SCREEN_WIDTH/2, gameconfig.SCREEN_HEIGHT/2-3, libtcod.BKGND_NONE, libtcod.CENTER,
         'by Norf Launmen')
-    return con
+    return con, panel
 
 def clear_interface():
-    global con
     libtcod.console_clear(con)
+
+def render_hud():
+    # dungeon level
+    libtcod.console_print_ex(panel, 1, 0, libtcod.BKGND_NONE, libtcod.LEFT, 'Dungeon level: ' + str(dungeon_level))
+    # health bar
+    render_bar(1, 1, gameconfig.BAR_WIDTH, 'HP', player.fighter.hp, player.fighter.max_hp,
+        libtcod.light_red, libtcod.darker_red)
+    # NPCs bar
+    render_bar(1, 3, gameconfig.BAR_WIDTH, 'NPCS', npc_count, start_npc_count, libtcod.light_blue, libtcod.darker_blue)
+    # items bar
+    render_bar(1, 5, gameconfig.BAR_WIDTH, 'ITEMS', item_count, start_item_count, libtcod.light_violet, libtcod.darker_violet)
+
 
 def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color):
     # render a status bar
@@ -118,10 +130,11 @@ def message_box(text, width=50):
     menu(text, [], width)
 
 def draw_object(obj):
+    global con
     if in_fov(obj.x, obj.y):
         libtcod.console_set_default_foreground(con, obj.color)
         libtcod.console_set_char_background(con, obj.x, obj.y, obj.color, libtcod.BKGND_SET)
         libtcod.console_put_char(con, obj.x, obj.y, obj.char,libtcod.BKGND_NONE)
 
-def clear_boject(obj):
+def clear_object(obj):
     libtcod.console_put_char(con, obj.x, obj.y, ' ', libtcod.BKGND_NONE)

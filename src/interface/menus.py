@@ -1,13 +1,14 @@
 import libtcodpy as libtcod
-from helpers import menu
+from interface.helpers import menu, initialize_interface
 from game.states import new_game, play_game, load_game
 
 def main_menu():
     #img = libtcod.image_load('bgk.png')
+    con, panel = initialize_interface()
     while not libtcod.console_is_window_closed():
         choice = menu('', ['New Game', 'Continue', 'Quit'], 24)
         if choice == 0:
-            new_game()
+            new_game(con, panel)
             play_game()
         if choice == 1:
             try:
