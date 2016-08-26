@@ -1,5 +1,6 @@
 import libtcodpy as libtcod
 import gameconfig
+from objects.player import player_move_or_attack
 
 def initialize_controls():
     global key, mouse

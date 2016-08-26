@@ -54,7 +54,7 @@ def render_all():
     libtcod.console_blit(panel, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.PANEL_HEIGHT, 0, 0, gameconfig.PANEL_Y)
 
 def new_game(new_cons, new_panel):
-    global player, panel, con, objects, inventory, game_state, dungeon_level, player_level, level_map, fov_map, fov_recompute
+    global player, panel, con, objects, inventory, game_state, dungeon_level, player_level, level_map, fov_map, fov_recompute, key, mouse
     # interface
     con = new_cons
     
@@ -119,8 +119,8 @@ def play_game():
 
     player_action = None
     # control assignment
-    mouse = libtcod.Mouse()
-    key = libtcod.Key()
+    #mouse = libtcod.Mouse()
+    #key = libtcod.Key()
 
     while not libtcod.console_is_window_closed():
 
