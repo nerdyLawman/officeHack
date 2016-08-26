@@ -2,8 +2,8 @@ import libtcodpy as libtcod
 import shelve
 import gameconfig
 from objects.classes import Object, Fighter, Player
-from objects.actions import player_death
-from interface.helpers import message, initialize_interface, render_all, clear_object
+from interface.interfaceconfig import initialize_interface
+from interface.helpers import message, message_box, render_all, clear_object
 from maps.helpers import make_map, initialize_fov, get_leveldata
 from interface.controls import get_names_under_mouse, initialize_controls, handle_keys
 from interface.menus import menu
@@ -11,7 +11,7 @@ from interface.menus import menu
 def main_menu():
     global con, panel, game_msgs
     #img = libtcod.image_load('bgk.png')
-    con, panel, game_msgs = initialize_interface() #setup screen here
+    con, panel, selected, game_msgs = initialize_interface() #setup screen here
     while not libtcod.console_is_window_closed():
         choice = menu('', ['New Game', 'Continue', 'Quit'], 24)
         if choice == 0:
@@ -95,7 +95,7 @@ def play_game():
     while not libtcod.console_is_window_closed():
 
         libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS|libtcod.EVENT_MOUSE,key,mouse)
-        render_all(fov_map, fov_recompute, level_map, objects, player)
+        render_all()
         libtcod.console_flush()
         for obj in objects:
             clear_object(obj)

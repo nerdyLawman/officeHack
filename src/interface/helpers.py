@@ -1,33 +1,17 @@
 import libtcodpy as libtcod
 import gameconfig
 import textwrap
-from interface import interfaceconfig
-from objects.classes import Object
 from maps.helpers import in_fov
 
-def initialize_interface():
-    global con, panel, selected, game_msgs
-    # here we go!
-    libtcod.console_set_custom_font('data/fonts/arial10x10.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
-    libtcod.console_init_root(gameconfig.SCREEN_WIDTH, gameconfig.SCREEN_HEIGHT, 'Office_Hack', False)
-    con = libtcod.console_new(gameconfig.MAP_WIDTH, gameconfig.MAP_HEIGHT)
-    panel = libtcod.console_new(gameconfig.SCREEN_WIDTH, gameconfig.PANEL_HEIGHT)
-    selected = 0
-    game_msgs = []
+# ADDRESS:
+# render_all()
+# menu()
+# inventory_menu()
 
-    libtcod.sys_set_fps(gameconfig.LIMIT_FPS)
-
-    libtcod.console_set_default_foreground(0, libtcod.light_yellow)
-    libtcod.console_print_ex(0, gameconfig.SCREEN_WIDTH/2, gameconfig.SCREEN_HEIGHT/2-4, libtcod.BKGND_NONE, libtcod.CENTER,
-        'OFFICE_HACK')
-    libtcod.console_print_ex(0, gameconfig.SCREEN_WIDTH/2, gameconfig.SCREEN_HEIGHT/2-3, libtcod.BKGND_NONE, libtcod.CENTER,
-        'by Norf Launmen')
-    return con, panel, game_msgs
-
-def clear_interface():
+def clear_console(con):
     libtcod.console_clear(con)
 
-def render_all(fov_map, fov_recompute, level_map, objects, player):
+def render_all():
     # main fucntion which draws all objects on the screen every cycle
     # NEEDS: fov_recompute, fov_map, player, objects, level_map, con, panel
     #global fov_map, fov_recompute
@@ -56,7 +40,8 @@ def render_all(fov_map, fov_recompute, level_map, objects, player):
     # draw all objects in the list
     for obj in objects:
         if obj != player:
-            draw_object(obj)
+            if in_fov(obj.x, obj.y):
+                draw_object(obj)
     # draw player last
     draw_object(player)
 
@@ -107,7 +92,6 @@ def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color):
         y += 1
 
 def menu(header, options, width):
-    global selected, con
     # general selection menu
     if len(options) > 26: raise ValueError('Cannot have a menu with more than 26 options!')
 
@@ -165,6 +149,7 @@ def menu(header, options, width):
 
 def message(new_msg, color=libtcod.white):
     # play by play message display
+    # NEEDS game_msgs
     new_msg_lines = textwrap.wrap(new_msg, gameconfig.MSG_WIDTH)
 
     for line in new_msg_lines:
@@ -177,11 +162,9 @@ def message_box(text, width=50):
     menu(text, [], width)
 
 def draw_object(obj):
-    global con
-    if in_fov(obj.x, obj.y):
-        libtcod.console_set_default_foreground(con, obj.color)
-        libtcod.console_set_char_background(con, obj.x, obj.y, obj.color, libtcod.BKGND_SET)
-        libtcod.console_put_char(con, obj.x, obj.y, obj.char,libtcod.BKGND_NONE)
+    libtcod.console_set_default_foreground(con, obj.color)
+    libtcod.console_set_char_background(con, obj.x, obj.y, obj.color, libtcod.BKGND_SET)
+    libtcod.console_put_char(con, obj.x, obj.y, obj.char,libtcod.BKGND_NONE)
 
 def clear_object(obj):
     libtcod.console_put_char(con, obj.x, obj.y, ' ', libtcod.BKGND_NONE)

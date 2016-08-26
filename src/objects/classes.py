@@ -45,10 +45,6 @@ class Object:
       dy = other.y - self.y
       return math.sqrt(dx ** 2 + dy ** 2)
 
-    def send_to_back(self, objects):
-        objects.remove(self)
-        objects.insert(0, self)
-
 class Item:
     # an Object that can be picked up and used
     def __init__(self, use_function=None):

@@ -2,16 +2,19 @@ import libtcodpy as libtcod
 import gameconfig
 from interface.helpers import message
 
+def send_to_back(target, objects):
+    #gotta get objects here somehow
+    objects.remove(target)
+    objects.insert(0, target_npc)
+
 def player_death(player):
-    global game_state
     # you ded
     message('You died!', libtcod.white)
-    game_state = 'dead'
     player.char = '%'
     player.color = libtcod.dark_red
+    return 'dead' #game_state
 
 def npc_death(npc):
-    global npc_count
     # npc death
     message(npc.name.capitalize() + ' is dead! You gain ' + str(npc.fighter.xp) + 'XP!', libtcod.cyan)
     npc.char = '%'
@@ -20,8 +23,7 @@ def npc_death(npc):
     npc.fighter = None
     npc.ai = None
     npc.name = 'remains of ' + npc.name
-    npc_count -= 1
-    npc.send_to_back()
+    npc.send_to_back(npc, objects) #gotta get objects here or take send_to_back call outside npc_death
 
 def closest_npc(max_range):
     # find closest enemy to max range and in FOV

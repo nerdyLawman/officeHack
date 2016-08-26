@@ -1,5 +1,9 @@
 import libtcodpy as libtcod
 
+# GAME TITLE
+GAME_TITLE = 'Office_HACK'
+GAME_AUTHO = 'Nord Mulman'
+
 # MESSAGES
 WELCOME_MESSAGE = 'Welcome stranger! Prepare to perish in the Tombs of the Ancient Kings.'
 
