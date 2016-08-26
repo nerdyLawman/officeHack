@@ -1,6 +1,6 @@
 import libtcodpy as libtcod
 import gameconfig
-from objects.player import player_move_or_attack
+from interface.helpers import message_box
 
 def initialize_controls():
     global key, mouse
@@ -43,8 +43,30 @@ def get_names_under_mouse(objects):
     names = ', '.join(names)
     return names.capitalize()
 
-def handle_keys():
-    global playerx, playery, fov_recompute, key
+def player_move_or_attack(player, objects, dx, dy):
+
+    fov_recompute = False
+    #the coordinates the player is moving to/attacking
+    x = player.x + dx
+    y = player.y + dy
+
+    #try to find an attackable object there
+    target = None
+    for obj in objects:
+        if obj.fighter and obj.x == x and obj.y == y:
+            target = obj
+            break
+
+    #attack if target found, move otherwise
+    if target is not None:
+        player.fighter.attack(target)
+    else:
+        player.move(dx, dy)
+        fov_recompute = True
+    return fov_recompute
+
+def handle_keys(player, objects):
+    #global playerx, playery, fov_recompute, key
     # primary game controls
 
     if key.vk == libtcod.KEY_ENTER and key.lalt:
@@ -57,21 +79,21 @@ def handle_keys():
 
     # 8-D movement arrorw keys or numpad
     if key.vk == libtcod.KEY_UP or key.vk == libtcod.KEY_KP8:
-        player_move_or_attack(0, -1)
+        fov_recompute = player_move_or_attack(player, objects, 0, -1)
     elif key.vk == libtcod.KEY_DOWN or key.vk == libtcod.KEY_KP2:
-        player_move_or_attack(0, 1)
+        fov_recompute = player_move_or_attack(player, objects, 0, 1)
     elif key.vk == libtcod.KEY_LEFT or key.vk == libtcod.KEY_KP4:
-        player_move_or_attack(-1, 0)
+        fov_recompute = player_move_or_attack(player, objects, -1, 0)
     elif key.vk == libtcod.KEY_RIGHT or key.vk == libtcod.KEY_KP6:
-        player_move_or_attack(1, 0)
+        fov_recompute = player_move_or_attack(player, objects, 1, 0)
     elif key.vk == libtcod.KEY_KP7:
-        player_move_or_attack(-1, -1)
+        fov_recompute = player_move_or_attack(player, objects, -1, -1)
     elif key.vk == libtcod.KEY_KP9:
-        player_move_or_attack(1, -1)
+        fov_recompute = player_move_or_attack(player, objects, 1, -1)
     elif key.vk == libtcod.KEY_KP1:
-        player_move_or_attack(-1, 1)
+        fov_recompute = player_move_or_attack(player, objects, -1, 1)
     elif key.vk == libtcod.KEY_KP3:
-        player_move_or_attack(1, 1)
+        fov_recompute = player_move_or_attack(player, objects, 1, 1)
     elif key.vk == libtcod.KEY_KP5:
         message('You wait a turn for the darkness to close in on you.', libtcod.white)
         pass
@@ -102,7 +124,7 @@ def handle_keys():
                 chosen_item.drop()
         # show character info
         if key_char == 'c':
-            level_up_xp = LEVEL_UP_BASE + player.level * LEVEL_UP_FACTOR
+            level_up_xp = gameconfig.LEVEL_UP_BASE + player.level * gameconfig.LEVEL_UP_FACTOR
             message_box('Character Information\n\nLevel: ' + str(player.level) + '\nExperience: ' + str(player.fighter.xp) +
                 '\nExperience to level up: ' + str(level_up_xp) + '\n\nMaximum HP: ' + str(player.fighter.max_hp) +
                 '\nAttack: ' + str(player.fighter.power) + '\nDefense: ' + str(player.fighter.defense), 24)

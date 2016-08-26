@@ -8,7 +8,7 @@ from objects.actions import player_death
 #player = Object(25, 23, '@', 'Hero', libtcod.white, blocks=True, fighter=fighter_component)
 #gameconfig.ACTIVE_OBJECTS.append(player)
 
-def player_move_or_attack(dx, dy):
+def player_move_or_attack(player, dx, dy):
     global fov_recompute
 
     #the coordinates the player is moving to/attacking

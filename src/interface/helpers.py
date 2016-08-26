@@ -22,10 +22,57 @@ def initialize_interface():
         'OFFICE_HACK')
     libtcod.console_print_ex(0, gameconfig.SCREEN_WIDTH/2, gameconfig.SCREEN_HEIGHT/2-3, libtcod.BKGND_NONE, libtcod.CENTER,
         'by Norf Launmen')
-    return con, panel
+    return con, panel, game_msgs
 
 def clear_interface():
     libtcod.console_clear(con)
+
+def render_all(fov_map, fov_recompute, level_map, objects, player):
+    # main fucntion which draws all objects on the screen every cycle
+    # NEEDS: fov_recompute, fov_map, player, objects, level_map, con, panel
+    #global fov_map, fov_recompute
+    fov_recompute = True
+    if fov_recompute:
+        fov_recompute = False
+        libtcod.map_compute_fov(fov_map, player.x, player.y, gameconfig.TORCH_RADIUS, gameconfig.FOV_LIGHT_WALLS, gameconfig.FOV_ALGO)
+        #go through all tiles, and set their background color
+        for y in range(gameconfig.MAP_HEIGHT):
+            for x in range(gameconfig.MAP_WIDTH):
+                visible = libtcod.map_is_in_fov(fov_map, x, y)
+                wall = level_map[x][y].block_sight
+                if not visible:
+                    if level_map[x][y].explored:
+                        if wall:
+                            libtcod.console_set_char_background(con, x, y, gameconfig.color_dark_wall, libtcod.BKGND_SET)
+                        else:
+                            libtcod.console_set_char_background(con, x, y, gameconfig.color_dark_ground, libtcod.BKGND_SET)
+                else:
+                    if wall:
+                        libtcod.console_set_char_background(con, x, y, gameconfig.color_light_wall, libtcod.BKGND_SET)
+                    else:
+                        libtcod.console_set_char_background(con, x, y, gameconfig.color_light_ground, libtcod.BKGND_SET)
+                    level_map[x][y].explored = True
+
+    # draw all objects in the list
+    for obj in objects:
+        if obj != player:
+            draw_object(obj)
+    # draw player last
+    draw_object(player)
+
+    #blit the contents of "con" to the root console
+    libtcod.console_blit(con, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.SCREEN_HEIGHT, 0, 0, 0)
+    libtcod.console_set_default_background(panel, libtcod.black)
+    libtcod.console_clear(panel)
+
+    # hud info render
+    #render_hud()
+
+    # mouse look
+    libtcod.console_set_default_foreground(panel, libtcod.light_gray)
+    #libtcod.console_print_ex(panel, gameconfig.SCREEN_WIDTH/4, 0, libtcod.BKGND_NONE, libtcod.LEFT, get_names_under_mouse(objects))
+
+    libtcod.console_blit(panel, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.PANEL_HEIGHT, 0, 0, gameconfig.PANEL_Y)
 
 def render_hud():
     # dungeon level
@@ -138,3 +185,17 @@ def draw_object(obj):
 
 def clear_object(obj):
     libtcod.console_put_char(con, obj.x, obj.y, ' ', libtcod.BKGND_NONE)
+
+def inventory_menu(header, inventory):
+    # inventory
+    # NEEDS: inventory
+    if len(inventory) == 0:
+        options = ['Inventory is empty']
+    else:
+        options = [item.name for item in inventory]
+    index = 'no selection'
+    #return selected item
+    while index == 'no selection':
+        index = menu(header, options, INVENTORY_WIDTH)
+    if index is None or len(inventory) == 0: return None
+    return inventory[index].item

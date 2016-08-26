@@ -1,7 +1,7 @@
 import libtcodpy as libtcod
 import math
 import gameconfig
-#from map.helpers import in_fov
+#from map.helpers import is_blocked  can't do cos looped import
 
 class Object:
     # generic object
@@ -26,7 +26,8 @@ class Object:
           self.item.owner = self
 
     def move(self, dx, dy):
-      if not is_blocked(self.x + dx, self.y + dy):
+        #if not is_blocked(self.x + dx, self.y + dy):
+        if True:
           self.x += dx
           self.y += dy
 
@@ -56,15 +57,15 @@ class Item:
     def pick_up(self):
         #add to inv and remove from map
         if len(inventory) >= 26:
-            interface_helpers.message('Your inventory is full, cannot pick up ' + self.owner.name + '.', libtcod.pink)
+            return('Your inventory is full, cannot pick up ' + self.owner.name + '.', libtcod.pink)
         else:
             inventory.append(self.owner)
             objects.remove(self.owner)
-            interface_helpers.message('You picked up a ' + self.owner.name + '!', libtcod.green)
+            return('You picked up a ' + self.owner.name + '!', libtcod.green)
 
     def use(self):
         if self.use_function is None:
-            interface_helpers.message('The ' + self.owner.name + ' cannot be used.')
+            return('The ' + self.owner.name + ' cannot be used.')
         else:
             if self.use_function() != 'cancelled':
                 inventory.remove(self.owner)
@@ -84,9 +85,10 @@ class Fighter:
             self.hp -= damage
         if self.hp <= 0:
             # if you kill em, gain exp
-            if self.owner != player:
-                player.fighter.xp += self.xp
-                check_level_up()
+            if self.owner.name != 'hero':
+                #player.fighter.xp += self.xp
+                #check_level_up()
+                print('death')
             function = self.death_function
             if function is not None:
                 function(self.owner)
@@ -100,14 +102,22 @@ class Fighter:
         damage = self.power - target.fighter.defense
 
         if damage > 0:
-            message(self.owner.name.capitalize() + ' attacks ' + target.name + ' for ' + str(damage) + ' hit points.', libtcod.orange)
             target.fighter.take_damage(damage)
+            return(self.owner.name.capitalize() + ' attacks ' + target.name + ' for ' + str(damage) + ' hit points.', libtcod.orange)
         else:
-            message(self.owner.name.capitalize() + ' attacks ' + target.name + ' but it has no effect!', libtcod.cyan)
+            return(self.owner.name.capitalize() + ' attacks ' + target.name + ' but it has no effect!', libtcod.cyan)
+
+class Player:
+    # the player
+    def __init__(self, inventory):
+        self.inventory = inventory
+
+    def add_item_inventory(self, item):
+        self.inventory.append(item)
 
 class BaseNPC:
     # basic NPC ai
-    def take_turn(self):
+    def take_turn(self, fov_map, player):
         npc = self.owner
         if libtcod.map_is_in_fov(fov_map, npc.x, npc.y):
             if npc.distance_to(player) >= 2:
@@ -127,4 +137,4 @@ class ConfusedNPC:
             self.num_turns -= 1
         else:
             self.owner.ai = self.old_ai
-            message('The ' + self.owner.name + ' is no longer confused.', libtcod.red)
+            return('The ' + self.owner.name + ' is no longer confused.', libtcod.red)

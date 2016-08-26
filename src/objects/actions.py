@@ -1,5 +1,6 @@
 import libtcodpy as libtcod
 import gameconfig
+from interface.helpers import message
 
 def player_death(player):
     global game_state

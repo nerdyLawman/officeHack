@@ -92,16 +92,16 @@ def place_objects(room):
         y = libtcod.random_get_int(0, room.y1+1, room.y2-1)
 
         if not is_blocked(x, y):
-            npc_ai = BaseNPC
+            npc_ai = BaseNPC()
             npc_chances = {'dave': 80, 'deb': 20}
             dice = random_choice(npc_chances)
             if dice == 'dave':  #80% chance of getting a Dave
                 #create a Dave
-                npc_fighter = Fighter(hp=6, defense=0, power=2, xp=10, death_function=npc_death)
+                npc_fighter = Fighter(hp=6, defense=0, power=2, xp=10, death_function=None)
                 npc = Object(x, y, 'O', 'Dave', libtcod.desaturated_green, blocks=True, fighter=npc_fighter, ai=npc_ai)
             elif dice == 'deb':
                 #create a Deb
-                npc_fighter = Fighter(hp=10, defense=0, power=3, xp=30, death_function=npc_death)
+                npc_fighter = Fighter(hp=10, defense=0, power=3, xp=30, death_function=None)
                 npc = Object(x, y, 'T', 'Troll', libtcod.darker_purple, blocks=True, fighter=npc_fighter, ai=npc_ai)
             objects.append(npc)
 
@@ -129,7 +129,7 @@ def place_objects(room):
             item.send_to_back(objects)
 
 def make_map(player):
-    global level_map, objects
+    global level_map, objects, stairs
     # generate the level map
 
     objects = [player]
@@ -187,4 +187,4 @@ def make_map(player):
     stairs = Object(new_x, new_y, '<', 'stairs', libtcod.black)
     objects.append(stairs)
     stairs.send_to_back(objects)
-    return objects, level_map
+    return objects, level_map, stairs
