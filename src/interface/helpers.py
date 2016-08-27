@@ -15,19 +15,16 @@ def clear_all(objects, con):
     for obj in objects:
         clear_object(obj, con)
 
-def render_all(player, objects, level_map, fov_map, con, panel):
+def render_all(player, objects, level_map, fov_map, fov_recompute, con, panel):
     # main fucntion which draws all objects on the screen every cycle
     
-    fov_recompute = True
     if fov_recompute:
-        fov_recompute = False
         libtcod.map_compute_fov(fov_map, player.x, player.y, gameconfig.TORCH_RADIUS, gameconfig.FOV_LIGHT_WALLS, gameconfig.FOV_ALGO)
         
         # go through all tiles, and set their background color
         for y in range(gameconfig.MAP_HEIGHT):
             for x in range(gameconfig.MAP_WIDTH):
-                #visible = libtcod.map_is_in_fov(fov_map, x, y)
-                visible = True
+                visible = libtcod.map_is_in_fov(fov_map, x, y)
                 wall = level_map[x][y].block_sight
                 if not visible:
                     if level_map[x][y].explored:
@@ -45,7 +42,7 @@ def render_all(player, objects, level_map, fov_map, con, panel):
     # draw all objects in the list
     for obj in objects:
         if obj != player:
-            if libtcod.map_is_in_fov(fov_map, x, y):
+            if libtcod.map_is_in_fov(fov_map, obj.x, obj.y):
                 draw_object(obj, con)
     # draw player last
     draw_object(player, con)
@@ -60,10 +57,10 @@ def render_all(player, objects, level_map, fov_map, con, panel):
     #render_hud()
 
     # mouse look
-    libtcod.console_set_default_foreground(panel, libtcod.light_gray)
+    #libtcod.console_set_default_foreground(panel, libtcod.light_gray)
     #libtcod.console_print_ex(panel, gameconfig.SCREEN_WIDTH/4, 0, libtcod.BKGND_NONE, libtcod.LEFT, get_names_under_mouse(objects))
 
-    libtcod.console_blit(panel, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.PANEL_HEIGHT, 0, 0, gameconfig.PANEL_Y)
+    #libtcod.console_blit(panel, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.PANEL_HEIGHT, 0, 0, gameconfig.PANEL_Y)
     
     libtcod.console_flush()
     for obj in objects:

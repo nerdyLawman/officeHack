@@ -60,22 +60,25 @@ def save_game():
 def play_game(player, objects, level_map, fov_map, key, mouse, con, panel):
     game_state = 'playing'
     player_action = None
-    fov_recomputer = True
+    fov_recompute = True
 
     while not libtcod.console_is_window_closed():
 
         libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS|libtcod.EVENT_MOUSE,key,mouse)
         
-        render_all(player, objects, level_map, fov_map, con, panel)
-
+        render_all(player, objects, level_map, fov_map, fov_recompute, con, panel)
         player_action = handle_keys(player, objects, level_map, key, mouse)
+        
         if player_action == 'exit':
             save_game()
             break
         if game_state == 'playing' and player_action != 'no turn':
+            fov_recompute = True
+            
             for obj in objects:
                 if obj.ai:
                     obj.ai.take_turn(fov_map, player)
+        fov_recompute = False
 
 """def next_level():
     global dungeon_level

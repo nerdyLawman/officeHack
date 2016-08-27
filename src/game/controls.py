@@ -50,7 +50,6 @@ def is_blocked(level_map, objects, x, y):
 
 def player_move_or_attack(player, objects, level_map, dx, dy):
 
-    fov_recompute = False
     #the coordinates the player is moving to/attacking
     x = player.x + dx
     y = player.y + dy
@@ -68,8 +67,6 @@ def player_move_or_attack(player, objects, level_map, dx, dy):
     else:
         if not is_blocked(level_map, objects, player.x+dx, player.y+dy):
             player.move(dx, dy)
-            fov_recompute = True
-    return fov_recompute
 
 def handle_keys(player, objects, level_map, key, mouse):
     # primary game controls
@@ -80,21 +77,21 @@ def handle_keys(player, objects, level_map, key, mouse):
 
     # 8-D movement arrorw keys or numpad
     if key.vk == libtcod.KEY_UP or key.vk == libtcod.KEY_KP8:
-        fov_recompute = player_move_or_attack(player, objects, level_map, 0, -1)
+        player_move_or_attack(player, objects, level_map, 0, -1)
     elif key.vk == libtcod.KEY_DOWN or key.vk == libtcod.KEY_KP2:
-        fov_recompute = player_move_or_attack(player, objects, level_map, 0, 1)
+        player_move_or_attack(player, objects, level_map, 0, 1)
     elif key.vk == libtcod.KEY_LEFT or key.vk == libtcod.KEY_KP4:
-        fov_recompute = player_move_or_attack(player, objects, level_map, -1, 0)
+        player_move_or_attack(player, objects, level_map, -1, 0)
     elif key.vk == libtcod.KEY_RIGHT or key.vk == libtcod.KEY_KP6:
-        fov_recompute = player_move_or_attack(player, objects, level_map, 1, 0)
+        player_move_or_attack(player, objects, level_map, 1, 0)
     elif key.vk == libtcod.KEY_KP7:
-        fov_recompute = player_move_or_attack(player, objects, level_map, -1, -1)
+        player_move_or_attack(player, objects, level_map, -1, -1)
     elif key.vk == libtcod.KEY_KP9:
-        fov_recompute = player_move_or_attack(player, objects, level_map, 1, -1)
+        player_move_or_attack(player, objects, level_map, 1, -1)
     elif key.vk == libtcod.KEY_KP1:
-        fov_recompute = player_move_or_attack(player, objects, level_map, -1, 1)
+        player_move_or_attack(player, objects, level_map, -1, 1)
     elif key.vk == libtcod.KEY_KP3:
-        fov_recompute = player_move_or_attack(player, objects, level_map, 1, 1)
+        player_move_or_attack(player, objects, level_map, 1, 1)
     elif key.vk == libtcod.KEY_KP5:
         #message('You wait a turn for the darkness to close in on you.', libtcod.white)
         pass
