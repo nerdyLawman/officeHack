@@ -78,7 +78,6 @@ def play_game(player, objects, level_map, fov_map, key, mouse, con, panel):
             for obj in objects:
                 if obj.ai:
                     obj.ai.take_turn(fov_map, player)
-        fov_recompute = False
 
 """def next_level():
     global dungeon_level

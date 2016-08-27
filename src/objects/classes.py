@@ -87,7 +87,8 @@ class Fighter:
                 #check_level_up()
                 print('death')
                 self.blocks = False
-                self.fighter=None
+                self.fighter = None
+                self.ai = None
             #function = self.death_function
             function = None
             if function is not None:

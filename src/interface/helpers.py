@@ -20,7 +20,6 @@ def render_all(player, objects, level_map, fov_map, fov_recompute, con, panel):
     
     if fov_recompute:
         libtcod.map_compute_fov(fov_map, player.x, player.y, gameconfig.TORCH_RADIUS, gameconfig.FOV_LIGHT_WALLS, gameconfig.FOV_ALGO)
-        
         # go through all tiles, and set their background color
         for y in range(gameconfig.MAP_HEIGHT):
             for x in range(gameconfig.MAP_WIDTH):
@@ -176,7 +175,7 @@ def message_box(text, width=50):
 def draw_object(obj, con):
     libtcod.console_set_default_foreground(con, obj.color)
     libtcod.console_set_char_background(con, obj.x, obj.y, obj.color, libtcod.BKGND_SET)
-    libtcod.console_put_char(con, obj.x, obj.y, obj.char,libtcod.BKGND_NONE)
+    libtcod.console_put_char(con, obj.x, obj.y, obj.char, libtcod.BKGND_NONE)
 
 def clear_object(obj, con):
     libtcod.console_put_char(con, obj.x, obj.y, ' ', libtcod.BKGND_NONE)
