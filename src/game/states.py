@@ -78,7 +78,7 @@ def play_game(player, objects, level_map, fov_map):
                 if obj.ai:
                     obj.ai.take_turn(fov_map, player)
 
-"""def next_level():
+def next_level():
     global dungeon_level
 
     # go to next level
@@ -90,4 +90,4 @@ def play_game(player, objects, level_map, fov_map):
     # create new level
     make_map()
     initialize_leveldata()
-    initialize_fov()"""
+    initialize_fov()
