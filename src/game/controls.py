@@ -1,14 +1,9 @@
 import libtcodpy as libtcod
 import gameconfig
-from interface.helpers import message_box
+from interface.helpers import render_all
+from objects.classes import Fighter
 
-def initialize_controls():
-    global key, mouse
-    key = libtcod.Key()
-    mouse = libtcod.Mouse()
-    return key, mouse
-
-def target_tile(max_range=None):
+"""def target_tile(max_range=None):
     global key, mouse
     # returns x, y of a tile selected by a mouseclick
     while True:
@@ -23,7 +18,7 @@ def target_tile(max_range=None):
         if mouse.rbutton_pressed or key.vk == libtcod.KEY_ESCAPE:
             return(None, None)
 
-def target_npc(max_range=None):
+def target_npc(objects, max_range=None):
     # select NPC in range
     while True:
         (x, y) = target_tile(max_range)
@@ -41,9 +36,19 @@ def get_names_under_mouse(objects):
     names = [obj.name for obj in objects
         if obj.x == x and obj.y == y and libtcod.map_is_in_fov(fov_map, obj.x, obj.y)]
     names = ', '.join(names)
-    return names.capitalize()
+    return names.capitalize()"""
 
-def player_move_or_attack(player, objects, dx, dy):
+def is_blocked(level_map, objects, x, y):
+    # test if tile is blocked
+    if level_map[x][y].blocked:
+        return True
+    # now check for any blocking objects
+    for obj in objects:
+        if obj.blocks and obj.x == x and obj.y == y:
+            return True
+    return False
+
+def player_move_or_attack(player, objects, level_map, dx, dy):
 
     fov_recompute = False
     #the coordinates the player is moving to/attacking
@@ -61,42 +66,39 @@ def player_move_or_attack(player, objects, dx, dy):
     if target is not None:
         player.fighter.attack(target)
     else:
-        player.move(dx, dy)
-        fov_recompute = True
+        if not is_blocked(level_map, objects, player.x+dx, player.y+dy):
+            player.move(dx, dy)
+            fov_recompute = True
     return fov_recompute
 
-def handle_keys(player, objects):
-    #global playerx, playery, fov_recompute, key
+def handle_keys(player, objects, level_map, key, mouse):
     # primary game controls
-
-    if key.vk == libtcod.KEY_ENTER and key.lalt:
-        #Alt+Enter: toggle fullscreen
-        libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
-
-    elif key.vk == libtcod.KEY_ESCAPE:
+    # exit
+    if key.vk == libtcod.KEY_ESCAPE:
         selected = 0
         return('exit')
 
     # 8-D movement arrorw keys or numpad
     if key.vk == libtcod.KEY_UP or key.vk == libtcod.KEY_KP8:
-        fov_recompute = player_move_or_attack(player, objects, 0, -1)
+        fov_recompute = player_move_or_attack(player, objects, level_map, 0, -1)
     elif key.vk == libtcod.KEY_DOWN or key.vk == libtcod.KEY_KP2:
-        fov_recompute = player_move_or_attack(player, objects, 0, 1)
+        fov_recompute = player_move_or_attack(player, objects, level_map, 0, 1)
     elif key.vk == libtcod.KEY_LEFT or key.vk == libtcod.KEY_KP4:
-        fov_recompute = player_move_or_attack(player, objects, -1, 0)
+        fov_recompute = player_move_or_attack(player, objects, level_map, -1, 0)
     elif key.vk == libtcod.KEY_RIGHT or key.vk == libtcod.KEY_KP6:
-        fov_recompute = player_move_or_attack(player, objects, 1, 0)
+        fov_recompute = player_move_or_attack(player, objects, level_map, 1, 0)
     elif key.vk == libtcod.KEY_KP7:
-        fov_recompute = player_move_or_attack(player, objects, -1, -1)
+        fov_recompute = player_move_or_attack(player, objects, level_map, -1, -1)
     elif key.vk == libtcod.KEY_KP9:
-        fov_recompute = player_move_or_attack(player, objects, 1, -1)
+        fov_recompute = player_move_or_attack(player, objects, level_map, 1, -1)
     elif key.vk == libtcod.KEY_KP1:
-        fov_recompute = player_move_or_attack(player, objects, -1, 1)
+        fov_recompute = player_move_or_attack(player, objects, level_map, -1, 1)
     elif key.vk == libtcod.KEY_KP3:
-        fov_recompute = player_move_or_attack(player, objects, 1, 1)
+        fov_recompute = player_move_or_attack(player, objects, level_map, 1, 1)
     elif key.vk == libtcod.KEY_KP5:
-        message('You wait a turn for the darkness to close in on you.', libtcod.white)
+        #message('You wait a turn for the darkness to close in on you.', libtcod.white)
         pass
+        
     else:
         # additional game commands
         key_char = chr(key.c)
@@ -107,27 +109,32 @@ def handle_keys(player, objects):
                 if obj.x == player.x and obj.y == player.y and obj.item:
                     obj.item.pick_up()
                     break
+        
         # go down stairs if player is on them
         if key_char == ',' or key_char == '.':
             if stairs.x == player.x and stairs.y == player.y:
                 next_level()
+        
         # display inventory
         if key_char == 'i':
             selection = -1
             chosen_item = inventory_menu('Press the key next to an item to use it, or ESC to cancel\n')
             if chosen_item is not None:
                 chosen_item.use()
+        
         # drop item
         if key_char == 'd':
             chosen_item = inventory_menu('Press the key next to an item to drop it.\n')
             if chosen_item is not None:
                 chosen_item.drop()
+        
         # show character info
         if key_char == 'c':
             level_up_xp = gameconfig.LEVEL_UP_BASE + player.level * gameconfig.LEVEL_UP_FACTOR
             message_box('Character Information\n\nLevel: ' + str(player.level) + '\nExperience: ' + str(player.fighter.xp) +
                 '\nExperience to level up: ' + str(level_up_xp) + '\n\nMaximum HP: ' + str(player.fighter.max_hp) +
                 '\nAttack: ' + str(player.fighter.power) + '\nDefense: ' + str(player.fighter.defense), 24)
+        
         # toggle fullscreen
         if key_char == 'f':
             libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())

@@ -8,21 +8,26 @@ from maps.helpers import in_fov
 # menu()
 # inventory_menu()
 
-def clear_console(con):
-    libtcod.console_clear(con)
+def clear_console(console):
+    libtcod.console_clear(console)
 
-def render_all():
+def clear_all(objects, con):
+    for obj in objects:
+        clear_object(obj, con)
+
+def render_all(player, objects, level_map, fov_map, con, panel):
     # main fucntion which draws all objects on the screen every cycle
-    # NEEDS: fov_recompute, fov_map, player, objects, level_map, con, panel
-    #global fov_map, fov_recompute
+    
     fov_recompute = True
     if fov_recompute:
         fov_recompute = False
         libtcod.map_compute_fov(fov_map, player.x, player.y, gameconfig.TORCH_RADIUS, gameconfig.FOV_LIGHT_WALLS, gameconfig.FOV_ALGO)
-        #go through all tiles, and set their background color
+        
+        # go through all tiles, and set their background color
         for y in range(gameconfig.MAP_HEIGHT):
             for x in range(gameconfig.MAP_WIDTH):
-                visible = libtcod.map_is_in_fov(fov_map, x, y)
+                #visible = libtcod.map_is_in_fov(fov_map, x, y)
+                visible = True
                 wall = level_map[x][y].block_sight
                 if not visible:
                     if level_map[x][y].explored:
@@ -40,16 +45,17 @@ def render_all():
     # draw all objects in the list
     for obj in objects:
         if obj != player:
-            if in_fov(obj.x, obj.y):
-                draw_object(obj)
+            if libtcod.map_is_in_fov(fov_map, x, y):
+                draw_object(obj, con)
     # draw player last
-    draw_object(player)
+    draw_object(player, con)
 
     #blit the contents of "con" to the root console
     libtcod.console_blit(con, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.SCREEN_HEIGHT, 0, 0, 0)
+    
+    #panel
     libtcod.console_set_default_background(panel, libtcod.black)
     libtcod.console_clear(panel)
-
     # hud info render
     #render_hud()
 
@@ -58,6 +64,10 @@ def render_all():
     #libtcod.console_print_ex(panel, gameconfig.SCREEN_WIDTH/4, 0, libtcod.BKGND_NONE, libtcod.LEFT, get_names_under_mouse(objects))
 
     libtcod.console_blit(panel, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.PANEL_HEIGHT, 0, 0, gameconfig.PANEL_Y)
+    
+    libtcod.console_flush()
+    for obj in objects:
+        clear_object(obj, con)
 
 def render_hud():
     # dungeon level
@@ -96,7 +106,8 @@ def menu(header, options, width):
     if len(options) > 26: raise ValueError('Cannot have a menu with more than 26 options!')
 
     # calculate total height for the header (after auto-wrap) and one line per option
-    header_height = libtcod.console_get_height_rect(con, 0, 0, width, gameconfig.SCREEN_HEIGHT, header)
+    #header_height = libtcod.console_get_height_rect(con, 0, 0, width, gameconfig.SCREEN_HEIGHT, header)
+    header_height = 1
     if header == '':
         header_height = 0
     height = len(options) + header_height
@@ -123,28 +134,32 @@ def menu(header, options, width):
 
     #present the root console to the player and wait for a key-press
     libtcod.console_flush()
-    key = libtcod.console_wait_for_keypress(True)
-    if key.vk == libtcod.KEY_DOWN:
-        if selected < len(options):
-            selected += 1
-        else:
-            selected = 1
-    elif key.vk == libtcod.KEY_UP:
-        if selected > 1:
-            selected -= 1
-        else:
-            selected = len(options)
-    elif key.vk == libtcod.KEY_ENTER:
-        return(selected-1)
-    elif key.vk == libtcod.KEY_ESCAPE:
-        return None
-    libtcod.console_set_default_background(window, libtcod.light_yellow)
-    libtcod.console_rect(window, 0, selected-1+header_height, 100, 1, True, libtcod.BKGND_SET)
-    libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 0.7)
-
-    # convert ascii to index
-    index = key.c - ord('a')
-    if index >= 0 and index < len(options): return index
+    selected = 0
+    while True:
+        key = libtcod.console_wait_for_keypress(True)
+        if key.vk == libtcod.KEY_DOWN:
+            if selected < len(options):
+                selected += 1
+            else:
+                selected = 1
+        if key.vk == libtcod.KEY_UP:
+            if selected > 1:
+                selected -= 1
+            else:
+                selected = len(options)
+        if key.vk == libtcod.KEY_ENTER:
+            return(selected-1)
+        if key.vk == libtcod.KEY_ESCAPE:
+            return None
+        
+        libtcod.console_clear(window)
+        libtcod.console_set_default_background(window, libtcod.light_yellow)
+        libtcod.console_rect(window, 0, selected-1+header_height, 100, 1, False, libtcod.BKGND_SCREEN)
+        libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 0.7)
+    
+        # convert ascii to index
+        index = key.c - ord('a')
+        if index >= 0 and index < len(options): return index
     return 'no selection'
 
 def message(new_msg, color=libtcod.white):
@@ -152,21 +167,21 @@ def message(new_msg, color=libtcod.white):
     # NEEDS game_msgs
     new_msg_lines = textwrap.wrap(new_msg, gameconfig.MSG_WIDTH)
 
-    for line in new_msg_lines:
-        if len(game_msgs) == gameconfig.MSG_HEIGHT:
-            del game_msgs[0]
-        game_msgs.append((line, color))
+    #for line in new_msg_lines:
+    #    if len(game_msgs) == gameconfig.MSG_HEIGHT:
+    #        del game_msgs[0]
+        #game_msgs.append((line, color))
 
 def message_box(text, width=50):
     # popup message box
     menu(text, [], width)
 
-def draw_object(obj):
+def draw_object(obj, con):
     libtcod.console_set_default_foreground(con, obj.color)
     libtcod.console_set_char_background(con, obj.x, obj.y, obj.color, libtcod.BKGND_SET)
     libtcod.console_put_char(con, obj.x, obj.y, obj.char,libtcod.BKGND_NONE)
 
-def clear_object(obj):
+def clear_object(obj, con):
     libtcod.console_put_char(con, obj.x, obj.y, ' ', libtcod.BKGND_NONE)
 
 def inventory_menu(header, inventory):

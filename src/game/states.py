@@ -1,63 +1,32 @@
 import libtcodpy as libtcod
 import shelve
 import gameconfig
-from objects.classes import Object, Fighter, Player
-from interface.interfaceconfig import initialize_interface
-from interface.helpers import message, message_box, render_all, clear_object
-from maps.helpers import make_map, initialize_fov, get_leveldata
-from interface.controls import get_names_under_mouse, initialize_controls, handle_keys
-from interface.menus import menu
-
-def main_menu():
-    global con, panel, game_msgs
-    #img = libtcod.image_load('bgk.png')
-    con, panel, selected, game_msgs = initialize_interface() #setup screen here
-    while not libtcod.console_is_window_closed():
-        choice = menu('', ['New Game', 'Continue', 'Quit'], 24)
-        if choice == 0:
-            new_game()
-            play_game()
-        if choice == 1:
-            try:
-                load_game()
-            except:
-                message_box('\n No saved gamedata to load.\n', 24)
-                continue
-            play_game()
-        elif choice == 2:
-            break
+from interface.interfaceconfig import initialize_controls
+from interface.helpers import render_all
+from game.controls import handle_keys
+from maps.mapconfig import make_map, initialize_fov
+from objects.classes import Fighter, Object
 
 def new_game():
-    global key, mouse, player, objects, level_map, stairs, inventory, dungeon_level, game_state, fov_map, fov_recompute
-    # interface
-    #con = new_cons
-    #gui
-    #panel = new_panel
-
     # controls - setup key and mouse
     key, mouse = initialize_controls()
 
     # player - create player
     inventory = []
     #player_component = Player(inventory=inventory)
-    fighter_component = Fighter(hp=30, defense=1, power=5, xp=0, death_function=player_death)
+    fighter_component = Fighter(hp=30, defense=1, power=5, xp=0)
     player = Object(0, 0, '@', 'Hero', libtcod.white, blocks=True, fighter=fighter_component)
     player.level = 1
 
     # level
     objects, level_map, stairs = make_map(player)
-    dungeon_level = 1
-    get_leveldata() #bunch of stuff from here for HUD - currently disabled
-
-    # game
-    game_state = 'playing'
+    #dungeon_level = 1
+    #get_leveldata() #bunch of stuff from here for HUD - currently disabled
 
     # fov
-    fov_map = initialize_fov()
-    fov_recompute = False
+    fov_map, fov_recompute = initialize_fov(level_map)
 
-    #a warm welcoming message!
-    message(gameconfig.WELCOME_MESSAGE, libtcod.red)
+    return key, mouse, inventory, player, objects, level_map, stairs, fov_map, fov_recompute
 
 def save_game():
     # open new empty shelve - overwrites old
@@ -72,7 +41,7 @@ def save_game():
     file['dungron_level'] = dungeon_level
     file.close()
 
-def load_game():
+"""def load_game():
     global level_map, objects, player, inventory, game_msgs, game_state, stairs, dungeon_level
     # open previously saved shelve
     file = shelve.open('savegame', 'r')
@@ -86,21 +55,20 @@ def load_game():
     dungeon_level = file['dungeon_level']
     file.close()
     # render FOV
-    initialize_fov()
+    initialize_fov()"""
 
-def play_game():
-    #global key, mouse, player, objects
+def play_game(player, objects, level_map, fov_map, key, mouse, con, panel):
+    game_state = 'playing'
     player_action = None
+    fov_recomputer = True
 
     while not libtcod.console_is_window_closed():
 
         libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS|libtcod.EVENT_MOUSE,key,mouse)
-        render_all()
-        libtcod.console_flush()
-        for obj in objects:
-            clear_object(obj)
+        
+        render_all(player, objects, level_map, fov_map, con, panel)
 
-        player_action = handle_keys(player, objects)
+        player_action = handle_keys(player, objects, level_map, key, mouse)
         if player_action == 'exit':
             save_game()
             break
@@ -109,7 +77,7 @@ def play_game():
                 if obj.ai:
                     obj.ai.take_turn(fov_map, player)
 
-def next_level():
+"""def next_level():
     global dungeon_level
 
     # go to next level
@@ -121,4 +89,4 @@ def next_level():
     # create new level
     make_map()
     initialize_leveldata()
-    initialize_fov()
+    initialize_fov()"""

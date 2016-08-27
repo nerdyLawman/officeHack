@@ -7,7 +7,6 @@ def initialize_interface():
     libtcod.console_init_root(gameconfig.SCREEN_WIDTH, gameconfig.SCREEN_HEIGHT, 'Office_Hack', False)
     con = libtcod.console_new(gameconfig.MAP_WIDTH, gameconfig.MAP_HEIGHT) # creates con
     panel = libtcod.console_new(gameconfig.SCREEN_WIDTH, gameconfig.PANEL_HEIGHT) #creates panel
-    selected = 0
     game_msgs = []
 
     libtcod.sys_set_fps(gameconfig.LIMIT_FPS) #FPS
@@ -17,4 +16,9 @@ def initialize_interface():
         gameconfig.GAME_TITLE)
     libtcod.console_print_ex(0, gameconfig.SCREEN_WIDTH/2, gameconfig.SCREEN_HEIGHT/2-3, libtcod.BKGND_NONE, libtcod.CENTER,
         gameconfig.GAME_AUTHOR)
-    return con, panel, selected, game_msgs
+    return con, panel, game_msgs
+
+def initialize_controls():
+    key = libtcod.Key()
+    mouse = libtcod.Mouse()
+    return key, mouse

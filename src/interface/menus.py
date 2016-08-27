@@ -1,10 +1,13 @@
 import libtcodpy as libtcod
 from interface.helpers import menu
-#from game.states import new_game, play_game, load_game
 
-def inventory_menu(header):
-    # inventory
-    # NEEDS: inventory
+def main_menu():
+    # start game menu - logic handled in officehack.py
+    #img = libtcod.image_load('bgk.png') #background image for menu
+    return menu('', ['New Game', 'Continue', 'Quit'], 24)
+
+def inventory_menu(header, inventory):
+    # inventory menu
     if len(inventory) == 0:
         options = ['Inventory is empty']
     else:

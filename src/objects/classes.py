@@ -68,13 +68,14 @@ class Item:
 
 class Fighter:
     # Object with combat-related properties and methods
-    def __init__(self, hp, defense, power, xp, death_function=None):
+    #death_function=None currently disabled
+    def __init__(self, hp, defense, power, xp):
         self.max_hp = hp
         self.hp = hp
         self.defense = defense
         self.power = power
         self.xp = xp
-        self.death_function = death_function
+        #self.death_function = death_function
 
     def take_damage(self, damage):
         if damage > 0:
@@ -85,7 +86,10 @@ class Fighter:
                 #player.fighter.xp += self.xp
                 #check_level_up()
                 print('death')
-            function = self.death_function
+                self.blocks = False
+                self.fighter=None
+            #function = self.death_function
+            function = None
             if function is not None:
                 function(self.owner)
 
