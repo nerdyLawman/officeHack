@@ -1,6 +1,7 @@
 import libtcodpy as libtcod
 import gameconfig
-from interface.helpers import render_all
+from interface.helpers import render_all, message, message_box, menu
+from interface.menus import inventory_menu
 from objects.classes import Fighter
 
 """def target_tile(max_range=None):
@@ -104,8 +105,11 @@ def handle_keys(player, objects, level_map, key, mouse):
         if key_char == 'g':
             for obj in objects:
                 if obj.x == player.x and obj.y == player.y and obj.item:
-                    obj.item.pick_up()
-                    break
+                    if len(player.player.inventory) >= 26:
+                        return('Your inventory is full, cannot pick up ' + self.owner.name + '.', libtcod.pink)
+                    else:
+                        player.player.add_item_inventory(obj.item)
+                        objects.remove(obj.item.owner)
         
         # go down stairs if player is on them
         if key_char == ',' or key_char == '.':
@@ -115,9 +119,9 @@ def handle_keys(player, objects, level_map, key, mouse):
         # display inventory
         if key_char == 'i':
             selection = -1
-            chosen_item = inventory_menu('Press the key next to an item to use it, or ESC to cancel\n')
+            chosen_item = inventory_menu('Press the key next to an item to use it, or ESC to cancel\n', player.player.inventory)
             if chosen_item is not None:
-                chosen_item.use()
+                chosen_item.use(player.fighter)
         
         # drop item
         if key_char == 'd':

@@ -38,13 +38,13 @@ def closest_npc(max_range):
                 closest_dist = dist
     return closest_npc
 
-def cast_heal():
+def cast_heal(target):
     #heal the player
-    if player.fighter.hp == player.fighter.max_hp:
+    if target.hp == target.max_hp:
 	    message('You are already at full health.', libtcod.red)
 	    return('cancelled')
     message('your wounds feel better.', libtcod.light_violet)
-    player.fighter.heal(HEAL_AMOUNT)
+    target.heal(HEAL_AMOUNT)
 
 def cast_lightning():
     #find nearest enemy and shock them with your deviant behaviour

@@ -1,4 +1,5 @@
 import libtcodpy as libtcod
+import gameconfig
 from interface.helpers import menu
 
 def main_menu():
@@ -11,10 +12,10 @@ def inventory_menu(header, inventory):
     if len(inventory) == 0:
         options = ['Inventory is empty']
     else:
-        options = [item.name for item in inventory]
+        options = [item.owner.name for item in inventory]
     index = 'no selection'
     #return selected item
     while index == 'no selection':
-        index = menu(header, options, INVENTORY_WIDTH)
+        index = menu(header, options, gameconfig.INVENTORY_WIDTH)
     if index is None or len(inventory) == 0: return None
-    return inventory[index].item
+    return inventory[index]

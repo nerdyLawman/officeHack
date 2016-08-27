@@ -5,14 +5,19 @@ import gameconfig
 
 class Object:
     # generic object
-    def __init__(self, x, y, char, name, color, blocks=False, fighter=None, ai=None, item=None):
+    def __init__(self, x, y, char, name, color, inventory=None, blocks=False, player=None, fighter=None, ai=None, item=None):
       self.x = x
       self.y = y
       self.char = char
       self.name = name
       self.color = color
+      self.inventory = inventory
       self.blocks = blocks
 
+      self.player = player
+      if self.player:
+        self.player.owner = self
+      
       self.fighter = fighter
       if self.fighter:
           self.fighter.owner = self
@@ -50,16 +55,7 @@ class Item:
     def __init__(self, use_function=None):
         self.use_function = use_function
 
-    def pick_up(self):
-        #add to inv and remove from map
-        if len(inventory) >= 26:
-            return('Your inventory is full, cannot pick up ' + self.owner.name + '.', libtcod.pink)
-        else:
-            inventory.append(self.owner)
-            objects.remove(self.owner)
-            return('You picked up a ' + self.owner.name + '!', libtcod.green)
-
-    def use(self):
+    def use(self, target):
         if self.use_function is None:
             return('The ' + self.owner.name + ' cannot be used.')
         else:
@@ -80,19 +76,20 @@ class Fighter:
     def take_damage(self, damage):
         if damage > 0:
             self.hp -= damage
+            print(self.hp)
         if self.hp <= 0:
-            # if you kill em, gain exp
-            if self.owner.name != 'hero':
+            if self.owner.player == None:
+                # if you kill em, gain exp
                 #player.fighter.xp += self.xp
                 #check_level_up()
-                print('death')
-                self.blocks = False
-                self.fighter = None
-                self.ai = None
-            #function = self.death_function
-            function = None
-            if function is not None:
-                function(self.owner)
+                self.owner.color = libtcod.dark_red
+                self.owner.blocks = False
+                self.owner.fighter = None
+                self.owner.ai = None
+                #function = self.death_function
+                #function = None
+                #if function is not None:
+                #    function(self.owner)
 
     def heal(self, amount):
         self.hp += amount

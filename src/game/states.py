@@ -5,7 +5,7 @@ from interface.interfaceconfig import initialize_controls
 from interface.helpers import render_all
 from game.controls import handle_keys
 from maps.mapconfig import make_map, initialize_fov
-from objects.classes import Fighter, Object
+from objects.classes import Fighter, Player, Object
 
 def new_game():
     # controls - setup key and mouse
@@ -14,8 +14,9 @@ def new_game():
     # player - create player
     inventory = []
     #player_component = Player(inventory=inventory)
+    player_component = Player(inventory=[])
     fighter_component = Fighter(hp=30, defense=1, power=5, xp=0)
-    player = Object(0, 0, '@', 'Hero', libtcod.white, blocks=True, fighter=fighter_component)
+    player = Object(0, 0, '@', 'Hero', libtcod.white, blocks=True, player=player_component, fighter=fighter_component)
     player.level = 1
 
     # level
