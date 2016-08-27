@@ -1,15 +1,13 @@
 import libtcodpy as libtcod
 import shelve
 import gameconfig
-from interface.interfaceconfig import initialize_controls
+from interface import interfaceconfig
 from interface.helpers import render_all
 from game.controls import handle_keys
 from maps.mapconfig import make_map, initialize_fov
 from objects.classes import Fighter, Player, Object
 
 def new_game():
-    # controls - setup key and mouse
-    key, mouse = initialize_controls()
 
     # player - create player
     inventory = []
@@ -27,7 +25,7 @@ def new_game():
     # fov
     fov_map, fov_recompute = initialize_fov(level_map)
 
-    return key, mouse, inventory, player, objects, level_map, stairs, fov_map, fov_recompute
+    return inventory, player, objects, level_map, stairs, fov_map, fov_recompute
 
 def save_game():
     # open new empty shelve - overwrites old
@@ -58,24 +56,24 @@ def save_game():
     # render FOV
     initialize_fov()"""
 
-def play_game(player, objects, level_map, fov_map, key, mouse, con, panel):
+def play_game(player, objects, level_map, fov_map):
     game_state = 'playing'
     player_action = None
     fov_recompute = True
 
     while not libtcod.console_is_window_closed():
 
-        libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS|libtcod.EVENT_MOUSE,key,mouse)
-        
-        render_all(player, objects, level_map, fov_map, fov_recompute, con, panel)
-        player_action = handle_keys(player, objects, level_map, key, mouse)
-        
+        libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS|libtcod.EVENT_MOUSE,interfaceconfig.key,interfaceconfig.mouse)
+
+        render_all(player, objects, level_map, fov_map, fov_recompute)
+        player_action = handle_keys(player, objects, level_map)
+
         if player_action == 'exit':
             save_game()
             break
         if game_state == 'playing' and player_action != 'no turn':
             fov_recompute = True
-            
+
             for obj in objects:
                 if obj.ai:
                     obj.ai.take_turn(fov_map, player)

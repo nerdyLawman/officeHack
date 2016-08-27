@@ -1,6 +1,7 @@
 import libtcodpy as libtcod
 import gameconfig
 import textwrap
+from interface import interfaceconfig
 from maps.helpers import in_fov
 
 # ADDRESS:
@@ -15,9 +16,9 @@ def clear_all(objects, con):
     for obj in objects:
         clear_object(obj, con)
 
-def render_all(player, objects, level_map, fov_map, fov_recompute, con, panel):
+def render_all(player, objects, level_map, fov_map, fov_recompute):
     # main fucntion which draws all objects on the screen every cycle
-    
+
     if fov_recompute:
         libtcod.map_compute_fov(fov_map, player.x, player.y, gameconfig.TORCH_RADIUS, gameconfig.FOV_LIGHT_WALLS, gameconfig.FOV_ALGO)
         # go through all tiles, and set their background color
@@ -28,46 +29,38 @@ def render_all(player, objects, level_map, fov_map, fov_recompute, con, panel):
                 if not visible:
                     if level_map[x][y].explored:
                         if wall:
-                            libtcod.console_set_char_background(con, x, y, gameconfig.color_dark_wall, libtcod.BKGND_SET)
+                            libtcod.console_set_char_background(interfaceconfig.con, x, y, gameconfig.color_dark_wall, libtcod.BKGND_SET)
                         else:
-                            libtcod.console_set_char_background(con, x, y, gameconfig.color_dark_ground, libtcod.BKGND_SET)
+                            libtcod.console_set_char_background(interfaceconfig.con, x, y, gameconfig.color_dark_ground, libtcod.BKGND_SET)
                 else:
                     if wall:
-                        libtcod.console_set_char_background(con, x, y, gameconfig.color_light_wall, libtcod.BKGND_SET)
+                        libtcod.console_set_char_background(interfaceconfig.con, x, y, gameconfig.color_light_wall, libtcod.BKGND_SET)
                     else:
-                        libtcod.console_set_char_background(con, x, y, gameconfig.color_light_ground, libtcod.BKGND_SET)
+                        libtcod.console_set_char_background(interfaceconfig.con, x, y, gameconfig.color_light_ground, libtcod.BKGND_SET)
                     level_map[x][y].explored = True
 
     # draw all objects in the list
     for obj in objects:
         if obj != player:
             if libtcod.map_is_in_fov(fov_map, obj.x, obj.y):
-                draw_object(obj, con)
+                draw_object(obj, interfaceconfig.con)
     # draw player last
-    draw_object(player, con)
+    draw_object(player, interfaceconfig.con)
 
     #blit the contents of "con" to the root console
-    libtcod.console_blit(con, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.SCREEN_HEIGHT, 0, 0, 0)
-    
+    libtcod.console_blit(interfaceconfig.con, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.SCREEN_HEIGHT, 0, 0, 0)
+
     #panel
-    libtcod.console_set_default_background(panel, libtcod.black)
-    libtcod.console_clear(panel)
-    # hud info render
-    #render_hud()
+    libtcod.console_set_default_background(interfaceconfig.panel, libtcod.black)
+    libtcod.console_clear(interfaceconfig.panel)
 
-    # mouse look
-    #libtcod.console_set_default_foreground(panel, libtcod.light_gray)
-    #libtcod.console_print_ex(panel, gameconfig.SCREEN_WIDTH/4, 0, libtcod.BKGND_NONE, libtcod.LEFT, get_names_under_mouse(objects))
-
-    #libtcod.console_blit(panel, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.PANEL_HEIGHT, 0, 0, gameconfig.PANEL_Y)
-    
     libtcod.console_flush()
     for obj in objects:
-        clear_object(obj, con)
+        clear_object(obj, interfaceconfig.con)
 
 def render_hud():
     # dungeon level
-    libtcod.console_print_ex(panel, 1, 0, libtcod.BKGND_NONE, libtcod.LEFT, 'Dungeon level: ' + str(dungeon_level))
+    libtcod.console_print_ex(interfaceconfig.panel, 1, 0, libtcod.BKGND_NONE, libtcod.LEFT, 'Dungeon level: ' + str(dungeon_level))
     # health bar
     render_bar(1, 1, gameconfig.BAR_WIDTH, 'HP', player.fighter.hp, player.fighter.max_hp,
         libtcod.light_red, libtcod.darker_red)
@@ -80,21 +73,21 @@ def render_hud():
 def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color):
     # render a status bar
     bar_width = int(float(value) / maximum * total_width)
-    libtcod.console_set_default_background(panel, back_color)
-    libtcod.console_rect(panel, x, y, total_width, 1, False, libtcod.BKGND_SCREEN)
+    libtcod.console_set_default_background(interfaceconfig.panel, back_color)
+    libtcod.console_rect(interfaceconfig.panel, x, y, total_width, 1, False, libtcod.BKGND_SCREEN)
 
-    libtcod.console_set_default_background(panel, bar_color)
+    libtcod.console_set_default_background(interfaceconfig.panel, bar_color)
     if bar_width > 0:
-        libtcod.console_rect(panel, x, y, bar_width, 1, False, libtcod.BKGND_SCREEN)
+        libtcod.console_rect(interfaceconfig.panel, x, y, bar_width, 1, False, libtcod.BKGND_SCREEN)
 
-    libtcod.console_set_default_foreground(panel, libtcod.white)
-    libtcod.console_print_ex(panel, x + total_width / 2, y, libtcod.BKGND_NONE, libtcod.CENTER,
+    libtcod.console_set_default_foreground(interfaceconfig.panel, libtcod.white)
+    libtcod.console_print_ex(interfaceconfig.panel, x + total_width / 2, y, libtcod.BKGND_NONE, libtcod.CENTER,
         name + ': ' + str(value) + '/' + str(maximum))
 
     y = 1
     for (line, color) in game_msgs:
-        libtcod.console_set_default_foreground(panel, color)
-        libtcod.console_print_ex(panel, gameconfig.MSG_X, y, libtcod.BKGND_NONE, libtcod.LEFT, line)
+        libtcod.console_set_default_foreground(interfaceconfig.panel, color)
+        libtcod.console_print_ex(interfaceconfig.panel, gameconfig.MSG_X, y, libtcod.BKGND_NONE, libtcod.LEFT, line)
         y += 1
 
 def menu(header, options, width):
@@ -147,12 +140,12 @@ def menu(header, options, width):
             return(selected-1)
         if key.vk == libtcod.KEY_ESCAPE:
             return None
-        
+
         libtcod.console_clear(window)
         libtcod.console_set_default_background(window, libtcod.light_yellow)
         libtcod.console_rect(window, 0, selected-1+header_height, 100, 1, False, libtcod.BKGND_SCREEN)
         libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 0.7)
-    
+
         # convert ascii to index
         index = key.c - ord('a')
         if index >= 0 and index < len(options): return index
