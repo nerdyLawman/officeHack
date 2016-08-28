@@ -74,3 +74,11 @@ RED_THEME = {'color_dark_wall' : libtcod.darker_red,
     'color_dark_ground' : libtcod.darker_flame,
     'color_light_ground' : libtcod.flame,
 }
+
+BLUE_THEME = {'color_dark_wall' : libtcod.darker_azure,
+    'color_light_wall' : libtcod.sky,
+    'color_dark_ground' : libtcod.darker_han,
+    'color_light_ground' : libtcod.azure,
+}
+
+COLOR_THEMES = [ DEFAULT_THEME, DARK_THEME, RED_THEME, BLUE_THEME ]

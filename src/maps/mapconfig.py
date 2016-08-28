@@ -2,7 +2,7 @@ import libtcodpy as libtcod
 import gameconfig
 import components
 from maps.components import Tile, RectRoom
-from maps.helpers import random_choice
+from maps.helpers import random_choice, random_choice_index
 from objects.classes import Object, Fighter, BaseNPC, Item
 from objects.actions import cast_heal, cast_lightning, cast_fireball, cast_confusion
 
@@ -97,6 +97,9 @@ def make_map(player):
     objects = [player]
     rooms = []
     num_rooms = 0
+    
+    #pick a random color theme for the level
+    color_theme = gameconfig.COLOR_THEMES[libtcod.random_get_int(0, 0, len(gameconfig.COLOR_THEMES)-1)]
 
     # fill map with unblocked tiles
     level_map = [[ Tile(True)
@@ -149,4 +152,4 @@ def make_map(player):
     stairs = Object(new_x, new_y, '<', 'stairs', gameconfig.STAIRS_COLOR)
     objects.append(stairs)
     send_to_back(stairs, objects)
-    return objects, level_map, stairs
+    return objects, level_map, stairs, color_theme

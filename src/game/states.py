@@ -18,14 +18,14 @@ def new_game():
     player.level = 1
 
     # level
-    objects, level_map, stairs = make_map(player)
+    objects, level_map, stairs, color_theme = make_map(player)
     #dungeon_level = 1
     #get_leveldata() #bunch of stuff from here for HUD - currently disabled
     
     # fov
     fov_map, fov_recompute = initialize_fov(level_map)
 
-    return inventory, player, objects, level_map, stairs, fov_map, fov_recompute
+    return inventory, player, objects, level_map, stairs, color_theme, fov_map, fov_recompute
 
 def save_game():
     # open new empty shelve - overwrites old
@@ -56,17 +56,17 @@ def save_game():
     # render FOV
     initialize_fov()"""
 
-def play_game(player, objects, level_map, fov_map):
+def play_game(player, objects, level_map, color_theme, fov_map):
     game_state = 'playing'
     player_action = None
     fov_recompute = True
-    theme = gameconfig.RED_THEME #set color theme
+    #theme = gameconfig.RED_THEME #set color theme
 
     while not libtcod.console_is_window_closed():
 
         libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS|libtcod.EVENT_MOUSE,interfaceconfig.key,interfaceconfig.mouse)
 
-        render_all(player, objects, level_map, fov_map, fov_recompute, theme)
+        render_all(player, objects, level_map, fov_map, fov_recompute, color_theme)
         player_action = handle_keys(player, objects, level_map)
 
         if player_action == 'exit':
