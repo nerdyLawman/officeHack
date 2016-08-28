@@ -146,7 +146,7 @@ def make_map(player):
             num_rooms += 1
 
     # create stairs in the last room
-    stairs = Object(new_x, new_y, '<', 'stairs', libtcod.black)
+    stairs = Object(new_x, new_y, '<', 'stairs', gameconfig.STAIRS_COLOR)
     objects.append(stairs)
     send_to_back(stairs, objects)
     return objects, level_map, stairs

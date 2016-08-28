@@ -1,8 +1,9 @@
 import libtcodpy as libtcod
 
 # GAME TITLE
+CONSOLE_TITLE = 'offICE_HACK//'
 GAME_TITLE = 'Office_HACK'
-GAME_AUTHOR = 'Nord Mulman'
+GAME_AUTHOR = 'Nord Mulman & Chairvan Arocstore'
 
 # MESSAGES
 WELCOME_MESSAGE = 'Welcome stranger! Prepare to perish in the Tombs of the Ancient Kings.'
@@ -51,7 +52,25 @@ CONFUSE_RANGE = 8
 HEAL_AMOUNT = 6
 
 # COLORS
-color_dark_wall = libtcod.Color(0, 0, 100)
-color_light_wall = libtcod.Color(130, 110, 50)
-color_dark_ground = libtcod.Color(50, 50, 100)
-color_light_ground = libtcod.Color(200, 180, 50)
+STAIRS_COLOR = libtcod.black
+MENU_BKGND = libtcod.red
+MENU_SELECT_BKGND = libtcod.amber
+
+# THEMES
+DEFAULT_THEME = { 'color_dark_wall' : libtcod.Color(0, 0, 100),
+    'color_light_wall' : libtcod.Color(130, 110, 50),
+    'color_dark_ground' : libtcod.Color(50, 50, 100),
+    'color_light_ground' : libtcod.Color(200, 180, 50),
+}
+
+DARK_THEME = {'color_dark_wall' : libtcod.darker_gray,
+    'color_light_wall' : libtcod.gray,
+    'color_dark_ground' : libtcod.darkest_gray,
+    'color_light_ground' : libtcod.dark_gray,
+}
+
+RED_THEME = {'color_dark_wall' : libtcod.darker_red,
+    'color_light_wall' : libtcod.red,
+    'color_dark_ground' : libtcod.darker_flame,
+    'color_light_ground' : libtcod.flame,
+}
