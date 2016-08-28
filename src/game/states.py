@@ -1,6 +1,7 @@
 import libtcodpy as libtcod
 import shelve
 import gameconfig
+import settings
 from interface import interfaceconfig
 from interface.helpers import render_all, clear_console, message, message_box
 from game.controls import handle_keys

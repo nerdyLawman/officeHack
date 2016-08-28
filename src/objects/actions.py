@@ -24,6 +24,7 @@ def npc_death(npcc):
     npc.fighter = None
     npc.ai = None
     npc.name = 'remains of ' + npc.name.upper()
+    gameconfig.npc_count -= 1
     #npc.send_to_back(npc, objects) #gotta get objects here or take send_to_back call outside npc_death
 
 def closest_npc(max_range):
@@ -39,13 +40,13 @@ def closest_npc(max_range):
                 closest_dist = dist
     return closest_npc
 
-def cast_heal(target):
+def cast_heal():
     #heal the player
-    if target.hp == target.max_hp:
+    if self.owner.fighter.hp == self.owner.fighter.max_hp:
 	    message('You are already at full health.', libtcod.red)
 	    return('cancelled')
     message('your wounds feel better.', libtcod.light_violet)
-    target.heal(HEAL_AMOUNT)
+    self.owner.fighter.heal(HEAL_AMOUNT)
 
 def cast_lightning():
     #find nearest enemy and shock them with your deviant behaviour

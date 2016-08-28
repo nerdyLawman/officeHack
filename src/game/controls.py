@@ -78,6 +78,7 @@ def handle_keys(player, objects, level_map, stairs):
                     else:
                         message(player.player.add_item_inventory(obj.item))
                         objects.remove(obj.item.owner)
+                        gameconfig.item_count -= 1
         
         # go down stairs if player is on them
         if interfaceconfig.key_char == ',' or interfaceconfig.key_char == '.':

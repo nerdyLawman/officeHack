@@ -6,13 +6,12 @@ from objects.actions import npc_death
 
 class Object:
     # generic object
-    def __init__(self, x, y, char, name, color, inventory=None, blocks=False, player=None, fighter=None, ai=None, item=None):
+    def __init__(self, x, y, char, name, color, blocks=False, player=None, fighter=None, ai=None, item=None):
       self.x = x
       self.y = y
       self.char = char
       self.name = name
       self.color = color
-      self.inventory = inventory
       self.blocks = blocks
 
       self.player = player
@@ -51,21 +50,17 @@ class Object:
       dy = other.y - self.y
       return math.sqrt(dx ** 2 + dy ** 2)
 
-class Item:
-    # an Object that can be picked up and used
-    def __init__(self, use_function=None):
-        self.use_function = use_function
+class Player:
+    # the player
+    def __init__(self, inventory, level=1):
+        self.inventory = inventory
 
-    def use(self, target):
-        if self.use_function is None:
-            return('The ' + self.owner.name + ' cannot be used.')
-        else:
-            if self.use_function() != 'cancelled':
-                inventory.remove(self.owner)
+    def add_item_inventory(self, item):
+        self.inventory.append(item)
+        return("You picked up an " + item.owner.name.upper() + ".")
 
 class Fighter:
     # Object with combat-related properties and methods
-    #death_function=None currently disabled
     def __init__(self, hp, defense, power, xp):
         self.max_hp = hp
         self.hp = hp
@@ -83,6 +78,9 @@ class Fighter:
                 npc_death(self)
                 #player.fighter.xp += self.xp
                 #check_level_up()
+            else:
+                #player_death(self)
+                True
 
     def heal(self, amount):
         self.hp += amount
@@ -98,15 +96,6 @@ class Fighter:
         else:
             return(self.owner.name.upper() + ' attacks ' + target.name + ' but it has no effect!', libtcod.cyan)
 
-class Player:
-    # the player
-    def __init__(self, inventory):
-        self.inventory = inventory
-
-    def add_item_inventory(self, item):
-        self.inventory.append(item)
-        return("You picked up an " + item.owner.name.upper() + ".")
-
 class BaseNPC:
     # basic NPC ai
     def take_turn(self, fov_map, player):
@@ -118,7 +107,10 @@ class BaseNPC:
             elif player.fighter.hp > 0:
                 npc.fighter.attack(player)
 
+
+# states of NPCs
 class ConfusedNPC:
+    # an NPC that is totally out of control!
     def __init__(self, old_ai, num_turns=gameconfig.CONFUSE_NUM_TURNS):
         self.old_ai = old_ai
         self.num_turns = num_turns
@@ -129,4 +121,16 @@ class ConfusedNPC:
             self.num_turns -= 1
         else:
             self.owner.ai = self.old_ai
-            return('The ' + self.owner.name + ' is no longer confused.', libtcod.red)
+            return('The ' + self.owner.name.upper() + ' is no longer confused.', libtcod.red)
+
+class Item:
+    # an Object that can be picked up and used
+    def __init__(self, use_function=None):
+        self.use_function = use_function
+
+    def use(self, target):
+        if self.use_function is None:
+            return('The ' + self.owner.name.upper() + ' cannot be used.')
+        else:
+            if self.use_function() != 'cancelled':
+                inventory.remove(self.owner)

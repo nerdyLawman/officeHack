@@ -1,11 +1,5 @@
 import libtcodpy as libtcod
 
-# TEMP GAME VARIABLES SPOT
-start_npc_count = 0
-npc_count = 0
-start_item_count = 0
-item_count = 0
-
 # GAME TITLE
 CONSOLE_TITLE = 'offICE_HACK//'
 GAME_TITLE = 'Office_HACK'
@@ -59,7 +53,7 @@ HEAL_AMOUNT = 6
 
 # COLORS
 STAIRS_COLOR = libtcod.black
-MENU_BKGND = libtcod.black
+MENU_BKGND = libtcod.red
 MENU_SELECT_BKGND = libtcod.amber
 
 # THEMES

@@ -64,8 +64,13 @@ def place_objects(level_map, room, objects):
                 #create a Deb
                 npc_fighter = Fighter(hp=10, defense=0, power=3, xp=30)
                 npc = Object(x, y, 'T', 'Troll', libtcod.darker_purple, blocks=True, fighter=npc_fighter, ai=npc_ai)
+            
             objects.append(npc)
-
+            gameconfig.start_npc_count += 1
+            send_to_back(npc, objects)
+            
+    gameconfig.npc_count = gameconfig.start_npc_count
+    
     # add Items
     for i in range(num_items):
         x = libtcod.random_get_int(0, room.x1+1, room.x2-1)
@@ -86,8 +91,12 @@ def place_objects(level_map, room, objects):
             elif dice == 'confuse':
                 item_component = Item(use_function = cast_confusion)
                 item = Object(x, y, '*', 'scroll of confusion', libtcod.light_orange, item=item_component)
+            
             objects.append(item)
+            gameconfig.start_item_count += 1
             send_to_back(item, objects)
+            
+    gameconfig.item_count = gameconfig.start_item_count
 
 def make_map(player):
     # generate the level map
@@ -95,6 +104,8 @@ def make_map(player):
     objects = [player]
     rooms = []
     num_rooms = 0
+    gameconfig.start_npc_count = 0
+    gameconfig.start_item_count = 0
     
     #pick a random color theme for the level
     color_theme = gameconfig.COLOR_THEMES[libtcod.random_get_int(0, 0, len(gameconfig.COLOR_THEMES)-1)]
