@@ -76,7 +76,7 @@ def handle_keys(player, objects, level_map, stairs):
                     if len(player.player.inventory) >= 26:
                         return('Your inventory is full, cannot pick up ' + self.owner.name + '.', libtcod.pink)
                     else:
-                        player.player.add_item_inventory(obj.item)
+                        message(player.player.add_item_inventory(obj.item))
                         objects.remove(obj.item.owner)
         
         # go down stairs if player is on them

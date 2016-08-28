@@ -1,6 +1,7 @@
 import libtcodpy as libtcod
 import math
 import gameconfig
+from objects.actions import npc_death
 #from map.helpers import is_blocked  can't do cos looped import
 
 class Object:
@@ -76,20 +77,12 @@ class Fighter:
     def take_damage(self, damage):
         if damage > 0:
             self.hp -= damage
-            print(self.hp)
         if self.hp <= 0:
             if self.owner.player == None:
                 # if you kill em, gain exp
+                npc_death(self)
                 #player.fighter.xp += self.xp
                 #check_level_up()
-                self.owner.color = libtcod.dark_red
-                self.owner.blocks = False
-                self.owner.fighter = None
-                self.owner.ai = None
-                #function = self.death_function
-                #function = None
-                #if function is not None:
-                #    function(self.owner)
 
     def heal(self, amount):
         self.hp += amount
@@ -101,9 +94,9 @@ class Fighter:
 
         if damage > 0:
             target.fighter.take_damage(damage)
-            return(self.owner.name.capitalize() + ' attacks ' + target.name + ' for ' + str(damage) + ' hit points.', libtcod.orange)
+            return(self.owner.name.upper() + ' attacks ' + target.name + ' for ' + str(damage) + ' hit points.', libtcod.orange)
         else:
-            return(self.owner.name.capitalize() + ' attacks ' + target.name + ' but it has no effect!', libtcod.cyan)
+            return(self.owner.name.upper() + ' attacks ' + target.name + ' but it has no effect!', libtcod.cyan)
 
 class Player:
     # the player
@@ -112,6 +105,7 @@ class Player:
 
     def add_item_inventory(self, item):
         self.inventory.append(item)
+        return("You picked up an " + item.owner.name.upper() + ".")
 
 class BaseNPC:
     # basic NPC ai

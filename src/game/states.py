@@ -2,7 +2,7 @@ import libtcodpy as libtcod
 import shelve
 import gameconfig
 from interface import interfaceconfig
-from interface.helpers import render_all, clear_console
+from interface.helpers import render_all, clear_console, message, message_box
 from game.controls import handle_keys
 from maps.mapconfig import make_map, initialize_fov
 from objects.classes import Fighter, Player, Object
@@ -58,6 +58,10 @@ def play_game(player, objects, level_map, stairs, color_theme, fov_map):
     game_state = 'playing'
     player_action = None
     fov_recompute = True
+    current_level = 0 # make a gameconfig variable
+    level1 = [ player, objects, level_map, stairs, color_theme, fov_map ]
+    levels = [ level1 ]
+    message('Welcome to your DOOM!', libtcod.red) #welcome message
 
     while not libtcod.console_is_window_closed():
 
@@ -71,6 +75,10 @@ def play_game(player, objects, level_map, stairs, color_theme, fov_map):
             break
         if player_action == 'stairs down':
             objects, level_map, stairs, color_theme, fov_map = next_level(player)
+            
+            new_level = [ objects, level_map, stairs, color_theme, fov_map ]
+            levels.append(new_level) # this needs to get fleshed out a lot more
+            # then we could have something like levels[current_level].objects, levels[current_level].level_map, etc...
         if game_state == 'playing' and player_action != 'no turn':
             fov_recompute = True
 
@@ -80,13 +88,16 @@ def play_game(player, objects, level_map, stairs, color_theme, fov_map):
 
 def next_level(player):
     # go to next level
+    
+    # we should also consider storing the previous levels so you can return to previously explored ones
+    
     #message('You take a moment to rest and recover your strength.', libtcod.light_cyan)
     #player.fighter.heal(player.fighter.max_hp / 2)
     #message('After a moment of peace, you descend deeper into the depths of horror.', libtcod.dark_red)
     #dungeon_level += 1
 
     # create new level
-    clear_console(interfaceconfig.con)
+    clear_console(interfaceconfig.con) #consider moving out of here - are there situations where you would want to create the level and not display it? Probably not, actually.
     objects, level_map, stairs, color_theme = make_map(player)  
     #initialize_leveldata()
     fov_map = initialize_fov(level_map)

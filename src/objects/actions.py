@@ -14,16 +14,17 @@ def player_death(player):
     player.color = libtcod.dark_red
     return 'dead' #game_state
 
-def npc_death(npc):
+def npc_death(npcc):
+    npc = npcc.owner
     # npc death
-    message(npc.name.capitalize() + ' is dead! You gain ' + str(npc.fighter.xp) + 'XP!', libtcod.cyan)
+    message(npc.name.upper() + ' is dead! You gain ' + str(npc.fighter.xp) + 'XP!', libtcod.cyan)
     npc.char = '%'
     npc.color = libtcod.dark_red
     npc.blocks = False
     npc.fighter = None
     npc.ai = None
-    npc.name = 'remains of ' + npc.name
-    npc.send_to_back(npc, objects) #gotta get objects here or take send_to_back call outside npc_death
+    npc.name = 'remains of ' + npc.name.upper()
+    #npc.send_to_back(npc, objects) #gotta get objects here or take send_to_back call outside npc_death
 
 def closest_npc(max_range):
     # find closest enemy to max range and in FOV

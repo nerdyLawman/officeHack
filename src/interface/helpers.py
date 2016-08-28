@@ -4,10 +4,15 @@ import textwrap
 from interface import interfaceconfig
 from maps.helpers import in_fov
 
-# ADDRESS:
-# render_all()
-# menu()
-# inventory_menu()
+def draw_object(obj, con):
+    # draws a object (char) to specified screenspace
+    libtcod.console_set_default_foreground(con, obj.color)
+    libtcod.console_set_char_background(con, obj.x, obj.y, obj.color, libtcod.BKGND_SET)
+    libtcod.console_put_char(con, obj.x, obj.y, obj.char, libtcod.BKGND_NONE)
+
+def clear_object(obj, con):
+    # sets objt char to blank
+    libtcod.console_put_char(con, obj.x, obj.y, ' ', libtcod.BKGND_NONE)
 
 def clear_console(console):
     # blacks out the specified screenspace
@@ -16,6 +21,7 @@ def clear_console(console):
     libtcod.console_rect(console, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.SCREEN_HEIGHT, True, libtcod.BKGND_SET)
 
 def clear_all(objects, con):
+    # clears them all
     for obj in objects:
         clear_object(obj, con)
 
@@ -56,21 +62,26 @@ def render_all(player, objects, level_map, fov_map, fov_recompute, theme):
     #panel
     libtcod.console_set_default_background(interfaceconfig.panel, libtcod.black)
     libtcod.console_clear(interfaceconfig.panel)
+    
+    render_hud(player)
+    render_messages()
+    
+    libtcod.console_blit(interfaceconfig.panel, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.PANEL_HEIGHT, 0, 0, gameconfig.PANEL_Y)
 
     libtcod.console_flush()
     for obj in objects:
         clear_object(obj, interfaceconfig.con)
 
-def render_hud():
+def render_hud(player):
     # dungeon level
-    libtcod.console_print_ex(interfaceconfig.panel, 1, 0, libtcod.BKGND_NONE, libtcod.LEFT, 'Dungeon level: ' + str(dungeon_level))
+    libtcod.console_set_default_foreground(interfaceconfig.panel, libtcod.white)
+    libtcod.console_print_ex(interfaceconfig.panel, 1, 0, libtcod.BKGND_NONE, libtcod.LEFT, 'Dungeon level: ' + str(1))
     # health bar
-    render_bar(1, 1, gameconfig.BAR_WIDTH, 'HP', player.fighter.hp, player.fighter.max_hp,
-        libtcod.light_red, libtcod.darker_red)
+    render_bar(1, 1, gameconfig.BAR_WIDTH, 'HP', player.fighter.hp, player.fighter.max_hp, libtcod.light_red, libtcod.darker_red)
     # NPCs bar
-    render_bar(1, 3, gameconfig.BAR_WIDTH, 'NPCS', npc_count, start_npc_count, libtcod.light_blue, libtcod.darker_blue)
+    #render_bar(1, 3, gameconfig.BAR_WIDTH, 'NPCS', npc_count, start_npc_count, libtcod.light_blue, libtcod.darker_blue)
     # items bar
-    render_bar(1, 5, gameconfig.BAR_WIDTH, 'ITEMS', item_count, start_item_count, libtcod.light_violet, libtcod.darker_violet)
+    #render_bar(1, 5, gameconfig.BAR_WIDTH, 'ITEMS', item_count, start_item_count, libtcod.light_violet, libtcod.darker_violet)
 
 
 def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color):
@@ -87,11 +98,14 @@ def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color):
     libtcod.console_print_ex(interfaceconfig.panel, x + total_width / 2, y, libtcod.BKGND_NONE, libtcod.CENTER,
         name + ': ' + str(value) + '/' + str(maximum))
 
+def render_messages():
+    #game_msgs = [['test1',libtcod.red], ['hello world',libtcod.white], ['I\'d like to go now',libtcod.blue]]
     y = 1
-    for (line, color) in game_msgs:
+    for (line, color) in interfaceconfig.game_msgs:
         libtcod.console_set_default_foreground(interfaceconfig.panel, color)
         libtcod.console_print_ex(interfaceconfig.panel, gameconfig.MSG_X, y, libtcod.BKGND_NONE, libtcod.LEFT, line)
         y += 1
+
 
 def menu(header, options, width):
     # general selection menu
@@ -166,33 +180,11 @@ def message(new_msg, color=libtcod.white):
     # NEEDS game_msgs
     new_msg_lines = textwrap.wrap(new_msg, gameconfig.MSG_WIDTH)
 
-    #for line in new_msg_lines:
-    #    if len(game_msgs) == gameconfig.MSG_HEIGHT:
-    #        del game_msgs[0]
-        #game_msgs.append((line, color))
+    for line in new_msg_lines:
+        if len(interfaceconfig.game_msgs) == gameconfig.MSG_HEIGHT:
+            del interfaceconfig.game_msgs[0]
+        interfaceconfig.game_msgs.append((line, color))
 
 def message_box(text, width=50):
     # popup message box
     menu(text, [], width)
-
-def draw_object(obj, con):
-    libtcod.console_set_default_foreground(con, obj.color)
-    libtcod.console_set_char_background(con, obj.x, obj.y, obj.color, libtcod.BKGND_SET)
-    libtcod.console_put_char(con, obj.x, obj.y, obj.char, libtcod.BKGND_NONE)
-
-def clear_object(obj, con):
-    libtcod.console_put_char(con, obj.x, obj.y, ' ', libtcod.BKGND_NONE)
-
-def inventory_menu(header, inventory):
-    # inventory
-    # NEEDS: inventory
-    if len(inventory) == 0:
-        options = ['Inventory is empty']
-    else:
-        options = [item.name for item in inventory]
-    index = 'no selection'
-    #return selected item
-    while index == 'no selection':
-        index = menu(header, options, INVENTORY_WIDTH)
-    if index is None or len(inventory) == 0: return None
-    return inventory[index].item
