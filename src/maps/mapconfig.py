@@ -8,13 +8,11 @@ from objects.actions import cast_heal, cast_lightning, cast_fireball, cast_confu
 
 def initialize_fov(level_map):
     # set initial FOV condition
-    fov_recompute = True
     fov_map = libtcod.map_new(gameconfig.MAP_WIDTH, gameconfig.MAP_HEIGHT)
     for y in range(gameconfig.MAP_HEIGHT):
         for x in range(gameconfig.MAP_WIDTH):
             libtcod.map_set_properties(fov_map, x, y, not level_map[x][y].block_sight, not level_map[x][y].blocked)
-    
-    return fov_map, fov_recompute
+    return fov_map
 
 def is_blocked(level_map, x, y):
     if level_map[x][y].blocked:

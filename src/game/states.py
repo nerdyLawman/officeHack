@@ -10,22 +10,20 @@ from objects.classes import Fighter, Player, Object
 def new_game():
 
     # player - create player
-    inventory = []
-    #player_component = Player(inventory=inventory)
     player_component = Player(inventory=[])
     fighter_component = Fighter(hp=30, defense=1, power=5, xp=0)
     player = Object(0, 0, '@', 'Hero', libtcod.white, blocks=True, player=player_component, fighter=fighter_component)
     player.level = 1
 
-    # level
-    objects, level_map, stairs, color_theme = make_map(player)
+    # level -- DARIN! don't run off making make_map a cofig just yet, because it needs to be callable to use on different levelzzz.
+    objects, level_map, stairs, color_theme = make_map(player)    
+    # fov -- COULD THINK ABOUT PUTTING THIS TOGETHER WITH map_map actually
+    fov_map = initialize_fov(level_map)
+    
     #dungeon_level = 1
     #get_leveldata() #bunch of stuff from here for HUD - currently disabled
-    
-    # fov
-    fov_map, fov_recompute = initialize_fov(level_map)
 
-    return inventory, player, objects, level_map, stairs, color_theme, fov_map, fov_recompute
+    return player, objects, level_map, stairs, color_theme, fov_map
 
 def save_game():
     # open new empty shelve - overwrites old
@@ -60,7 +58,6 @@ def play_game(player, objects, level_map, color_theme, fov_map):
     game_state = 'playing'
     player_action = None
     fov_recompute = True
-    #theme = gameconfig.RED_THEME #set color theme
 
     while not libtcod.console_is_window_closed():
 
@@ -80,8 +77,6 @@ def play_game(player, objects, level_map, color_theme, fov_map):
                     obj.ai.take_turn(fov_map, player)
 
 def next_level():
-    global dungeon_level
-
     # go to next level
     message('You take a moment to rest and recover your strength.', libtcod.light_cyan)
     player.fighter.heal(player.fighter.max_hp / 2)
@@ -89,6 +84,7 @@ def next_level():
     dungeon_level += 1
 
     # create new level
-    make_map()
-    initialize_leveldata()
-    initialize_fov()
+    objects, level_map, stairs, color_theme = make_map(player)  
+    #initialize_leveldata()
+    fov_map = initialize_fov(level_map)
+    return player, objects, level_map, stairs, color_theme, fov_map
