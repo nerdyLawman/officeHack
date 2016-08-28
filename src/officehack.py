@@ -11,7 +11,7 @@ while not libtcod.console_is_window_closed():
     if choice == 0:
         player, objects, level_map, stairs, color_theme, fov_map = new_game()
         message(gameconfig.WELCOME_MESSAGE, libtcod.red)
-        play_game(player, objects, level_map, color_theme, fov_map)
+        play_game(player, objects, level_map, stairs, color_theme, fov_map)
     if choice == 1:
         try:
             load_game()

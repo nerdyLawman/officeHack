@@ -36,7 +36,7 @@ def player_move_or_attack(player, objects, level_map, dx, dy):
         if not is_blocked(level_map, objects, player.x+dx, player.y+dy):
             player.move(dx, dy)
 
-def handle_keys(player, objects, level_map):
+def handle_keys(player, objects, level_map, stairs):
     # primary game controls
     # exit
     if interfaceconfig.key.vk == libtcod.KEY_ESCAPE:
@@ -82,7 +82,7 @@ def handle_keys(player, objects, level_map):
         # go down stairs if player is on them
         if interfaceconfig.key_char == ',' or interfaceconfig.key_char == '.':
             if stairs.x == player.x and stairs.y == player.y:
-                next_level()
+                return('stairs down')
 
         # display inventory
         if interfaceconfig.key_char == 'i':

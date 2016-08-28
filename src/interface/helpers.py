@@ -10,7 +10,10 @@ from maps.helpers import in_fov
 # inventory_menu()
 
 def clear_console(console):
+    # blacks out the specified screenspace
     libtcod.console_clear(console)
+    libtcod.console_set_default_background(console, libtcod.black)
+    libtcod.console_rect(console, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.SCREEN_HEIGHT, True, libtcod.BKGND_SET)
 
 def clear_all(objects, con):
     for obj in objects:

@@ -2,7 +2,7 @@ import libtcodpy as libtcod
 import shelve
 import gameconfig
 from interface import interfaceconfig
-from interface.helpers import render_all
+from interface.helpers import render_all, clear_console
 from game.controls import handle_keys
 from maps.mapconfig import make_map, initialize_fov
 from objects.classes import Fighter, Player, Object
@@ -54,7 +54,7 @@ def save_game():
     # render FOV
     initialize_fov()"""
 
-def play_game(player, objects, level_map, color_theme, fov_map):
+def play_game(player, objects, level_map, stairs, color_theme, fov_map):
     game_state = 'playing'
     player_action = None
     fov_recompute = True
@@ -64,11 +64,13 @@ def play_game(player, objects, level_map, color_theme, fov_map):
         libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS|libtcod.EVENT_MOUSE,interfaceconfig.key,interfaceconfig.mouse)
 
         render_all(player, objects, level_map, fov_map, fov_recompute, color_theme)
-        player_action = handle_keys(player, objects, level_map)
+        player_action = handle_keys(player, objects, level_map, stairs)
 
         if player_action == 'exit':
             save_game()
             break
+        if player_action == 'stairs down':
+            objects, level_map, stairs, color_theme, fov_map = next_level(player)
         if game_state == 'playing' and player_action != 'no turn':
             fov_recompute = True
 
@@ -76,15 +78,16 @@ def play_game(player, objects, level_map, color_theme, fov_map):
                 if obj.ai:
                     obj.ai.take_turn(fov_map, player)
 
-def next_level():
+def next_level(player):
     # go to next level
-    message('You take a moment to rest and recover your strength.', libtcod.light_cyan)
-    player.fighter.heal(player.fighter.max_hp / 2)
-    message('After a moment of peace, you descend deeper into the depths of horror.', libtcod.dark_red)
-    dungeon_level += 1
+    #message('You take a moment to rest and recover your strength.', libtcod.light_cyan)
+    #player.fighter.heal(player.fighter.max_hp / 2)
+    #message('After a moment of peace, you descend deeper into the depths of horror.', libtcod.dark_red)
+    #dungeon_level += 1
 
     # create new level
+    clear_console(interfaceconfig.con)
     objects, level_map, stairs, color_theme = make_map(player)  
     #initialize_leveldata()
     fov_map = initialize_fov(level_map)
-    return player, objects, level_map, stairs, color_theme, fov_map
+    return objects, level_map, stairs, color_theme, fov_map
