@@ -53,6 +53,7 @@ class Player:
     # the player
     def __init__(self, inventory, level=1):
         self.inventory = inventory
+        self.level = level
 
     def add_item_inventory(self, item):
         self.inventory.append(item)

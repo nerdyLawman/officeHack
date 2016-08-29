@@ -1,7 +1,7 @@
 import libtcodpy as libtcod
 import gameconfig
 from interface.helpers import render_all, message, message_box, menu
-from interface.menus import inventory_menu
+from interface.menus import inventory_menu, main_menu
 #from objects.classes import Fighter
 
 def is_blocked(x, y):
@@ -41,8 +41,11 @@ def handle_keys():
     _stairsU = gameconfig.stairs_up
     _stairsD = gameconfig.stairs_down
     if gameconfig.key.vk == libtcod.KEY_ESCAPE:
-        selected = 0
-        return('exit')
+        choice = main_menu()
+        if choice == 2:
+            return 'exit'
+        else:
+            return 'no turn'
 
     # 8-D movement arrorw gameconfig.keys or numpad
     if gameconfig.key.vk == libtcod.KEY_UP or gameconfig.key.vk == libtcod.KEY_KP8:
@@ -81,12 +84,11 @@ def handle_keys():
                         gameconfig.objects.remove(obj.item.owner)
                         gameconfig.item_count -= 1
 
-        # go down stairs if player is on them
+        # go up down stairs if player is on them
         if gameconfig.key_char == ',' or gameconfig.key_char == '.':
             if _stairsU.x == _player.x and _stairsU.y == _player.y:
                 if gameconfig.game_level - 1 > 0:
                     return('stairs up')
-
             if  _stairsD.x == _player.x and _stairsD.y == _player.y:
                 if gameconfig.game_level >= len(gameconfig.game_levels):
                     return('stairs new')
@@ -108,8 +110,8 @@ def handle_keys():
 
         # show character info
         if gameconfig.key_char == 'c':
-            level_up_xp = gameconfig.LEVEL_UP_BASE + _player.level * gameconfig.LEVEL_UP_FACTOR
-            message_box('Character Information\n\nLevel: ' + str(_player.level) + '\nExperience: ' + str(_player.fighter.xp) +
+            level_up_xp = gameconfig.LEVEL_UP_BASE + _player.player.level * gameconfig.LEVEL_UP_FACTOR
+            message_box('Character Information\n\nLevel: ' + str(_player.player.level) + '\nExperience: ' + str(_player.fighter.xp) +
                 '\nExperience to level up: ' + str(level_up_xp) + '\n\nMaximum HP: ' + str(_player.fighter.max_hp) +
                 '\nAttack: ' + str(_player.fighter.power) + '\nDefense: ' + str(_player.fighter.defense), 24)
 

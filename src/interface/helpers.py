@@ -154,26 +154,26 @@ def menu(header, options, width):
         key = libtcod.console_wait_for_keypress(True)
 
         if options: # selection loop
-            if key.vk == libtcod.KEY_DOWN:
-                if selected < len(options):
-                    selected += 1
-                else:
-                    selected = 1
-            if key.vk == libtcod.KEY_UP:
-                if selected > 1:
-                    selected -= 1
-                else:
-                    selected = len(options)
+            if key.vk == libtcod.KEY_DOWN or key.vk == libtcod.KEY_UP:
+                if key.vk == libtcod.KEY_DOWN:
+                    if selected < len(options):
+                        selected += 1
+                    else:
+                        selected = 1
+                if key.vk == libtcod.KEY_UP:
+                    if selected > 1:
+                        selected -= 1
+                    else:
+                        selected = len(options)
+                # hightlight selected option
+                libtcod.console_set_default_background(window, gameconfig.MENU_BKGND)
+                libtcod.console_rect(window, 0, 0, width, height, False, libtcod.BKGND_SET)
+                libtcod.console_set_default_background(window, gameconfig.MENU_SELECT_BKGND)
+                libtcod.console_rect(window, 0, selected-1+header_height, width, 1, False, libtcod.BKGND_SCREEN)
+                libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 1.0)
+                libtcod.console_flush()
             if key.vk == libtcod.KEY_ENTER:
                 return(selected-1)
-
-            # hightlight selected option
-            libtcod.console_set_default_background(window, gameconfig.MENU_BKGND)
-            libtcod.console_rect(window, 0, 0, width, height, False, libtcod.BKGND_SET)
-            libtcod.console_set_default_background(window, gameconfig.MENU_SELECT_BKGND)
-            libtcod.console_rect(window, 0, selected-1+header_height, width, 1, False, libtcod.BKGND_SCREEN)
-            libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 1.0)
-            libtcod.console_flush()
 
             # convert ascii to index
             index = key.c - ord('a')

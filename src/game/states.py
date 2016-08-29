@@ -15,6 +15,7 @@ def new_game():
     # creat level map
     make_map()
 
+    # add first level to game_levels
     first_level = [ gameconfig.objects,
         gameconfig.level_map,
         gameconfig.stairs_up,
@@ -27,37 +28,38 @@ def new_game():
 def save_game():
     # open new empty shelve - overwrites old
     file = shelve.open('savegame', 'n')
-    file['map'] = level_map
-    file['objects'] = objects
-    file['player_index'] = objects.index(player)
-    file['inventory'] = inventory
-    file['game_msgs'] = game_msgs
-    file['game_state'] = game_state
-    file['stairs_index'] = objects.index(stairs)
-    file['dungron_level'] = dungeon_level
+    file['map'] = gameconfig.level_map
+    file['fov'] = gameconfig.fov_map
+    file['objects'] = gameconfig.objects
+    file['player'] = gameconfig.player
+    file['game_msgs'] = gameconfig.game_msgs
+    file['stairs_up'] = gameconfig.stairs_up
+    file['stairs_down'] = gameconfig.stairs_down
+    file['color_theme'] = gameconfig.color_theme
+    file['game_level'] = gameconfig.game_level
+    file['game_levels'] = gameconfig.game_levels
     file.close()
 
-"""def load_game():
-    global level_map, objects, player, inventory, game_msgs, game_state, stairs, dungeon_level
+def load_game():
     # open previously saved shelve
+    clear_console(gameconfig.con)
     file = shelve.open('savegame', 'r')
-    level_map = file['map']
-    objects = file['objects']
-    player = objects[file['player_index']]
-    inventory = file['inventory']
-    game_msgs = file['game_msgs']
-    game_state = file['game_state']
-    stairs = objects[file['stairs_index']]
-    dungeon_level = file['dungeon_level']
+    gameconfig.level_map = file['map']
+    gameconfig.fov_map = file['fov']
+    gameconfig.objects = file['objects']
+    gameconfig.player = file['player']
+    gameconfig.game_msgs = file['game_msgs']
+    gameconfig.stairs_up = file['stairs_up']
+    gameconfig.stairs_down = file['stairs_down']
+    gameconfig.color_theme = file['color_theme']
+    gameconfig.game_level = file['game_level']
+    gameconfig.game_levels = file['game_levels']
     file.close()
-    # render FOV
-    initialize_fov()"""
 
 def play_game():
     game_state = 'playing'
     player_action = None
     fov_recompute = True
-    message('Welcome to your DOOM!', libtcod.red) #welcome message
 
     while not libtcod.console_is_window_closed():
 
