@@ -37,7 +37,7 @@ alan = { 'char' : 'A',
     'chance' : 5,
 }
 
-level_npcs = [ dave, deb, alan ]
+level_npcs = [ jeff, sophie, alan ]
 
 
 floppy_disc =   { 'char' : '!',
