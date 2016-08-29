@@ -2,9 +2,8 @@ import libtcodpy as libtcod
 import gameconfig
 import components
 from maps.components import Tile, RectRoom
-from maps.helpers import random_choice, random_choice_index
+from maps.helpers import random_choice, random_choice_index, random_dict
 from objects.classes import Object, Fighter, BaseNPC, Item
-from objects.actions import cast_heal, cast_lightning, cast_fireball, cast_confusion
 
 def initialize_fov(level_map):
     # set initial FOV condition
@@ -54,7 +53,7 @@ def place_objects(level_map, room, objects):
 
         if not is_blocked(level_map, x, y):
             npc_ai = BaseNPC()
-            npc_chances = {'dave': 80, 'deb': 20}
+            npc_chances = {'dave': 80, 'deb': 20} #future define this in a config so the rolls can happen behind the scenes for each npc
             dice = random_choice(npc_chances)
             if dice == 'dave':  #80% chance of getting a Dave
                 #create a Dave
@@ -63,7 +62,7 @@ def place_objects(level_map, room, objects):
             elif dice == 'deb':
                 #create a Deb
                 npc_fighter = Fighter(hp=10, defense=0, power=3, xp=30)
-                npc = Object(x, y, 'T', 'Troll', libtcod.darker_purple, blocks=True, fighter=npc_fighter, ai=npc_ai)
+                npc = Object(x, y, 'T', 'Deb', libtcod.darker_purple, blocks=True, fighter=npc_fighter, ai=npc_ai)
             
             objects.append(npc)
             gameconfig.start_npc_count += 1
@@ -77,20 +76,9 @@ def place_objects(level_map, room, objects):
         y = libtcod.random_get_int(0, room.y1+1, room.y1-1)
 
         if not is_blocked(level_map, x, y):
-            item_chances = {'heal': 70, 'lightning': 10, 'fireball': 10, 'confuse': 10}
-            dice = random_choice(item_chances)
-            if dice == 'heal':
-                item_component = Item(use_function = cast_heal)
-                item = Object(x, y, '!', 'healing potion', libtcod.cyan, item=item_component)
-            elif dice == 'lightning':
-                item_component = Item(use_function = cast_lightning)
-                item = Object(x, y, 'Z', 'scroll of lightning bolt', libtcod.light_yellow, item=item_component)
-            elif dice == 'fireball':
-                item_component = Item(use_function=cast_fireball)
-                item = Object(x, y, '#', 'scroll of fireball', libtcod.light_red, item=item_component)
-            elif dice == 'confuse':
-                item_component = Item(use_function = cast_confusion)
-                item = Object(x, y, '*', 'scroll of confusion', libtcod.light_orange, item=item_component)
+            # place item
+            dice = random_dict_entry(gameconfig.level_items)
+            item = Object(x, y, dice.get('char'), dice.get('name'), dice.get('color'), item=Item(use_function=dice.get('use')))
             
             objects.append(item)
             gameconfig.start_item_count += 1

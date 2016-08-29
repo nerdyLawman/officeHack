@@ -6,6 +6,29 @@ npc_count = 0
 start_item_count = 0
 item_count = 0
 
+floppy_disc =   { 'char' : '!',
+    'name' : 'floppy disc',
+    'color' : libtcod.light_lime,
+    'use' : None,
+    'chance': 80
+}
+
+document = { 'char' : '#',
+    'name' : 'document',
+    'color' : libtcod.lightest_sepia,
+    'use' : None,
+    'chance' : 10
+}
+
+coffee = { 'char' : '0',
+    'name' : 'coffee',
+    'color' : libtcod.dark_sepia,
+    'use' : None,
+    'chance' : 10
+}
+
+level_items = [ floppy_disc, document, coffee ]
+
 # GAME TITLE
 CONSOLE_TITLE = 'offICE_HACK//'
 GAME_TITLE = 'Office_HACK'

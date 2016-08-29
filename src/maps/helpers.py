@@ -18,6 +18,15 @@ def random_choice(chances_dict):
     strings = chances_dict.keys()
     return strings[random_choice_index(chances)]
 
+def random_dict_entry(dict_list):
+    # returns a random dictionary entry from a list of dictionaries based on 'chance'
+    dice = libtcod.random_get_int(0, 1, 100)
+    running_sum = 0
+    for d in dict_list:
+        running_sum += d.get('chance')
+        if dice <= running_sum:
+            return d
+
 def get_leveldata(objects):
     # returns counts of NPCs and Items --todo return instead of assignment
     start_npc_count = 0
