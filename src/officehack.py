@@ -1,7 +1,6 @@
 import libtcodpy as libtcod
 import gameconfig
 from interface.menus import main_menu
-from interface import interfaceconfig
 from interface.helpers import message, message_box
 from game.states import new_game, play_game, save_game
 

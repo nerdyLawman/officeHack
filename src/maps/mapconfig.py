@@ -1,9 +1,9 @@
 import libtcodpy as libtcod
 import gameconfig
-import components
 from maps.components import Tile, RectRoom
 from maps.helpers import random_choice, random_choice_index, random_dict_entry
 from objects.classes import Object, Fighter, BaseNPC, Item
+from game import color_themes, game_items, game_npcs
 
 def initialize_fov(level_map):
     # set initial FOV condition
@@ -52,7 +52,7 @@ def place_objects(level_map, room, objects):
         y = libtcod.random_get_int(0, room.y1+1, room.y2-1)
 
         if not is_blocked(level_map, x, y):
-            dice = random_dict_entry(gameconfig.level_npcs)
+            dice = random_dict_entry(game_npcs.NPCS)
             npc = Object(x, y, dice.get('char'),
                 dice.get('name'), dice.get('color'), blocks=True,
                 fighter=Fighter(hp=dice.get('hp'), defense=dice.get('defense'), power=dice.get('power'), xp=dice.get('xp')),
@@ -71,7 +71,7 @@ def place_objects(level_map, room, objects):
 
         if not is_blocked(level_map, x, y):
             # place item
-            dice = random_dict_entry(gameconfig.level_items)
+            dice = random_dict_entry(game_items.ITEMS)
             item = Object(x, y, dice.get('char'), dice.get('name'), dice.get('color'), item=Item(use_function=dice.get('use')))
 
             objects.append(item)
@@ -90,7 +90,7 @@ def make_map(player):
     gameconfig.start_item_count = 0
 
     #pick a random color theme for the level
-    color_theme = gameconfig.COLOR_THEMES[libtcod.random_get_int(0, 0, len(gameconfig.COLOR_THEMES)-1)]
+    color_theme = color_themes.COLOR_THEMES[libtcod.random_get_int(0, 0, len(color_themes.COLOR_THEMES)-1)]
 
     # fill map with unblocked tiles
     level_map = [[ Tile(True)

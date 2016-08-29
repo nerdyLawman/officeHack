@@ -1,7 +1,6 @@
 import libtcodpy as libtcod
 import gameconfig
 from interface.helpers import menu
-import interfaceconfig
 
 def main_menu():
     # start game menu - logic handled in officehack.py

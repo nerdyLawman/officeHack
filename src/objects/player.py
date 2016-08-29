@@ -1,12 +1,6 @@
 import gameconfig
 import libtcodpy as libtcod
 from objects.classes import Object, Fighter
-from objects.actions import player_death
-
-#fighter_component = Fighter(hp=30, defense=1, power=5, xp=0, death_function=player_death)
-
-#player = Object(25, 23, '@', 'Hero', libtcod.white, blocks=True, fighter=fighter_component)
-#gameconfig.ACTIVE_OBJECTS.append(player)
 
 def player_move_or_attack(player, dx, dy):
     global fov_recompute

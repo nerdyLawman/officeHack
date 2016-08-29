@@ -1,7 +1,6 @@
 import libtcodpy as libtcod
 import gameconfig
 import textwrap
-from interface import interfaceconfig
 from maps.helpers import in_fov
 
 def draw_object(obj, con):
@@ -38,44 +37,44 @@ def render_all(player, objects, level_map, fov_map, fov_recompute, theme):
                 if not visible:
                     if level_map[x][y].explored:
                         if wall:
-                            libtcod.console_set_char_background(interfaceconfig.con, x, y, theme['color_dark_wall'], libtcod.BKGND_SET)
+                            libtcod.console_set_char_background(gameconfig.con, x, y, theme['color_dark_wall'], libtcod.BKGND_SET)
                         else:
-                            libtcod.console_set_char_background(interfaceconfig.con, x, y, theme['color_dark_ground'], libtcod.BKGND_SET)
+                            libtcod.console_set_char_background(gameconfig.con, x, y, theme['color_dark_ground'], libtcod.BKGND_SET)
                 else:
                     if wall:
-                        libtcod.console_set_char_background(interfaceconfig.con, x, y, theme['color_light_wall'], libtcod.BKGND_SET)
+                        libtcod.console_set_char_background(gameconfig.con, x, y, theme['color_light_wall'], libtcod.BKGND_SET)
                     else:
-                        libtcod.console_set_char_background(interfaceconfig.con, x, y, theme['color_light_ground'], libtcod.BKGND_SET)
+                        libtcod.console_set_char_background(gameconfig.con, x, y, theme['color_light_ground'], libtcod.BKGND_SET)
                     level_map[x][y].explored = True
 
     # draw all objects in the list
     for obj in objects:
         if obj != player:
             if libtcod.map_is_in_fov(fov_map, obj.x, obj.y):
-                draw_object(obj, interfaceconfig.con)
+                draw_object(obj, gameconfig.con)
     # draw player last
-    draw_object(player, interfaceconfig.con)
+    draw_object(player, gameconfig.con)
 
     #blit the contents of "con" to the root console
-    libtcod.console_blit(interfaceconfig.con, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.SCREEN_HEIGHT, 0, 0, 0)
+    libtcod.console_blit(gameconfig.con, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.SCREEN_HEIGHT, 0, 0, 0)
 
     #panel
-    libtcod.console_set_default_background(interfaceconfig.panel, libtcod.black)
-    libtcod.console_clear(interfaceconfig.panel)
-    
+    libtcod.console_set_default_background(gameconfig.panel, libtcod.black)
+    libtcod.console_clear(gameconfig.panel)
+
     render_hud(player)
     render_messages()
-    
-    libtcod.console_blit(interfaceconfig.panel, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.PANEL_HEIGHT, 0, 0, gameconfig.PANEL_Y)
+
+    libtcod.console_blit(gameconfig.panel, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.PANEL_HEIGHT, 0, 0, gameconfig.PANEL_Y)
 
     libtcod.console_flush()
     for obj in objects:
-        clear_object(obj, interfaceconfig.con)
+        clear_object(obj, gameconfig.con)
 
 def render_hud(player):
     # dungeon level
-    libtcod.console_set_default_foreground(interfaceconfig.panel, libtcod.white)
-    libtcod.console_print_ex(interfaceconfig.panel, 1, 0, libtcod.BKGND_NONE, libtcod.LEFT, 'Dungeon level: ' + str(1))
+    libtcod.console_set_default_foreground(gameconfig.panel, libtcod.white)
+    libtcod.console_print_ex(gameconfig.panel, 1, 0, libtcod.BKGND_NONE, libtcod.LEFT, 'Dungeon level: ' + str(1))
     # health bar
     render_bar(1, 1, gameconfig.BAR_WIDTH, 'HP', player.fighter.hp, player.fighter.max_hp, libtcod.red, libtcod.darker_flame)
     # NPCs bar
@@ -87,23 +86,23 @@ def render_hud(player):
 def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color):
     # render a status bar
     bar_width = int(float(value) / maximum * total_width)
-    libtcod.console_set_default_background(interfaceconfig.panel, back_color)
-    libtcod.console_rect(interfaceconfig.panel, x, y, total_width, 1, False, libtcod.BKGND_SCREEN)
+    libtcod.console_set_default_background(gameconfig.panel, back_color)
+    libtcod.console_rect(gameconfig.panel, x, y, total_width, 1, False, libtcod.BKGND_SCREEN)
 
-    libtcod.console_set_default_background(interfaceconfig.panel, bar_color)
+    libtcod.console_set_default_background(gameconfig.panel, bar_color)
     if bar_width > 0:
-        libtcod.console_rect(interfaceconfig.panel, x, y, bar_width, 1, False, libtcod.BKGND_SCREEN)
+        libtcod.console_rect(gameconfig.panel, x, y, bar_width, 1, False, libtcod.BKGND_SCREEN)
 
-    libtcod.console_set_default_foreground(interfaceconfig.panel, libtcod.white)
-    libtcod.console_print_ex(interfaceconfig.panel, x + total_width / 2, y, libtcod.BKGND_NONE, libtcod.CENTER,
+    libtcod.console_set_default_foreground(gameconfig.panel, libtcod.white)
+    libtcod.console_print_ex(gameconfig.panel, x + total_width / 2, y, libtcod.BKGND_NONE, libtcod.CENTER,
         name + ': ' + str(value) + '/' + str(maximum))
 
 def render_messages():
     #game_msgs = [['test1',libtcod.red], ['hello world',libtcod.white], ['I\'d like to go now',libtcod.blue]]
     y = 1
-    for (line, color) in interfaceconfig.game_msgs:
-        libtcod.console_set_default_foreground(interfaceconfig.panel, color)
-        libtcod.console_print_ex(interfaceconfig.panel, gameconfig.MSG_X, y, libtcod.BKGND_NONE, libtcod.LEFT, line)
+    for (line, color) in gameconfig.game_msgs:
+        libtcod.console_set_default_foreground(gameconfig.panel, color)
+        libtcod.console_print_ex(gameconfig.panel, gameconfig.MSG_X, y, libtcod.BKGND_NONE, libtcod.LEFT, line)
         y += 1
 
 
@@ -112,7 +111,7 @@ def menu(header, options, width):
     if len(options) > 26: raise ValueError('Cannot have a menu with more than 26 options!')
 
     # calculate total height for the header (after auto-wrap) and one line per option
-    header_height = libtcod.console_get_height_rect(interfaceconfig.con, 0, 0, width, gameconfig.SCREEN_HEIGHT, header)
+    header_height = libtcod.console_get_height_rect(gameconfig.con, 0, 0, width, gameconfig.SCREEN_HEIGHT, header)
     if header == '':
         header_height = 0
     height = len(options) + header_height
@@ -145,7 +144,7 @@ def menu(header, options, width):
     selected = 0
     while True:
         key = libtcod.console_wait_for_keypress(True)
-        
+
         if options: # selection loop
             if key.vk == libtcod.KEY_DOWN:
                 if selected < len(options):
@@ -159,7 +158,7 @@ def menu(header, options, width):
                     selected = len(options)
             if key.vk == libtcod.KEY_ENTER:
                 return(selected-1)
-            
+
             # hightlight selected option
             libtcod.console_set_default_background(window, gameconfig.MENU_BKGND)
             libtcod.console_rect(window, 0, 0, width, height, False, libtcod.BKGND_SET)
@@ -167,23 +166,22 @@ def menu(header, options, width):
             libtcod.console_rect(window, 0, selected-1+header_height, width, 1, False, libtcod.BKGND_SCREEN)
             libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 1.0)
             libtcod.console_flush()
-            
+
             # convert ascii to index
             index = key.c - ord('a')
             if index >= 0 and index < len(options): return index
-        
+
         if key.vk == libtcod.KEY_ESCAPE:
             return None
 
 def message(new_msg, color=libtcod.white):
     # play by play message display
-    # NEEDS game_msgs
     new_msg_lines = textwrap.wrap(new_msg, gameconfig.MSG_WIDTH)
 
     for line in new_msg_lines:
-        if len(interfaceconfig.game_msgs) == gameconfig.MSG_HEIGHT:
-            del interfaceconfig.game_msgs[0]
-        interfaceconfig.game_msgs.append((line, color))
+        if len(gameconfig.game_msgs) == gameconfig.MSG_HEIGHT:
+            del gameconfig.game_msgs[0]
+        gameconfig.game_msgs.append((line, color))
 
 def message_box(text, width=50):
     # popup message box

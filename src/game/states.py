@@ -1,8 +1,6 @@
 import libtcodpy as libtcod
 import shelve
 import gameconfig
-import settings
-from interface import interfaceconfig
 from interface.helpers import render_all, clear_console, message, message_box
 from game.controls import handle_keys
 from maps.mapconfig import make_map, initialize_fov
@@ -17,10 +15,10 @@ def new_game():
     player.level = 1
 
     # level -- DARIN! don't run off making make_map a cofig just yet, because it needs to be callable to use on different levelzzz.
-    objects, level_map, stairs, color_theme = make_map(player)    
+    objects, level_map, stairs, color_theme = make_map(player)
     # fov -- COULD THINK ABOUT PUTTING THIS TOGETHER WITH map_map actually
     fov_map = initialize_fov(level_map)
-    
+
     #dungeon_level = 1
     #get_leveldata() #bunch of stuff from here for HUD - currently disabled
 
@@ -66,7 +64,7 @@ def play_game(player, objects, level_map, stairs, color_theme, fov_map):
 
     while not libtcod.console_is_window_closed():
 
-        libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS|libtcod.EVENT_MOUSE,interfaceconfig.key,interfaceconfig.mouse)
+        libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS|libtcod.EVENT_MOUSE,gameconfig.key,gameconfig.mouse)
 
         render_all(player, objects, level_map, fov_map, fov_recompute, color_theme)
         player_action = handle_keys(player, objects, level_map, stairs)
@@ -76,7 +74,7 @@ def play_game(player, objects, level_map, stairs, color_theme, fov_map):
             break
         if player_action == 'stairs down':
             objects, level_map, stairs, color_theme, fov_map = next_level(player)
-            
+
             new_level = [ objects, level_map, stairs, color_theme, fov_map ]
             levels.append(new_level) # this needs to get fleshed out a lot more
             # then we could have something like levels[current_level].objects, levels[current_level].level_map, etc...
@@ -89,17 +87,17 @@ def play_game(player, objects, level_map, stairs, color_theme, fov_map):
 
 def next_level(player):
     # go to next level
-    
+
     # we should also consider storing the previous levels so you can return to previously explored ones
-    
-    #message('You take a moment to rest and recover your strength.', libtcod.light_cyan)
-    #player.fighter.heal(player.fighter.max_hp / 2)
-    #message('After a moment of peace, you descend deeper into the depths of horror.', libtcod.dark_red)
+
+    message('You take a moment to rest and recover your strength.', libtcod.light_cyan)
+    player.fighter.heal(player.fighter.max_hp / 2)
+    message('After a moment of peace, you descend deeper into the depths of horror.', libtcod.dark_red)
     #dungeon_level += 1
 
     # create new level
-    clear_console(interfaceconfig.con) #consider moving out of here - are there situations where you would want to create the level and not display it? Probably not, actually.
-    objects, level_map, stairs, color_theme = make_map(player)  
+    clear_console(gameconfig.con) #consider moving out of here - are there situations where you would want to create the level and not display it? Probably not, actually.
+    objects, level_map, stairs, color_theme = make_map(player)
     #initialize_leveldata()
     fov_map = initialize_fov(level_map)
     return objects, level_map, stairs, color_theme, fov_map
