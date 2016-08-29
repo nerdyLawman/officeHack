@@ -52,17 +52,11 @@ def place_objects(level_map, room, objects):
         y = libtcod.random_get_int(0, room.y1+1, room.y2-1)
 
         if not is_blocked(level_map, x, y):
-            npc_ai = BaseNPC()
-            npc_chances = {'dave': 80, 'deb': 20} #future define this in a config so the rolls can happen behind the scenes for each npc
-            dice = random_choice(npc_chances)
-            if dice == 'dave':  #80% chance of getting a Dave
-                #create a Dave
-                npc_fighter = Fighter(hp=6, defense=0, power=2, xp=10)
-                npc = Object(x, y, 'O', 'Dave', libtcod.desaturated_green, blocks=True, fighter=npc_fighter, ai=npc_ai)
-            elif dice == 'deb':
-                #create a Deb
-                npc_fighter = Fighter(hp=10, defense=0, power=3, xp=30)
-                npc = Object(x, y, 'T', 'Deb', libtcod.darker_purple, blocks=True, fighter=npc_fighter, ai=npc_ai)
+            dice = random_dict_entry(gameconfig.level_npcs)
+            npc = Object(x, y, dice.get('char'),
+                dice.get('name'), dice.get('color'), blocks=True,
+                fighter=Fighter(hp=dice.get('hp'), defense=dice.get('defense'), power=dice.get('power'), xp=dice.get('xp')),
+                ai=BaseNPC())
 
             objects.append(npc)
             gameconfig.start_npc_count += 1
@@ -141,7 +135,7 @@ def make_map(player):
                     create_v_tunnel(level_map, prev_y, new_y, prev_x)
                     create_h_tunnel(level_map, prev_x, new_x, new_y)
 
-            place_objects(level_map, new_room, objects)
+                place_objects(level_map, new_room, objects)
             rooms.append(new_room)
             num_rooms += 1
 
