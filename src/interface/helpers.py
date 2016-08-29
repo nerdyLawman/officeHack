@@ -24,8 +24,15 @@ def clear_all(objects, con):
     for obj in objects:
         clear_object(obj, con)
 
-def render_all(player, objects, level_map, fov_map, fov_recompute, theme):
+def render_all(fov_recompute):
     # main fucntion which draws all objects on the screen every cycle
+
+    #local renders
+    player = gameconfig.player
+    objects = gameconfig.objects
+    level_map = gameconfig.level_map
+    fov_map = gameconfig.fov_map
+    theme = gameconfig.color_theme
 
     if fov_recompute:
         libtcod.map_compute_fov(fov_map, player.x, player.y, gameconfig.TORCH_RADIUS, gameconfig.FOV_LIGHT_WALLS, gameconfig.FOV_ALGO)
@@ -52,29 +59,31 @@ def render_all(player, objects, level_map, fov_map, fov_recompute, theme):
         if obj != player:
             if libtcod.map_is_in_fov(fov_map, obj.x, obj.y):
                 draw_object(obj, gameconfig.con)
-    # draw player last
-    draw_object(player, gameconfig.con)
+    draw_object(player, gameconfig.con) # draw player last
 
     #blit the contents of "con" to the root console
     libtcod.console_blit(gameconfig.con, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.SCREEN_HEIGHT, 0, 0, 0)
 
-    #panel
+    # panel
     libtcod.console_set_default_background(gameconfig.panel, libtcod.black)
     libtcod.console_clear(gameconfig.panel)
 
-    render_hud(player)
+    # HUD
+    render_hud()
     render_messages()
 
     libtcod.console_blit(gameconfig.panel, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.PANEL_HEIGHT, 0, 0, gameconfig.PANEL_Y)
 
+    # clean up
     libtcod.console_flush()
     for obj in objects:
         clear_object(obj, gameconfig.con)
 
-def render_hud(player):
+def render_hud():
+    player = gameconfig.player
     # dungeon level
     libtcod.console_set_default_foreground(gameconfig.panel, libtcod.white)
-    libtcod.console_print_ex(gameconfig.panel, 1, 0, libtcod.BKGND_NONE, libtcod.LEFT, 'Dungeon level: ' + str(1))
+    libtcod.console_print_ex(gameconfig.panel, 1, 0, libtcod.BKGND_NONE, libtcod.LEFT, 'Dungeon level: ' + str(gameconfig.game_level))
     # health bar
     render_bar(1, 1, gameconfig.BAR_WIDTH, 'HP', player.fighter.hp, player.fighter.max_hp, libtcod.red, libtcod.darker_flame)
     # NPCs bar
@@ -98,13 +107,12 @@ def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color):
         name + ': ' + str(value) + '/' + str(maximum))
 
 def render_messages():
-    #game_msgs = [['test1',libtcod.red], ['hello world',libtcod.white], ['I\'d like to go now',libtcod.blue]]
-    y = 1
+    # display a message
+    y = 0
     for (line, color) in gameconfig.game_msgs:
         libtcod.console_set_default_foreground(gameconfig.panel, color)
         libtcod.console_print_ex(gameconfig.panel, gameconfig.MSG_X, y, libtcod.BKGND_NONE, libtcod.LEFT, line)
         y += 1
-
 
 def menu(header, options, width):
     # general selection menu

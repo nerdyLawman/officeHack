@@ -3,26 +3,26 @@ import shelve
 import gameconfig
 from interface.helpers import render_all, clear_console, message, message_box
 from game.controls import handle_keys
-from maps.mapconfig import make_map, initialize_fov
+from maps.mapconfig import make_map
 from objects.classes import Fighter, Player, Object
 
 def new_game():
-
-    # player - create player
+    # create player
     player_component = Player(inventory=[])
     fighter_component = Fighter(hp=30, defense=1, power=5, xp=0)
-    player = Object(0, 0, '@', 'Hero', libtcod.white, blocks=True, player=player_component, fighter=fighter_component)
-    player.level = 1
+    gameconfig.player = Object(0, 0, '@', 'Hero', libtcod.white, blocks=True, player=player_component, fighter=fighter_component)
 
-    # level -- DARIN! don't run off making make_map a cofig just yet, because it needs to be callable to use on different levelzzz.
-    objects, level_map, stairs, color_theme = make_map(player)
-    # fov -- COULD THINK ABOUT PUTTING THIS TOGETHER WITH map_map actually
-    fov_map = initialize_fov(level_map)
+    # creat level map
+    make_map()
 
-    #dungeon_level = 1
-    #get_leveldata() #bunch of stuff from here for HUD - currently disabled
-
-    return player, objects, level_map, stairs, color_theme, fov_map
+    first_level = [ gameconfig.objects,
+        gameconfig.level_map,
+        gameconfig.stairs_up,
+        gameconfig.stairs_down,
+        gameconfig.color_theme,
+        gameconfig.fov_map
+    ]
+    gameconfig.game_levels.append(first_level)
 
 def save_game():
     # open new empty shelve - overwrites old
@@ -53,51 +53,85 @@ def save_game():
     # render FOV
     initialize_fov()"""
 
-def play_game(player, objects, level_map, stairs, color_theme, fov_map):
+def play_game():
     game_state = 'playing'
     player_action = None
     fov_recompute = True
-    current_level = 0 # make a gameconfig variable
-    level1 = [ player, objects, level_map, stairs, color_theme, fov_map ]
-    levels = [ level1 ]
     message('Welcome to your DOOM!', libtcod.red) #welcome message
 
     while not libtcod.console_is_window_closed():
 
         libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS|libtcod.EVENT_MOUSE,gameconfig.key,gameconfig.mouse)
 
-        render_all(player, objects, level_map, fov_map, fov_recompute, color_theme)
-        player_action = handle_keys(player, objects, level_map, stairs)
+        render_all(fov_recompute)
+        player_action = handle_keys()
 
         if player_action == 'exit':
             save_game()
             break
-        if player_action == 'stairs down':
-            objects, level_map, stairs, color_theme, fov_map = next_level(player)
 
-            new_level = [ objects, level_map, stairs, color_theme, fov_map ]
-            levels.append(new_level) # this needs to get fleshed out a lot more
-            # then we could have something like levels[current_level].objects, levels[current_level].level_map, etc...
+        if player_action == 'stairs up':
+            up_level()
+
+        if player_action == 'stairs new':
+            new_level()
+
+        if player_action == 'stairs down':
+            down_level()
+
         if game_state == 'playing' and player_action != 'no turn':
             fov_recompute = True
-
-            for obj in objects:
+            for obj in gameconfig.objects:
                 if obj.ai:
-                    obj.ai.take_turn(fov_map, player)
+                    obj.ai.take_turn(gameconfig.fov_map, gameconfig.player)
 
-def next_level(player):
+def up_level():
+    gameconfig.game_level -= 1
+    golevel = gameconfig.game_level - 1
+    gameconfig.objects = gameconfig.game_levels[golevel][0]
+    gameconfig.level_map = gameconfig.game_levels[golevel][1]
+    gameconfig.stairs_up = gameconfig.game_levels[golevel][2]
+    gameconfig.stairs_down = gameconfig.game_levels[golevel][3]
+    gameconfig.color_theme = gameconfig.game_levels[golevel][4]
+    gameconfig.fov_map = gameconfig.game_levels[golevel][5]
+
+    # player position
+    gameconfig.player.x = gameconfig.stairs_down.x
+    gameconfig.player.y = gameconfig.stairs_down.y
+    clear_console(gameconfig.con)
+
+def down_level():
+    gameconfig.game_level += 1
+    golevel = gameconfig.game_level - 1
+    gameconfig.objects = gameconfig.game_levels[golevel][0]
+    gameconfig.level_map = gameconfig.game_levels[golevel][1]
+    gameconfig.stairs_up = gameconfig.game_levels[golevel][2]
+    gameconfig.stairs_down = gameconfig.game_levels[golevel][3]
+    gameconfig.color_theme = gameconfig.game_levels[golevel][4]
+    gameconfig.fov_map = gameconfig.game_levels[golevel][5]
+
+    # player position
+    gameconfig.player.x = gameconfig.stairs_up.x
+    gameconfig.player.y = gameconfig.stairs_up.y
+    clear_console(gameconfig.con)
+
+def new_level():
     # go to next level
-
     # we should also consider storing the previous levels so you can return to previously explored ones
-
     message('You take a moment to rest and recover your strength.', libtcod.light_cyan)
-    player.fighter.heal(player.fighter.max_hp / 2)
+    gameconfig.player.fighter.heal(gameconfig.player.fighter.max_hp / 2)
     message('After a moment of peace, you descend deeper into the depths of horror.', libtcod.dark_red)
-    #dungeon_level += 1
+    gameconfig.game_level += 1
 
     # create new level
-    clear_console(gameconfig.con) #consider moving out of here - are there situations where you would want to create the level and not display it? Probably not, actually.
-    objects, level_map, stairs, color_theme = make_map(player)
-    #initialize_leveldata()
-    fov_map = initialize_fov(level_map)
-    return objects, level_map, stairs, color_theme, fov_map
+    clear_console(gameconfig.con)
+    make_map()
+
+    new_level = [ gameconfig.objects,
+        gameconfig.level_map,
+        gameconfig.stairs_up,
+        gameconfig.stairs_down,
+        gameconfig.color_theme,
+        gameconfig.fov_map
+    ]
+    gameconfig.game_levels.append(new_level)

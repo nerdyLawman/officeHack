@@ -30,10 +30,14 @@ key = libtcod.Key()
 mouse = libtcod.Mouse()
 objects = []
 player = None
-stairs = None
+level_map = None
+fov_map = None
+color_theme = None
+stairs_up = None
+stairs_down = None
 game_msgs = []
 game_level = 1
-levels = []
+game_levels = []
 start_npc_count = npc_count = 0
 start_item_count = item_count = 0
 
@@ -41,9 +45,6 @@ start_item_count = item_count = 0
 libtcod.console_set_custom_font('data/fonts/arial10x10.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
 libtcod.console_init_root(SCREEN_WIDTH, SCREEN_HEIGHT, CONSOLE_TITLE, False)
 libtcod.sys_set_fps(LIMIT_FPS) #FPS
-
-# MESSAGES
-WELCOME_MESSAGE = 'Welcome stranger! Prepare to perish in the Tombs of the Ancient Kings.'
 
 # STATUS
 CONFUSE_NUM_TURNS = 5

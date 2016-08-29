@@ -2,7 +2,7 @@ import libtcodpy as libtcod
 import math
 import gameconfig
 from objects.actions import npc_death
-#from map.helpers import is_blocked  can't do cos looped import
+from game.controls import is_blocked
 
 class Object:
     # generic object
@@ -17,7 +17,7 @@ class Object:
       self.player = player
       if self.player:
         self.player.owner = self
-      
+
       self.fighter = fighter
       if self.fighter:
           self.fighter.owner = self
@@ -31,8 +31,7 @@ class Object:
           self.item.owner = self
 
     def move(self, dx, dy):
-        #if not is_blocked(self.x + dx, self.y + dy):
-        if True:
+        if not is_blocked(self.x + dx, self.y + dy):
           self.x += dx
           self.y += dy
 
