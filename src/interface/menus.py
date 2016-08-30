@@ -25,9 +25,14 @@ def inventory_menu(header, inventory):
         options = ['Inventory is empty']
     else:
         options = [item.owner.name for item in inventory]
-    index = 'no selection'
-    #return selected item
-    while index == 'no selection':
-        index = menu(header, options, gameconfig.INVENTORY_WIDTH)
+    index = menu(header, options, gameconfig.INVENTORY_WIDTH)
     if index is None or len(inventory) == 0: return None
     return inventory[index]
+
+
+def conversation(header):
+    # basic test conversation
+    responses = ['yeah.', 'I guess.', 'sure do.', 'maybe?', 'no way.']
+    index = menu(header, responses, gameconfig.INVENTORY_WIDTH)
+    if index is None or len(responses) == 0: return None
+    return responses[index]

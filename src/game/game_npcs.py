@@ -9,6 +9,7 @@ jeff = { 'char' : 'D',
     'power' : 2,
     'xp' : 10,
     'chance' : 70,
+    'ai' : 'base',
 }
 
 sophie = { 'char' : 'E',
@@ -19,6 +20,7 @@ sophie = { 'char' : 'E',
     'power' : 3,
     'xp' : 15,
     'chance' : 25,
+    'ai' : 'talk',
 }
 
 alan = { 'char' : 'A',
@@ -29,6 +31,7 @@ alan = { 'char' : 'A',
     'power' : 6,
     'xp' : 45,
     'chance' : 5,
+    'ai' : 'base',
 }
 
 NPCS = [ jeff, sophie, alan ]

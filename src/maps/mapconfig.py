@@ -2,7 +2,7 @@ import libtcodpy as libtcod
 import gameconfig
 from maps.components import Tile, RectRoom
 from maps.helpers import random_choice, random_choice_index, random_dict_entry
-from objects.classes import Object, Fighter, BaseNPC, Item
+from objects.classes import Object, Fighter, BaseNPC, Talker, Item
 from game import color_themes, game_items, game_npcs
 
 def is_blocked(x, y):
@@ -54,10 +54,14 @@ def place_objects(room):
 
         if not is_blocked(x, y):
             dice = random_dict_entry(game_npcs.NPCS)
+            if dice.get('ai') == 'talk':
+                npc_ai = Talker()
+            else:
+                npc_ai = BaseNPC()
             npc = Object(x, y, dice.get('char'),
                 dice.get('name'), dice.get('color'), blocks=True,
                 fighter=Fighter(hp=dice.get('hp'), defense=dice.get('defense'), power=dice.get('power'), xp=dice.get('xp')),
-                ai=BaseNPC())
+                ai=npc_ai)
 
             gameconfig.objects.append(npc)
             gameconfig.start_npc_count += 1

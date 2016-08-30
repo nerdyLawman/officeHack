@@ -1,8 +1,9 @@
 import libtcodpy as libtcod
 import math
 import gameconfig
-from objects.actions import npc_death
+from objects.actions import npc_death, player_death, send_to_back
 from game.controls import is_blocked
+from interface.menus import conversation
 
 class Object:
     # generic object
@@ -67,7 +68,6 @@ class Fighter:
         self.defense = defense
         self.power = power
         self.xp = xp
-        #self.death_function = death_function
 
     def take_damage(self, damage):
         if damage > 0:
@@ -75,12 +75,12 @@ class Fighter:
         if self.hp <= 0:
             if self.owner.player == None:
                 # if you kill em, gain exp
-                npc_death(self)
+                npc_death(self.owner)
+                send_to_back(self.owner)
                 #player.fighter.xp += self.xp
                 #check_level_up()
             else:
-                #player_death(self)
-                True
+                player_death(self.owner)
 
     def heal(self, amount):
         self.hp += amount
@@ -96,16 +96,41 @@ class Fighter:
         else:
             return(self.owner.name.upper() + ' attacks ' + target.name + ' but it has no effect!', libtcod.cyan)
 
+class Talker:
+    def take_turn(self):
+        topics = [ 'What\s the deal with BECKY?\n',
+            'Can you believe this weather we\ve been having?\n',
+            'I\'m thinking about getting another iPhone.\n',
+            'Can you come take a look at something on my computer for me?\n',
+            'Do you think JEFF is acting strange?\n',
+            'I can\'t believe they didn\'t offer me the CPM position!\n',
+            'Do you like this new coffee better? It\'s ITALIAN.\n',
+            'Did you see the picture of my DOG I posted on the office board yet?\n',
+            'Did you get up to anything fun last night?\n',
+            'Whenever you get around to it, would you mind wiping down the coffee machine?\n',
+            'What do you think of LUCY?\n',        
+        ]
+        npc = self.owner
+        if libtcod.map_is_in_fov(gameconfig.fov_map, npc.x, npc.y):
+            if npc.distance_to(gameconfig.player) >= 2:
+                npc.move_towards(gameconfig.player.x, gameconfig.player.y)
+            else:
+                depth = libtcod.random_get_int(0, 1, 5)
+                while depth > 0:
+                    topic = topics[libtcod.random_get_int(0, 1, len(topics)-1)]
+                    conversation(topic)
+                    depth -= 1
+    
 class BaseNPC:
     # basic NPC ai
-    def take_turn(self, fov_map, player):
+    def take_turn(self):
         npc = self.owner
-        if libtcod.map_is_in_fov(fov_map, npc.x, npc.y):
-            if npc.distance_to(player) >= 2:
-                npc.move_towards(player.x, player.y)
+        if libtcod.map_is_in_fov(gameconfig.fov_map, npc.x, npc.y):
+            if npc.distance_to(gameconfig.player) >= 2:
+                npc.move_towards(gameconfig.player.x, gameconfig.player.y)
 
-            elif player.fighter.hp > 0:
-                npc.fighter.attack(player)
+            elif gameconfig.player.fighter.hp > 0:
+                npc.fighter.attack(gameconfig.player)
 
 
 # states of NPCs

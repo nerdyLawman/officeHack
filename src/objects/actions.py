@@ -2,10 +2,10 @@ import libtcodpy as libtcod
 import gameconfig
 from interface.helpers import message
 
-def send_to_back(target, objects):
+def send_to_back(target):
     #gotta get objects here somehow
-    objects.remove(target)
-    objects.insert(0, target_npc)
+    gameconfig.objects.remove(target)
+    gameconfig.objects.insert(0, target)
 
 def player_death(player):
     # you ded
@@ -14,8 +14,7 @@ def player_death(player):
     player.color = libtcod.dark_red
     return 'dead' #game_state
 
-def npc_death(npcc):
-    npc = npcc.owner
+def npc_death(npc):
     # npc death
     message(npc.name.upper() + ' is dead! You gain ' + str(npc.fighter.xp) + 'XP!', libtcod.cyan)
     npc.char = '%'

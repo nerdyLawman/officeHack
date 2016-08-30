@@ -85,7 +85,7 @@ def play_game():
             fov_recompute = True
             for obj in gameconfig.objects:
                 if obj.ai:
-                    obj.ai.take_turn(gameconfig.fov_map, gameconfig.player)
+                    obj.ai.take_turn()
 
 def up_level():
     gameconfig.game_level -= 1
