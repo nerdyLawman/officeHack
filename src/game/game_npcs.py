@@ -1,5 +1,4 @@
 import libtcodpy as libtcod
-import random
 
 names = ['Seth', 'Peter', 'Ms. Suzy', 'Mary', 'Mark', 'Sophie', 'Alan',
         'Jeff', 'Martin', 'Mr. Frank', 'Donna', 'Deanie', 'Dr. Tod']
@@ -39,8 +38,3 @@ npc_generic_3 = {
 }
 
 NPC_classes = [ npc_generic_1, npc_generic_2, npc_generic_3 ]
-
-def get_npc():
-    npc_class = random.choice(NPC_classes)
-    npc_class['name'] = random.choice(names)
-    return npc_class
