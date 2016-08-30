@@ -100,7 +100,7 @@ def handle_keys():
             selection = -1
             chosen_item = inventory_menu('Press the key next to an item to use it, or ESC to cancel\n', _player.player.inventory)
             if chosen_item is not None:
-                chosen_item.use(_player.fighter)
+                chosen_item.use()
 
         # drop item
         if gameconfig.key_char == 'd':

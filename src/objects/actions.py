@@ -31,10 +31,20 @@ def closest_npc(max_range):
     closest_npc = None
     closest_dist = max_range + 1
 
-    for obj in objects:
-        if obj.fighter and not obj == player and libtcod.map_is_in_fov(fov_map, obj.x, obj.y):
-            dist = player.distance_to(obj)
+    for obj in gameconfig.objects:
+        if obj.fighter and not obj == gameconfig.player and libtcod.map_is_in_fov(gameconfig.fov_map, obj.x, obj.y):
+            dist = gameconfig.player.distance_to(obj)
             if dist < closest_dist:
                 closest_npc = obj
                 closest_dist = dist
     return closest_npc
+
+def throw_coffee():
+    #find closest npc (inside a maximum range) and damage it
+    target = closest_npc(gameconfig.COFFEE_RANGE)
+    if target is None:  #no enemy found within maximum range
+        message('No CO-WORKER is close enough to strike.', libtcod.red)
+        return 'cancelled'
+    # douce em!
+    message('A wave of HOT COFFEE strikes the ' + target.name.upper() + '! ' + target.name.upper() + ' is REPULSED!')
+    target.change_ai('repulsed')

@@ -45,10 +45,26 @@ class Object:
       dy = int(round(dx / distance))
       self.move(dx, dy)
 
+    def move_away(self, target_x, target_y):
+      dx = target_x - self.x
+      dy = target_y - self.y
+      distance = math.sqrt(dx ** 2 + dy ** 2)
+
+      dx = int(round(dx / distance)) * -1
+      dy = int(round(dx / distance)) * -1
+      self.move(dx, dy)
+
     def distance_to(self, other):
       dx = other.x - self.x
       dy = other.y - self.y
       return math.sqrt(dx ** 2 + dy ** 2)
+
+    def change_ai(self, new_ai):
+        old_ai = self.ai
+        if new_ai == 'repulsed':
+            self.ai = RepulsedNPC(old_ai)
+            self.ai.owner = self
+        return 'Done'
 
 class Player:
     # the player
@@ -59,6 +75,9 @@ class Player:
     def add_item_inventory(self, item):
         self.inventory.append(item)
         return("You picked up an " + item.owner.name.upper() + ".")
+
+    def remove_item_inventory(self, item):
+        self.inventory.remove(item)
 
 class Fighter:
     # Object with combat-related properties and methods
@@ -97,6 +116,9 @@ class Fighter:
             return(self.owner.name.upper() + ' attacks ' + target.name + ' but it has no effect!', libtcod.cyan)
 
 class Talker:
+    def __init__(self, recharge=gameconfig.TALK_RECHARGE):
+        self.recharge = recharge
+
     def take_turn(self):
         topics = [ 'What\s the deal with BECKY?\n',
             'Can you believe this weather we\ve been having?\n',
@@ -111,10 +133,13 @@ class Talker:
             'What do you think of LUCY?\n',
         ]
         npc = self.owner
-        if libtcod.map_is_in_fov(gameconfig.fov_map, npc.x, npc.y):
-            if npc.distance_to(gameconfig.player) >= 2:
+        if self.recharge < gameconfig.TALK_RECHARGE:
+            self.recharge += 1
+        elif libtcod.map_is_in_fov(gameconfig.fov_map, npc.x, npc.y):
+            if npc.distance_to(gameconfig.player) >= gameconfig.TALK_RANGE:
                 npc.move_towards(gameconfig.player.x, gameconfig.player.y)
             else:
+                self.recharge = 0
                 depth = libtcod.random_get_int(0, 1, 5)
                 while depth > 0:
                     topic = topics[libtcod.random_get_int(0, 1, len(topics)-1)]
@@ -157,16 +182,30 @@ class ConfusedNPC:
             self.num_turns -= 1
         else:
             self.owner.ai = self.old_ai
-            return('The ' + self.owner.name.upper() + ' is no longer confused.', libtcod.red)
+            return('The ' + self.owner.name.upper() + ' is no longer CONFUSED.', libtcod.red)
+
+class RepulsedNPC:
+    # an NPC that is totally out of control!
+    def __init__(self, old_ai, num_turns=gameconfig.REPULSED_NUM_TURNS):
+        self.old_ai = old_ai
+        self.num_turns = num_turns
+
+    def take_turn(self):
+        if self.num_turns > 0:
+            self.owner.move_away(gameconfig.player.x, gameconfig.player.y)
+            self.num_turns -= 1
+        else:
+            self.owner.ai = self.old_ai
+            return('The ' + self.owner.name.upper() + ' is no longer REPULSED.', libtcod.red)
 
 class Item:
     # an Object that can be picked up and used
     def __init__(self, use_function=None):
         self.use_function = use_function
 
-    def use(self, target):
+    def use(self):
         if self.use_function is None:
             return('The ' + self.owner.name.upper() + ' cannot be used.')
         else:
             if self.use_function() != 'cancelled':
-                inventory.remove(self.owner)
+                gameconfig.player.player.remove_item_inventory(self)
