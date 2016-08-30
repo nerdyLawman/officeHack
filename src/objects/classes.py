@@ -143,7 +143,7 @@ class Talker:
                 depth = libtcod.random_get_int(0, 1, 5)
                 while depth > 0:
                     topic = topics[libtcod.random_get_int(0, 1, len(topics)-1)]
-                    conversation(topic)
+                    conversation(topic, self.owner.name)
                     depth -= 1
 
 class BaseNPC:
