@@ -3,7 +3,7 @@ import math
 import gameconfig
 from objects.actions import npc_death, player_death, send_to_back
 from game.controls import is_blocked
-from interface.menus import conversation
+from interface.menus import conversation, terminal
 
 class Object:
     # generic object
@@ -74,7 +74,7 @@ class Player:
 
     def add_item_inventory(self, item):
         self.inventory.append(item)
-        return("You picked up an " + item.owner.name.upper() + ".")
+        return("You PICKED UP a " + item.owner.name.upper() + ".")
 
     def remove_item_inventory(self, item):
         self.inventory.remove(item)
@@ -159,15 +159,22 @@ class BaseNPC:
 
 class StationaryNPC:
     # stationary NPC
-    def __init__(self, base_color, blink_color=libtcod.white):
+    def __init__(self, base_color, blink_color=libtcod.white, interact=None):
         self.blink_color = blink_color
         self.base_color = base_color
+        self.interact = interact
 
     def take_turn(self):
         if self.owner.color == self.blink_color:
             self.owner.color = self.base_color
         else:
             self.owner.color = self.blink_color
+
+    def interact_function(self):
+        if self.interact == 'terminal':
+            terminal()
+        else:
+            return None
 
 # states of NPCs
 class ConfusedNPC:

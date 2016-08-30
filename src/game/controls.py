@@ -23,16 +23,17 @@ def player_move_or_attack(dx, dy):
     #try to find an attackable object there
     target = None
     for obj in gameconfig.objects:
-        if obj.fighter and obj.x == x and obj.y == y:
-            target = obj
-            break
+        if obj.x == x and obj.y == y:
+            if obj.fighter:
+                gameconfig.player.fighter.attack(obj)
+                break
+            if hasattr(obj.ai, 'interact'): #if interactable
+                obj.ai.interact_function()
+                break
 
     #attack if target found, move otherwise
-    if target is not None:
-        gameconfig.player.fighter.attack(target)
-    else:
-        if not is_blocked(gameconfig.player.x+dx, gameconfig.player.y+dy):
-            gameconfig.player.move(dx, dy)
+    if not is_blocked(gameconfig.player.x+dx, gameconfig.player.y+dy):
+        gameconfig.player.move(dx, dy)
 
 def handle_keys():
     # primary game controls
@@ -78,7 +79,7 @@ def handle_keys():
                 if obj.x == _player.x and obj.y == _player.y and obj.item:
 
                     if len(_player.player.inventory) >= 26:
-                        return('Your inventory is full, cannot pick up ' + self.owner.name + '.', libtcod.pink)
+                        return('Your INVENTORY is FULL! Cannot PICK UP ' + self.owner.name.upper() + '.', libtcod.pink)
                     else:
                         message(_player.player.add_item_inventory(obj.item))
                         gameconfig.objects.remove(obj.item.owner)
@@ -98,13 +99,13 @@ def handle_keys():
         # display inventory
         if gameconfig.key_char == 'i':
             selection = -1
-            chosen_item = inventory_menu('Press the key next to an item to use it, or ESC to cancel\n', _player.player.inventory)
+            chosen_item = inventory_menu('PRESS the KEY next to an ITEM to USE it, or ESC to CANCEL', _player.player.inventory)
             if chosen_item is not None:
                 chosen_item.use()
 
         # drop item
         if gameconfig.key_char == 'd':
-            chosen_item = inventory_menu('Press the key next to an item to drop it.\n')
+            chosen_item = inventory_menu('PRESS the KEY next to an ITEM to DROP it.')
             if chosen_item is not None:
                 chosen_item.drop()
 

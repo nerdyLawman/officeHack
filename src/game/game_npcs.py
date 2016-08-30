@@ -15,7 +15,7 @@ npc_generic_1 = {
     'ai' : 'base',
 }
 
-npc_generic_2 = {
+npc_talker = {
     'char' : 'E',
     'color' : libtcod.magenta,
     'hp' : 10,
@@ -26,7 +26,7 @@ npc_generic_2 = {
     'ai' : 'talk',
 }
 
-npc_generic_3 = {
+npc_boss = {
     'char' : 'A',
     'color' : libtcod.lime,
     'hp' : 30,
@@ -37,4 +37,4 @@ npc_generic_3 = {
     'ai' : 'base',
 }
 
-NPC_classes = [ npc_generic_1, npc_generic_2, npc_generic_3 ]
+NPC_classes = [ npc_generic_1, npc_talker, npc_boss ]

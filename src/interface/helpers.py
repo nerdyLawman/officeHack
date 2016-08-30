@@ -108,30 +108,37 @@ def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color):
 
 def render_messages():
     # display a message
-    y = 0
+    y = 1
     for (line, color) in gameconfig.game_msgs:
         libtcod.console_set_default_foreground(gameconfig.panel, color)
         libtcod.console_print_ex(gameconfig.panel, gameconfig.MSG_X, y, libtcod.BKGND_NONE, libtcod.LEFT, line)
         y += 1
 
-def menu(header, options, width):
+def menu(header, options, width=gameconfig.MENU_WIDTH, bkgnd=None, frgnd=None, select_color=None):
     # general selection menu
+    if bkgnd is None:
+        bkgnd = gameconfig.MENU_BKGND
+    if frgnd is None:
+        frgnd = libtcod.white
+    if select_color is None:
+        select_color = gameconfig.MENU_SELECT_BKGND
     if len(options) > 26: raise ValueError('Cannot have a menu with more than 26 options!')
 
     # calculate total height for the header (after auto-wrap) and one line per option
-    header_height = libtcod.console_get_height_rect(gameconfig.con, 0, 0, width, gameconfig.SCREEN_HEIGHT, header+'\n')
-    if header == '':
-        header_height = 1
+    header += '\n\n'
+    header_height = libtcod.console_get_height_rect(gameconfig.con, 0, 0, width, gameconfig.SCREEN_HEIGHT, header)
+    if header == '\n\n':
+        header_height = 0
     height = len(options) + header_height + 1
 
     #create an off-screen console that represents the menu's window
     window = libtcod.console_new(width, height)
-    libtcod.console_set_default_background(window, gameconfig.MENU_BKGND)
+    libtcod.console_set_default_background(window, bkgnd)
     libtcod.console_rect(window, 0, 0, width, height, False, libtcod.BKGND_SCREEN)
 
     #print the header, with auto-wrap
-    libtcod.console_set_default_foreground(window, libtcod.white)
-    libtcod.console_print_rect_ex(window, 1, 1, width, height, libtcod.BKGND_NONE, libtcod.LEFT, header)
+    libtcod.console_set_default_foreground(window, frgnd)
+    libtcod.console_print_rect_ex(window, 1, 1, width, height, libtcod.BKGND_NONE, libtcod.LEFT, header+'\n')
 
     y = header_height
     letter_index = ord('a')
@@ -144,7 +151,7 @@ def menu(header, options, width):
     #blit window contents
     x = gameconfig.SCREEN_WIDTH/2 - width/2
     y = gameconfig.SCREEN_HEIGHT/2 - height/2
-    libtcod.console_set_default_background(window, libtcod.red)
+    #libtcod.console_set_default_background(window, libtcod.red)
     libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 1.0)
 
     #present the root console to the player and wait for a key-press
@@ -166,9 +173,9 @@ def menu(header, options, width):
                     else:
                         selected = len(options)
                 # hightlight selected option
-                libtcod.console_set_default_background(window, gameconfig.MENU_BKGND)
+                libtcod.console_set_default_background(window, bkgnd)
                 libtcod.console_rect(window, 0, 0, width, height, False, libtcod.BKGND_SET)
-                libtcod.console_set_default_background(window, gameconfig.MENU_SELECT_BKGND)
+                libtcod.console_set_default_background(window, select_color)
                 libtcod.console_rect(window, 0, selected-1+header_height, width, 1, False, libtcod.BKGND_SCREEN)
                 libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 1.0)
                 libtcod.console_flush()

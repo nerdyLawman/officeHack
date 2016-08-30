@@ -9,14 +9,14 @@ def send_to_back(target):
 
 def player_death(player):
     # you ded
-    message('You died!', libtcod.white)
+    message('You have DIED!', libtcod.white)
     player.char = '%'
     player.color = libtcod.dark_red
     return 'dead' #game_state
 
 def npc_death(npc):
     # npc death
-    message(npc.name.upper() + ' is dead! You gain ' + str(npc.fighter.xp) + 'XP!', libtcod.cyan)
+    message(npc.name.upper() + ' is DEAD! You gain ' + str(npc.fighter.xp) + 'XP!', libtcod.cyan)
     npc.char = '%'
     npc.color = libtcod.dark_red
     npc.blocks = False
@@ -43,8 +43,8 @@ def throw_coffee():
     #find closest npc (inside a maximum range) and damage it
     target = closest_npc(gameconfig.COFFEE_RANGE)
     if target is None:  #no enemy found within maximum range
-        message('No CO-WORKER is close enough to strike.', libtcod.red)
+        message('No CO-WORKER is close enough to STRIKE.', libtcod.red)
         return 'cancelled'
     # douce em!
-    message('A wave of HOT COFFEE strikes the ' + target.name.upper() + '! ' + target.name.upper() + ' is REPULSED!')
+    message('A wave of HOT COFFEE strikes the ' + target.name.upper() + '! ' + target.name.upper() + ' is REPULSED!', libtcod.lime)
     target.change_ai('repulsed')

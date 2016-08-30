@@ -75,7 +75,7 @@ def place_objects(room):
 
         if not is_blocked(x, y):
             #test computer stationary object
-            item = Object(x, y, '#', 'computer', libtcod.pink, blocks=True, ai=StationaryNPC(base_color=libtcod.pink))
+            item = Object(x, y, '#', 'computer', libtcod.dark_pink, blocks=True, ai=StationaryNPC(base_color=libtcod.dark_pink,interact='terminal'))
             gameconfig.objects.append(item)
             send_to_back(item)
 
