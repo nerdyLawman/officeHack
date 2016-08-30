@@ -83,11 +83,11 @@ def render_hud():
     player = gameconfig.player
     # dungeon level
     libtcod.console_set_default_foreground(gameconfig.panel, libtcod.white)
-    libtcod.console_print_ex(gameconfig.panel, 1, 0, libtcod.BKGND_NONE, libtcod.LEFT, 'Dungeon level: ' + str(gameconfig.game_level))
+    libtcod.console_print_ex(gameconfig.panel, 1, 0, libtcod.BKGND_NONE, libtcod.LEFT, 'OFFICE LEVEL: ' + str(gameconfig.game_level))
     # health bar
     render_bar(1, 1, gameconfig.BAR_WIDTH, 'HP', player.fighter.hp, player.fighter.max_hp, libtcod.red, libtcod.darker_flame)
     # NPCs bar
-    render_bar(1, 3, gameconfig.BAR_WIDTH, 'NPCS', gameconfig.npc_count, gameconfig.start_npc_count, libtcod.azure, libtcod.darker_blue)
+    render_bar(1, 3, gameconfig.BAR_WIDTH, 'COWORKERS', gameconfig.npc_count, gameconfig.start_npc_count, libtcod.azure, libtcod.darker_blue)
     # items bar
     render_bar(1, 5, gameconfig.BAR_WIDTH, 'ITEMS', gameconfig.item_count, gameconfig.start_item_count, libtcod.light_violet, libtcod.darker_violet)
 
