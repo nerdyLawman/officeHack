@@ -2,7 +2,7 @@ import libtcodpy as libtcod
 import gameconfig
 from maps.components import Tile, RectRoom
 from maps.helpers import random_choice, random_choice_index, random_dict_entry
-from objects.classes import Object, Fighter, BaseNPC, Item
+from objects.classes import Object, Fighter, BaseNPC, StationaryNPC, Item
 from game import color_themes, game_items, game_npcs
 
 def is_blocked(x, y):
@@ -64,6 +64,16 @@ def place_objects(room):
             send_to_back(npc)
 
     gameconfig.npc_count = gameconfig.start_npc_count
+    # stationary objects
+    for i in range(1):
+        x = libtcod.random_get_int(0, room.x1+1, room.x2-1)
+        y = libtcod.random_get_int(0, room.y1+1, room.y1-1)
+
+        if not is_blocked(x, y):
+            #test computer stationary object
+            item = Object(x, y, '#', 'computer', libtcod.pink, blocks=True, ai=StationaryNPC(base_color=libtcod.pink))
+            gameconfig.objects.append(item)
+            send_to_back(item)
 
     # add Items
     for i in range(num_items):

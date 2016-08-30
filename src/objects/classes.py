@@ -98,14 +98,27 @@ class Fighter:
 
 class BaseNPC:
     # basic NPC ai
-    def take_turn(self, fov_map, player):
+    def take_turn(self):
         npc = self.owner
-        if libtcod.map_is_in_fov(fov_map, npc.x, npc.y):
-            if npc.distance_to(player) >= 2:
-                npc.move_towards(player.x, player.y)
+        if libtcod.map_is_in_fov(gameconfig.fov_map, npc.x, npc.y):
+            if npc.distance_to(gameconfig.player) >= 2:
+                npc.move_towards(gameconfig.player.x, gameconfig.player.y)
 
-            elif player.fighter.hp > 0:
-                npc.fighter.attack(player)
+            elif gameconfig.player.fighter.hp > 0:
+                npc.fighter.attack(gameconfig.player)
+
+
+class StationaryNPC:
+    # stationary NPC
+    def __init__(self, base_color, blink_color=libtcod.white):
+        self.blink_color = blink_color
+        self.base_color = base_color
+
+    def take_turn(self):
+        if self.owner.color == self.blink_color:
+            self.owner.color = self.base_color
+        else:
+            self.owner.color = self.blink_color
 
 
 # states of NPCs
