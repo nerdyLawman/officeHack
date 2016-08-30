@@ -73,5 +73,6 @@ LEVEL_UP_FACTOR = 50
 
 # COLORS
 STAIRS_COLOR = libtcod.black
+LEVEL_BKGND = libtcod.black
 MENU_BKGND = libtcod.darkest_gray
 MENU_SELECT_BKGND = libtcod.amber

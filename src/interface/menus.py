@@ -1,6 +1,6 @@
 import libtcodpy as libtcod
 import gameconfig
-from interface.helpers import menu
+from interface.helpers import menu, cli_window
 
 def main_menu():
     # start game menu - logic handled in officehack.py
@@ -29,10 +29,14 @@ def inventory_menu(header, inventory):
     if index is None or len(inventory) == 0: return None
     return inventory[index]
 
-def terminal():
+def terminal(header=''):
+    # computer terminal
     header = 'Welcome to TERMINAL-A' # give it a name eventually
     options = ['read_', 'write_', 'save_']
-    index = menu(header, options, bkgnd=libtcod.dark_azure, frgnd=libtcod.lighter_sky, select_color=libtcod.light_azure)
+    index = menu(header, options, bgnd_color=libtcod.dark_azure,
+        fgnd_color=libtcod.lighter_sky, sel_color=libtcod.light_azure)
+    if options[index] == 'write_':
+        cli_window()
 
 def conversation(header, npc_name):
     # basic test conversation

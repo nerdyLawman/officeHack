@@ -17,7 +17,8 @@ def clear_console(console):
     # blacks out the specified screenspace
     libtcod.console_clear(console)
     libtcod.console_set_default_background(console, libtcod.black)
-    libtcod.console_rect(console, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.SCREEN_HEIGHT, True, libtcod.BKGND_SET)
+    libtcod.console_rect(console, 0, 0, gameconfig.SCREEN_WIDTH,
+        gameconfig.SCREEN_HEIGHT, True, libtcod.BKGND_SET)
 
 def clear_all(objects, con):
     # clears them all
@@ -27,7 +28,7 @@ def clear_all(objects, con):
 def render_all(fov_recompute):
     # main fucntion which draws all objects on the screen every cycle
 
-    #local renders
+    #local renders for convenience
     player = gameconfig.player
     objects = gameconfig.objects
     level_map = gameconfig.level_map
@@ -35,7 +36,8 @@ def render_all(fov_recompute):
     theme = gameconfig.color_theme
 
     if fov_recompute:
-        libtcod.map_compute_fov(fov_map, player.x, player.y, gameconfig.TORCH_RADIUS, gameconfig.FOV_LIGHT_WALLS, gameconfig.FOV_ALGO)
+        libtcod.map_compute_fov(fov_map, player.x, player.y,
+            gameconfig.TORCH_RADIUS, gameconfig.FOV_LIGHT_WALLS, gameconfig.FOV_ALGO)
         # go through all tiles, and set their background color
         for y in range(gameconfig.MAP_HEIGHT):
             for x in range(gameconfig.MAP_WIDTH):
@@ -44,14 +46,18 @@ def render_all(fov_recompute):
                 if not visible:
                     if level_map[x][y].explored:
                         if wall:
-                            libtcod.console_set_char_background(gameconfig.con, x, y, theme['color_dark_wall'], libtcod.BKGND_SET)
+                            libtcod.console_set_char_background(gameconfig.con, x, y,
+                                theme['color_dark_wall'], libtcod.BKGND_SET)
                         else:
-                            libtcod.console_set_char_background(gameconfig.con, x, y, theme['color_dark_ground'], libtcod.BKGND_SET)
+                            libtcod.console_set_char_background(gameconfig.con, x, y,
+                                theme['color_dark_ground'], libtcod.BKGND_SET)
                 else:
                     if wall:
-                        libtcod.console_set_char_background(gameconfig.con, x, y, theme['color_light_wall'], libtcod.BKGND_SET)
+                        libtcod.console_set_char_background(gameconfig.con, x, y,
+                            theme['color_light_wall'], libtcod.BKGND_SET)
                     else:
-                        libtcod.console_set_char_background(gameconfig.con, x, y, theme['color_light_ground'], libtcod.BKGND_SET)
+                        libtcod.console_set_char_background(gameconfig.con, x, y,
+                            theme['color_light_ground'], libtcod.BKGND_SET)
                     level_map[x][y].explored = True
 
     # draw all objects in the list
@@ -65,13 +71,11 @@ def render_all(fov_recompute):
     libtcod.console_blit(gameconfig.con, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.SCREEN_HEIGHT, 0, 0, 0)
 
     # panel
-    libtcod.console_set_default_background(gameconfig.panel, libtcod.black)
+    libtcod.console_set_default_background(gameconfig.panel, gameconfig.LEVEL_BKGND)
     libtcod.console_clear(gameconfig.panel)
-
     # HUD
     render_hud()
     render_messages()
-
     libtcod.console_blit(gameconfig.panel, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.PANEL_HEIGHT, 0, 0, gameconfig.PANEL_Y)
 
     # clean up
@@ -87,7 +91,7 @@ def render_hud():
     # health bar
     render_bar(1, 1, gameconfig.BAR_WIDTH, 'HP', player.fighter.hp, player.fighter.max_hp, libtcod.red, libtcod.darker_flame)
     # NPCs bar
-    render_bar(1, 3, gameconfig.BAR_WIDTH, 'COWORKERS', gameconfig.npc_count, gameconfig.start_npc_count, libtcod.azure, libtcod.darker_blue)
+    render_bar(1, 3, gameconfig.BAR_WIDTH, 'CO-WORKERS', gameconfig.npc_count, gameconfig.start_npc_count, libtcod.azure, libtcod.darker_blue)
     # items bar
     render_bar(1, 5, gameconfig.BAR_WIDTH, 'ITEMS', gameconfig.item_count, gameconfig.start_item_count, libtcod.light_violet, libtcod.darker_violet)
 
@@ -97,48 +101,46 @@ def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color):
     bar_width = int(float(value) / maximum * total_width)
     libtcod.console_set_default_background(gameconfig.panel, back_color)
     libtcod.console_rect(gameconfig.panel, x, y, total_width, 1, False, libtcod.BKGND_SCREEN)
-
     libtcod.console_set_default_background(gameconfig.panel, bar_color)
     if bar_width > 0:
-        libtcod.console_rect(gameconfig.panel, x, y, bar_width, 1, False, libtcod.BKGND_SCREEN)
-
+        libtcod.console_rect(gameconfig.panel, x, y, bar_width, 1, False, libtcod.BKGND_SET)
     libtcod.console_set_default_foreground(gameconfig.panel, libtcod.white)
     libtcod.console_print_ex(gameconfig.panel, x + total_width / 2, y, libtcod.BKGND_NONE, libtcod.CENTER,
         name + ': ' + str(value) + '/' + str(maximum))
 
 def render_messages():
     # display a message
-    y = 1
+    y = 1 # give it a line break at the top
     for (line, color) in gameconfig.game_msgs:
         libtcod.console_set_default_foreground(gameconfig.panel, color)
-        libtcod.console_print_ex(gameconfig.panel, gameconfig.MSG_X, y, libtcod.BKGND_NONE, libtcod.LEFT, line)
+        libtcod.console_print_ex(gameconfig.panel, gameconfig.MSG_X, y,
+            libtcod.BKGND_NONE, libtcod.LEFT, line)
         y += 1
 
-def menu(header, options, width=gameconfig.MENU_WIDTH, bkgnd=None, frgnd=None, select_color=None):
+def menu(header, options, width=gameconfig.MENU_WIDTH, bgnd_color=None, fgnd_color=None, sel_color=None):
     # general selection menu
-    if bkgnd is None:
-        bkgnd = gameconfig.MENU_BKGND
-    if frgnd is None:
-        frgnd = libtcod.white
-    if select_color is None:
-        select_color = gameconfig.MENU_SELECT_BKGND
-    if len(options) > 26: raise ValueError('Cannot have a menu with more than 26 options!')
+    # color inits
+    if bgnd_color is None: bgnd_color = gameconfig.MENU_BKGND
+    if fgnd_color is None: fgnd_color = libtcod.white
+    if sel_color is None: sel_color = gameconfig.MENU_SELECT_BKGND
+
+    if len(options) > 26: raise ValueError('Cannot have a MENU with more than 26 OPTIONS!')
 
     # calculate total height for the header (after auto-wrap) and one line per option
     header += '\n\n'
     header_height = libtcod.console_get_height_rect(gameconfig.con, 0, 0, width, gameconfig.SCREEN_HEIGHT, header)
     if header == '\n\n':
-        header_height = 0
+        header_height = 1
     height = len(options) + header_height + 1
 
     #create an off-screen console that represents the menu's window
     window = libtcod.console_new(width, height)
-    libtcod.console_set_default_background(window, bkgnd)
+    libtcod.console_set_default_background(window, bgnd_color)
     libtcod.console_rect(window, 0, 0, width, height, False, libtcod.BKGND_SCREEN)
 
     #print the header, with auto-wrap
-    libtcod.console_set_default_foreground(window, frgnd)
-    libtcod.console_print_rect_ex(window, 1, 1, width, height, libtcod.BKGND_NONE, libtcod.LEFT, header+'\n')
+    libtcod.console_set_default_foreground(window, fgnd_color)
+    libtcod.console_print_rect_ex(window, 1, 1, width, height, libtcod.BKGND_NONE, libtcod.LEFT, header)
 
     y = header_height
     letter_index = ord('a')
@@ -151,7 +153,6 @@ def menu(header, options, width=gameconfig.MENU_WIDTH, bkgnd=None, frgnd=None, s
     #blit window contents
     x = gameconfig.SCREEN_WIDTH/2 - width/2
     y = gameconfig.SCREEN_HEIGHT/2 - height/2
-    #libtcod.console_set_default_background(window, libtcod.red)
     libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 1.0)
 
     #present the root console to the player and wait for a key-press
@@ -172,13 +173,15 @@ def menu(header, options, width=gameconfig.MENU_WIDTH, bkgnd=None, frgnd=None, s
                         selected -= 1
                     else:
                         selected = len(options)
+
                 # hightlight selected option
-                libtcod.console_set_default_background(window, bkgnd)
+                libtcod.console_set_default_background(window, bgnd_color)
                 libtcod.console_rect(window, 0, 0, width, height, False, libtcod.BKGND_SET)
-                libtcod.console_set_default_background(window, select_color)
+                libtcod.console_set_default_background(window, sel_color)
                 libtcod.console_rect(window, 0, selected-1+header_height, width, 1, False, libtcod.BKGND_SCREEN)
                 libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 1.0)
                 libtcod.console_flush()
+
             if key.vk == libtcod.KEY_ENTER:
                 return(selected-1)
 
@@ -201,3 +204,47 @@ def message(new_msg, color=libtcod.white):
 def message_box(text, width=50):
     # popup message box
     menu(text, [], width)
+
+def cli_window():
+    bgnd_color = libtcod.dark_azure
+    fgnd_color = libtcod.light_sky
+    cursor = '_'
+    text = ''
+    width = 50
+    height = 20
+    x = gameconfig.SCREEN_WIDTH/2 - width/2
+    y = gameconfig.SCREEN_HEIGHT/2 - height/2
+
+    window = libtcod.console_new(width, height)
+    libtcod.console_set_default_background(window, bgnd_color)
+    libtcod.console_set_default_foreground(window, fgnd_color)
+    libtcod.console_rect(window, 0, 0, width, height, False, libtcod.BKGND_SET)
+    libtcod.console_print_ex(window, 1, 1, libtcod.BKGND_NONE, libtcod.LEFT, 'HAPPY TERMINAL V1.0 - 1993')
+    libtcod.console_print_ex(window, 1, 3, libtcod.BKGND_NONE, libtcod.LEFT, cursor)
+    libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 1.0)
+    libtcod.console_flush()
+    while True:
+        key = libtcod.console_wait_for_keypress(True)
+        if key.vk == libtcod.KEY_ESCAPE:
+            return None
+        if key.vk == libtcod.KEY_BACKSPACE:
+            text = text[:-1]
+        if key.vk == libtcod.KEY_SPACE:
+            text += ' '
+        if key.vk == libtcod.KEY_ENTER:
+            break
+        if key.c >= 64 and key.c <= 127:
+            #print(chr(key.c))
+            text += chr(key.c)
+
+        libtcod.console_rect(window, 0, 2, width, height, True, libtcod.BKGND_SET)
+        libtcod.console_print_ex(window, 1, 3, libtcod.BKGND_NONE, libtcod.LEFT, text)
+        libtcod.console_print_ex(window, len(text)+1, 3, libtcod.BKGND_NONE, libtcod.LEFT, cursor)
+        libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 1.0)
+        libtcod.console_flush()
+    if text == 'exit':
+        print('exited')
+        return None
+    if text == 'save':
+        print('saved!')
+        return None

@@ -24,7 +24,6 @@ def npc_death(npc):
     npc.ai = None
     npc.name = 'remains of ' + npc.name.upper()
     gameconfig.npc_count -= 1
-    #npc.send_to_back(npc, objects) #gotta get objects here or take send_to_back call outside npc_death
 
 def closest_npc(max_range):
     # find closest enemy to max range and in FOV
