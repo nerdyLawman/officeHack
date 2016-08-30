@@ -53,7 +53,7 @@ def place_objects(room):
         y = libtcod.random_get_int(0, room.y1+1, room.y2-1)
 
         if not is_blocked(x, y):
-            dice = random_dict_entry(game_npcs.NPCS)
+            dice = game_npcs.get_npc()
             npc = Object(x, y, dice.get('char'),
                 dice.get('name'), dice.get('color'), blocks=True,
                 fighter=Fighter(hp=dice.get('hp'), defense=dice.get('defense'), power=dice.get('power'), xp=dice.get('xp')),
