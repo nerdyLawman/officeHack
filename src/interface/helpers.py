@@ -224,7 +224,8 @@ def cli_window():
     libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 1.0)
     libtcod.console_flush()
     while True:
-        key = libtcod.console_wait_for_keypress(True)
+        #key = libtcod.console_wait_for_keypress(True)
+        key = libtcod.console_check_for_keypress(True)
         if key.vk == libtcod.KEY_ESCAPE:
             return None
         if key.vk == libtcod.KEY_BACKSPACE:
