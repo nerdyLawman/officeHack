@@ -54,6 +54,10 @@ def place_objects(room):
 
         if not is_blocked(x, y):
             dice = game_npcs.get_npc()
+            if dice.get('ai') == 'talk':
+                npc_ai = Talker()
+            else:
+                npc_ai = BaseNPC()
             npc = Object(x, y, dice.get('char'),
                 dice.get('name'), dice.get('color'), blocks=True,
                 fighter=Fighter(hp=dice.get('hp'), defense=dice.get('defense'), power=dice.get('power'), xp=dice.get('xp')),
