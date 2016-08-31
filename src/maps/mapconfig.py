@@ -68,14 +68,18 @@ def place_objects(room):
             send_to_back(npc)
 
     gameconfig.npc_count = gameconfig.start_npc_count
+
     # stationary objects
     for i in range(1):
         x = libtcod.random_get_int(0, room.x1+1, room.x2-1)
         y = libtcod.random_get_int(0, room.y1+1, room.y1-1)
 
         if not is_blocked(x, y):
-            #test computer stationary object
-            item = Object(x, y, '#', 'computer', libtcod.dark_pink, blocks=True, ai=StationaryNPC(base_color=libtcod.dark_pink,interact='terminal'))
+            # place stationary object
+            dice = random_dict_entry(game_items.stationary_objects)
+            item = Object(x, y, dice.get('char'), dice.get('name'), dice.get('color'), blocks=True,
+                ai=StationaryNPC(base_color=dice.get('color'),interact=dice.get('interact')))
+
             gameconfig.objects.append(item)
             send_to_back(item)
 
@@ -87,7 +91,8 @@ def place_objects(room):
         if not is_blocked(x, y):
             # place item
             dice = random_dict_entry(game_items.ITEMS)
-            item = Object(x, y, dice.get('char'), dice.get('name'), dice.get('color'), item=Item(use_function=dice.get('use')))
+            item = Object(x, y, dice.get('char'), dice.get('name'), dice.get('color'),
+                item=Item(use_function=dice.get('use')))
 
             gameconfig.objects.append(item)
             gameconfig.start_item_count += 1

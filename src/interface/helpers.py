@@ -1,6 +1,7 @@
 import libtcodpy as libtcod
 import gameconfig
 import textwrap
+import time
 from maps.helpers import in_fov
 
 def draw_object(obj, con):
@@ -117,6 +118,14 @@ def render_messages():
             libtcod.BKGND_NONE, libtcod.LEFT, line)
         y += 1
 
+def highlight_selection(window, bgnd_color, sel_color, selected, width, height, header_height, x, y):
+    libtcod.console_set_default_background(window, bgnd_color)
+    libtcod.console_rect(window, 0, 0, width, height, False, libtcod.BKGND_SET)
+    libtcod.console_set_default_background(window, sel_color)
+    libtcod.console_rect(window, 0, selected+header_height, width, 1, False, libtcod.BKGND_SCREEN)
+    libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 1.0)
+    libtcod.console_flush()
+
 def menu(header, options, width=gameconfig.MENU_WIDTH, bgnd_color=None, fgnd_color=None, sel_color=None):
     # general selection menu
     # color inits
@@ -175,19 +184,19 @@ def menu(header, options, width=gameconfig.MENU_WIDTH, bgnd_color=None, fgnd_col
                         selected = len(options)
 
                 # hightlight selected option
-                libtcod.console_set_default_background(window, bgnd_color)
-                libtcod.console_rect(window, 0, 0, width, height, False, libtcod.BKGND_SET)
-                libtcod.console_set_default_background(window, sel_color)
-                libtcod.console_rect(window, 0, selected-1+header_height, width, 1, False, libtcod.BKGND_SCREEN)
-                libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 1.0)
-                libtcod.console_flush()
+                highlight_selection(window, bgnd_color, sel_color, selected-1, width, height, header_height, x, y)
 
             if key.vk == libtcod.KEY_ENTER:
                 return(selected-1)
 
             # convert ascii to index
             index = key.c - ord('a')
-            if index >= 0 and index < len(options): return index
+            if index >= 0 and index < len(options):
+                selected = index
+                # hightlight selected option
+                highlight_selection(window, bgnd_color, sel_color, selected, width, height, header_height, x, y)
+                time.sleep(0.1)
+                return index
 
         if key.vk == libtcod.KEY_ESCAPE:
             return None
@@ -205,10 +214,9 @@ def message_box(text, width=50):
     # popup message box
     menu(text, [], width)
 
-def cli_refresh(window, width, height, x, y, text, cursor):
-    libtcod.console_rect(window, 0, 2, width, height, True, libtcod.BKGND_SET)
-    libtcod.console_print_ex(window, 1, 3, libtcod.BKGND_NONE, libtcod.LEFT, text)
-    libtcod.console_print_ex(window, len(text)+1, 3, libtcod.BKGND_NONE, libtcod.LEFT, cursor)
+def cli_refresh(window, width, height, x, y, text, header_height=2):
+    libtcod.console_rect(window, 0, header_height, width, height, True, libtcod.BKGND_SET)
+    libtcod.console_print_ex(window, 1, header_height+1, libtcod.BKGND_NONE, libtcod.LEFT, text)
     libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 1.0)
     libtcod.console_flush()
 
@@ -216,7 +224,7 @@ def cli_window():
     bgnd_color = libtcod.dark_azure
     fgnd_color = libtcod.light_sky
     cursor = '_'
-    text = ''
+    text = cursor
     width = gameconfig.SCREEN_WIDTH
     height = gameconfig.SCREEN_HEIGHT
     x = gameconfig.SCREEN_WIDTH/2 - width/2
@@ -225,15 +233,15 @@ def cli_window():
     window = libtcod.console_new(width, height)
     libtcod.console_set_default_background(window, bgnd_color)
     libtcod.console_set_default_foreground(window, fgnd_color)
-    libtcod.console_rect(window, 0, 0, width, height, False, libtcod.BKGND_SET)
+    # header
+    libtcod.console_rect(window, 0, 0, width, height, True, libtcod.BKGND_SET)
     libtcod.console_print_ex(window, 1, 1, libtcod.BKGND_NONE, libtcod.LEFT, 'HAPPY TERMINAL V1.0 - 1993')
-    libtcod.console_print_ex(window, 1, 3, libtcod.BKGND_NONE, libtcod.LEFT, cursor)
-    libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 1.0)
-    libtcod.console_flush()
-    
+    cli_refresh(window, width, height, x, y, text) #update screen
+
     while True:
         while True:
             key = libtcod.console_wait_for_keypress(True)
+            text = text[:-1] #takeout cursor
             if key.vk == libtcod.KEY_ESCAPE:
                 return None
             if key.vk == libtcod.KEY_BACKSPACE:
@@ -243,11 +251,11 @@ def cli_window():
             if key.vk == libtcod.KEY_ENTER:
                 break
             if key.c >= 64 and key.c <= 127:
-                #print(chr(key.c))
                 text += chr(key.c)
-    
-            cli_refresh(window, width, height, x, y, text, cursor)
-            
+
+            text += cursor #redraw cursor
+            cli_refresh(window, width, height, x, y, text)
+
         if text == 'exit':
             print('exited')
             return None
@@ -256,7 +264,7 @@ def cli_window():
             return None
         if text == 'help':
             helptext = 'type help for options\ntype save to save\ntype exit to exit\n\npress ANY KEY.'
-            cli_refresh(window, width, height, x, y, helptext, '')
-            text = ''
+            cli_refresh(window, width, height, x, y, helptext)
+            text = cursor
         libtcod.console_wait_for_keypress(True)
-        cli_refresh(window, width, height, x, y, text, cursor)
+        cli_refresh(window, width, height, x, y, text)

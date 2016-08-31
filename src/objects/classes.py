@@ -73,11 +73,27 @@ class Player:
         self.level = level
 
     def add_item_inventory(self, item):
-        self.inventory.append(item)
+        inv_item = self.get_inventory_item(item)
+        if inv_item is not None:
+            inv_item.add_count()
+        else:
+            self.inventory.append(InventoryItem(item.owner.name, item))
         return("You PICKED UP a " + item.owner.name.upper() + ".")
 
     def remove_item_inventory(self, item):
-        self.inventory.remove(item)
+        inv_item = self.get_inventory_item(item)
+        if inv_item is not None:
+            if inv_item.count > 1:
+                inv_item.subtract_count()
+            else:
+                self.inventory.remove(inv_item)
+
+    def get_inventory_item(self, item):
+        if len(self.inventory) > 0:
+            for i in self.inventory:
+                if i.inv_id == item.owner.name:
+                    return i
+        return None
 
 class Fighter:
     # Object with combat-related properties and methods
@@ -216,3 +232,19 @@ class Item:
         else:
             if self.use_function() != 'cancelled':
                 gameconfig.player.player.remove_item_inventory(self)
+
+
+class InventoryItem:
+
+    def __init__(self, inv_id, item, count=1):
+        self.inv_id = inv_id
+        self.item = item
+        self.count = count
+
+    def add_count(self):
+        if self.count < 10:
+            self.count += 1
+
+    def subtract_count(self):
+        if self.count > 0:
+            self.count -= 1

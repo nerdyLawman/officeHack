@@ -29,6 +29,7 @@ npc_talker = {
 npc_boss = {
     'char' : 'A',
     'color' : libtcod.lime,
+    'per_level' : 1,
     'hp' : 30,
     'defense' : 0,
     'power' : 6,
@@ -38,3 +39,14 @@ npc_boss = {
 }
 
 NPC_classes = [ npc_generic_1, npc_talker, npc_boss ]
+
+
+computer = {
+    'char' : '#',
+    'name' : 'computer',
+    'color' : libtcod.dark_pink,
+    'base_col' : libtcod.dark_pink,
+    'interact' : 'terminal',
+}
+
+stationary_objects = [computer]

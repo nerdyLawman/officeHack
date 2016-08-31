@@ -24,10 +24,12 @@ def inventory_menu(header, inventory):
     if len(inventory) == 0:
         options = ['Inventory is empty']
     else:
-        options = [item.owner.name for item in inventory]
+        options = []
+        for item in inventory:
+            options.append(item.inv_id + ' [' + str(item.count) +']')
     index = menu(header, options)
     if index is None or len(inventory) == 0: return None
-    return inventory[index]
+    return inventory[index].item
 
 def terminal(header=''):
     # computer terminal
