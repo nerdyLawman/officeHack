@@ -205,13 +205,20 @@ def message_box(text, width=50):
     # popup message box
     menu(text, [], width)
 
+def cli_refresh(window, width, height, x, y, text, cursor):
+    libtcod.console_rect(window, 0, 2, width, height, True, libtcod.BKGND_SET)
+    libtcod.console_print_ex(window, 1, 3, libtcod.BKGND_NONE, libtcod.LEFT, text)
+    libtcod.console_print_ex(window, len(text)+1, 3, libtcod.BKGND_NONE, libtcod.LEFT, cursor)
+    libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 1.0)
+    libtcod.console_flush()
+
 def cli_window():
     bgnd_color = libtcod.dark_azure
     fgnd_color = libtcod.light_sky
     cursor = '_'
     text = ''
-    width = 50
-    height = 20
+    width = gameconfig.SCREEN_WIDTH
+    height = gameconfig.SCREEN_HEIGHT
     x = gameconfig.SCREEN_WIDTH/2 - width/2
     y = gameconfig.SCREEN_HEIGHT/2 - height/2
 
@@ -223,29 +230,33 @@ def cli_window():
     libtcod.console_print_ex(window, 1, 3, libtcod.BKGND_NONE, libtcod.LEFT, cursor)
     libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 1.0)
     libtcod.console_flush()
+    
     while True:
-        #key = libtcod.console_wait_for_keypress(True)
-        key = libtcod.console_check_for_keypress(True)
-        if key.vk == libtcod.KEY_ESCAPE:
+        while True:
+            key = libtcod.console_wait_for_keypress(True)
+            if key.vk == libtcod.KEY_ESCAPE:
+                return None
+            if key.vk == libtcod.KEY_BACKSPACE:
+                text = text[:-1]
+            if key.vk == libtcod.KEY_SPACE:
+                text += ' '
+            if key.vk == libtcod.KEY_ENTER:
+                break
+            if key.c >= 64 and key.c <= 127:
+                #print(chr(key.c))
+                text += chr(key.c)
+    
+            cli_refresh(window, width, height, x, y, text, cursor)
+            
+        if text == 'exit':
+            print('exited')
             return None
-        if key.vk == libtcod.KEY_BACKSPACE:
-            text = text[:-1]
-        if key.vk == libtcod.KEY_SPACE:
-            text += ' '
-        if key.vk == libtcod.KEY_ENTER:
-            break
-        if key.c >= 64 and key.c <= 127:
-            #print(chr(key.c))
-            text += chr(key.c)
-
-        libtcod.console_rect(window, 0, 2, width, height, True, libtcod.BKGND_SET)
-        libtcod.console_print_ex(window, 1, 3, libtcod.BKGND_NONE, libtcod.LEFT, text)
-        libtcod.console_print_ex(window, len(text)+1, 3, libtcod.BKGND_NONE, libtcod.LEFT, cursor)
-        libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 1.0)
-        libtcod.console_flush()
-    if text == 'exit':
-        print('exited')
-        return None
-    if text == 'save':
-        print('saved!')
-        return None
+        if text == 'save':
+            print('saved!')
+            return None
+        if text == 'help':
+            helptext = 'type help for options\ntype save to save\ntype exit to exit\n\npress ANY KEY.'
+            cli_refresh(window, width, height, x, y, helptext, '')
+            text = ''
+        libtcod.console_wait_for_keypress(True)
+        cli_refresh(window, width, height, x, y, text, cursor)
