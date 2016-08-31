@@ -3,7 +3,7 @@ import shelve
 import gameconfig
 from interface.helpers import render_all, clear_console, message, message_box
 from game.controls import handle_keys
-from maps.mapconfig import make_map
+from maps.mapping import make_map
 from objects.classes import Fighter, Player, Object
 
 def new_game():
@@ -62,7 +62,7 @@ def play_game():
     fov_recompute = True
 
     while not libtcod.console_is_window_closed():
-        
+
         libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS|libtcod.EVENT_MOUSE,gameconfig.key,gameconfig.mouse)
 
         render_all(fov_recompute)
