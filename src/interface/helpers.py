@@ -187,6 +187,10 @@ def menu(header, options, width=gameconfig.MENU_WIDTH, bgnd_color=None, fgnd_col
                 highlight_selection(window, bgnd_color, sel_color, selected-1, width, height, header_height, x, y)
 
             if key.vk == libtcod.KEY_ENTER:
+                if selected == 0:
+                    selected = 1
+                highlight_selection(window, bgnd_color, sel_color, selected-1, width, height, header_height, x, y)
+                time.sleep(0.1)
                 return(selected-1)
 
             # convert ascii to index

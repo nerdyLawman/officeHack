@@ -76,12 +76,14 @@ def place_objects(room):
 
         if not is_blocked(x, y):
             # place stationary object
-            dice = random_dict_entry(game_items.stationary_objects)
-            item = Object(x, y, dice.get('char'), dice.get('name'), dice.get('color'), blocks=True,
-                ai=StationaryNPC(base_color=dice.get('color'),interact=dice.get('interact')))
+            dice = random_dict_entry(game_npcs.stationary_objects)
+            if dice:
+                print('computer')
+                item = Object(x, y, dice.get('char'), dice.get('name'), dice.get('color'), blocks=True,
+                    ai=StationaryNPC(base_color=dice.get('color'),interact=dice.get('interact')))
 
-            gameconfig.objects.append(item)
-            send_to_back(item)
+                gameconfig.objects.append(item)
+                send_to_back(item)
 
     # add Items
     for i in range(num_items):
