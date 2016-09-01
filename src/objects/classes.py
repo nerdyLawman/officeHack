@@ -2,17 +2,18 @@ import libtcodpy as libtcod
 import math
 import gameconfig
 from objects.actions import npc_death, player_death, send_to_back
-from game.controls import is_blocked
 from interface.menus import conversation, terminal
+from maps.helpers import is_blocked
 
 class Object:
     # generic object
-    def __init__(self, x, y, char, name, color, blocks=False, player=None, fighter=None, ai=None, item=None):
+    def __init__(self, x, y, char, name, color, info="Coming Soon", blocks=False, player=None, fighter=None, ai=None, item=None):
       self.x = x
       self.y = y
       self.char = char
       self.name = name
       self.color = color
+      self.info = info
       self.blocks = blocks
 
       self.player = player
@@ -98,15 +99,27 @@ class Player:
             inv_item.add_count()
         else:
             self.inventory.append(InventoryItem(item.owner.name, item))
+        gameconfig.objects.remove(item.owner)
+        gameconfig.item_count -= 1
         return("You PICKED UP a " + item.owner.name.upper() + ".")
 
-    def remove_item_inventory(self, item):
+    def drop_item_inventory(self, item, x, y):
+        if self.consume_item_inventory(item):
+            item.owner.x = x
+            item.owner.y = y
+            gameconfig.objects.append(item.owner)
+            gameconfig.item_count += 1
+            return("You DROPPED a " + item.owner.name.upper() + ".")
+
+    def consume_item_inventory(self, item):
         inv_item = self.get_inventory_item(item)
         if inv_item is not None:
             if inv_item.count > 1:
                 inv_item.subtract_count()
             else:
                 self.inventory.remove(inv_item)
+            return True
+        return False
 
     def get_inventory_item(self, item):
         if len(self.inventory) > 0:
@@ -251,11 +264,10 @@ class Item:
             return('The ' + self.owner.name.upper() + ' cannot be used.')
         else:
             if self.use_function() != 'cancelled':
-                gameconfig.player.player.remove_item_inventory(self)
-
+                gameconfig.player.player.consume_item_inventory(self)
 
 class InventoryItem:
-
+    # an item listing that goes in the player's inventory
     def __init__(self, inv_id, item, count=1):
         self.inv_id = inv_id
         self.item = item

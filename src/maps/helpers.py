@@ -43,6 +43,16 @@ def get_leveldata(objects):
 def in_fov(fov_map, x, y):
     return libtcod.map_is_in_fov(fov_map, x, y)
 
+def is_blocked(x, y):
+    # test if tile is blocked
+    if gameconfig.level_map[x][y].blocked:
+        return True
+    # now check for any blocking objects
+    for obj in gameconfig.objects:
+        if obj.blocks and obj.x == x and obj.y == y:
+            return True
+    return False
+
 def check_map_blocked(x, y):
     if level_map[x][y].blocked:
         return True

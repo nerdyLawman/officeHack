@@ -57,12 +57,11 @@ def load_game():
     file.close()
 
 def play_game():
+    # main game loop
     game_state = 'playing'
     player_action = None
     fov_recompute = True
-
     while not libtcod.console_is_window_closed():
-
         libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS|libtcod.EVENT_MOUSE,gameconfig.key,gameconfig.mouse)
 
         render_all(fov_recompute)
@@ -71,15 +70,9 @@ def play_game():
         if player_action == 'exit':
             save_game()
             break
-
-        if player_action == 'stairs up':
-            up_level()
-
-        if player_action == 'stairs new':
-            new_level()
-
-        if player_action == 'stairs down':
-            down_level()
+        if player_action == 'stairs up': up_level()
+        if player_action == 'stairs new': new_level()
+        if player_action == 'stairs down': down_level()
 
         if game_state == 'playing' and player_action != 'no turn':
             fov_recompute = True
@@ -119,7 +112,6 @@ def down_level():
 
 def new_level():
     # go to next level
-    # we should also consider storing the previous levels so you can return to previously explored ones
     message('You take a moment to rest and recover your strength.', libtcod.light_cyan)
     gameconfig.player.fighter.heal(gameconfig.player.fighter.max_hp / 2)
     message('After a moment of peace, you descend deeper into the depths of horror.', libtcod.dark_red)

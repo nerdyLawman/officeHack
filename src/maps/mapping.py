@@ -78,7 +78,6 @@ def place_objects(room):
             # place stationary object
             dice = random_dict_entry(game_npcs.stationary_objects)
             if dice:
-                print('computer')
                 item = Object(x, y, dice.get('char'), dice.get('name'), dice.get('color'), blocks=True,
                     ai=StationaryNPC(base_color=dice.get('color'),interact=dice.get('interact')))
 

@@ -4,29 +4,16 @@ from interface.helpers import render_all, message, message_box, menu
 from interface.menus import inventory_menu, main_menu
 from objects.actions import objects_in_fov
 
-def is_blocked(x, y):
-    # test if tile is blocked
-    if gameconfig.level_map[x][y].blocked:
-        return True
-    # now check for any blocking objects
-    for obj in gameconfig.objects:
-        if obj.blocks and obj.x == x and obj.y == y:
-            return True
-    return False
-
 def handle_keys():
     # primary game controls
-    # exit
-    _p = gameconfig.player
-    _stairsU = gameconfig.stairs_up
-    _stairsD = gameconfig.stairs_down
+    _p = gameconfig.player #for ease of ref
 
+    # Exit
     if gameconfig.key.vk == libtcod.KEY_ESCAPE:
         choice = main_menu()
         if choice == 2:
             return 'exit'
-        else:
-            return 'no turn'
+        return 'no turn'
 
     # 8-D movement arrorw gameconfig.keys or numpad
     if gameconfig.key.vk == libtcod.KEY_UP or gameconfig.key.vk == libtcod.KEY_KP8:
@@ -58,15 +45,14 @@ def handle_keys():
         # help menu
         if gameconfig.key_char == 'h':
             header = "PRESS the key next to any of the OPTIONS for more INFORMATION."
-            menu(header, available_commands)
+            selected_entry = menu(header, available_commands)
 
         # FOV look
         if gameconfig.key_char == 'l':
             header = "SELECT an OBJECT in you FOV for more INFORMATION.\n"
             options = objects_in_fov()
-            if len(options) == 0:
-                options.append('Nothing to see here.')
-            menu(header, options)
+            selected_object = options[menu(header, [obj.name.upper() for obj in objects_in_fov()])]
+            if selected_object is not None: message_box(selected_object.info)
 
         # pick up an item
         if gameconfig.key_char == 'g':
@@ -77,21 +63,19 @@ def handle_keys():
                         return('Your INVENTORY is FULL! Cannot PICK UP ' + self.owner.name.upper() + '.', libtcod.pink)
                     else:
                         message(_p.player.add_item_inventory(obj.item))
-                        gameconfig.objects.remove(obj.item.owner)
-                        gameconfig.item_count -= 1
+
+        # drop item
+        if gameconfig.key_char == 'd':
+            chosen_item = inventory_menu('PRESS the KEY next to an ITEM to DROP it.', _p.player.inventory)
+            if chosen_item is not None:
+                message(_p.player.drop_item_inventory(chosen_item, _p.x, _p.y))
 
         # display inventory
         if gameconfig.key_char == 'i':
             selection = -1
             chosen_item = inventory_menu('PRESS the KEY next to an ITEM to USE it, or ESC to CANCEL', _p.player.inventory)
-            if chosen_item is not None:
+            if chosen_item:
                 chosen_item.use()
-
-        # drop item
-        if gameconfig.key_char == 'd':
-            chosen_item = inventory_menu('PRESS the KEY next to an ITEM to DROP it.')
-            if chosen_item is not None:
-                chosen_item.drop()
 
         # go up down stairs if player is on them
         if gameconfig.key_char == ',' or gameconfig.key_char == '.':

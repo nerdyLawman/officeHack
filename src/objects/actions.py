@@ -43,7 +43,7 @@ def objects_in_fov():
     fov_objects = []
     for obj in gameconfig.objects:
         if obj is not gameconfig.player and libtcod.map_is_in_fov(gameconfig.fov_map, obj.x, obj.y):
-            fov_objects.append(obj.name.upper())
+            fov_objects.append(obj)
     return fov_objects
 
 def throw_coffee():
