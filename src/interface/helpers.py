@@ -149,7 +149,7 @@ def menu(header, options, width=gameconfig.MENU_WIDTH, bgnd_color=None, fgnd_col
 
     #print the header, with auto-wrap
     libtcod.console_set_default_foreground(window, fgnd_color)
-    libtcod.console_print_rect_ex(window, 1, 1, width, height, libtcod.BKGND_NONE, libtcod.LEFT, header)
+    libtcod.console_print_rect_ex(window, 1, 1, width-2, height, libtcod.BKGND_NONE, libtcod.LEFT, header)
 
     y = header_height
     letter_index = ord('a')

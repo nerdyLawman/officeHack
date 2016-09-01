@@ -38,6 +38,14 @@ def closest_npc(max_range):
                 closest_dist = dist
     return closest_npc
 
+def objects_in_fov():
+    # get all that you can see
+    fov_objects = []
+    for obj in gameconfig.objects:
+        if obj is not gameconfig.player and libtcod.map_is_in_fov(gameconfig.fov_map, obj.x, obj.y):
+            fov_objects.append(obj.name.upper())
+    return fov_objects
+
 def throw_coffee():
     #find closest npc (inside a maximum range) and damage it
     target = closest_npc(gameconfig.COFFEE_RANGE)

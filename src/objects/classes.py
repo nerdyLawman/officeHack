@@ -72,6 +72,26 @@ class Player:
         self.inventory = inventory
         self.level = level
 
+    def move_or_attack(self, dx, dy):
+        #the coordinates the player is moving to/attacking
+        x = self.owner.x + dx
+        y = self.owner.y + dy
+
+        #try to find an attackable object there
+        target = None
+        for obj in gameconfig.objects:
+            if obj.x == x and obj.y == y:
+                if obj.fighter:
+                    self.owner.fighter.attack(obj)
+                    break
+                if hasattr(obj.ai, 'interact'): #if interactable
+                    obj.ai.interact_function()
+                    break
+
+        #attack if target found, move otherwise
+        if not is_blocked(self.owner.x+dx, self.owner.y+dy):
+            self.owner.move(dx, dy)
+
     def add_item_inventory(self, item):
         inv_item = self.get_inventory_item(item)
         if inv_item is not None:
