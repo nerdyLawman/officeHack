@@ -64,10 +64,10 @@ def place_objects(room):
                 ai=npc_ai)
 
             gameconfig.objects.append(npc)
-            gameconfig.start_npc_count += 1
+            gameconfig.level_npc_count += 1
             send_to_back(npc)
 
-    gameconfig.npc_count = gameconfig.start_npc_count
+    gameconfig.npc_count = gameconfig.level_npc_count
 
     # stationary objects
     for i in range(1):
@@ -93,21 +93,21 @@ def place_objects(room):
             # place item
             dice = random_dict_entry(game_items.ITEMS)
             item = Object(x, y, dice.get('char'), dice.get('name'), dice.get('color'),
-                item=Item(use_function=dice.get('use')))
+                item=Item(special=dice.get('special'),use_function=dice.get('use')))
 
             gameconfig.objects.append(item)
-            gameconfig.start_item_count += 1
+            gameconfig.level_item_count += 1
             send_to_back(item)
 
-    gameconfig.item_count = gameconfig.start_item_count
+    gameconfig.item_count = gameconfig.level_item_count
 
 def make_map():
     # generate the level map
     gameconfig.objects = [gameconfig.player]
     rooms = []
     num_rooms = 0
-    gameconfig.start_npc_count = 0
-    gameconfig.start_item_count = 0
+    gameconfig.level_npc_count = 0
+    gameconfig.level_item_count = 0
 
     #pick a random color theme for the level
     gameconfig.color_theme = color_themes.COLOR_THEMES[libtcod.random_get_int(0, 0, len(color_themes.COLOR_THEMES)-1)]

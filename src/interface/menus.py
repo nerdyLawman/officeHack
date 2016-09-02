@@ -1,6 +1,8 @@
 import libtcodpy as libtcod
 import gameconfig
-from interface.helpers import menu, cli_window
+from interface.helpers import menu
+from interface.cli import cli_window
+from objects.actions import read_write_file
 
 def main_menu():
     # start game menu - logic handled in officehack.py
@@ -33,12 +35,23 @@ def inventory_menu(header, inventory):
 
 def terminal(header=''):
     # computer terminal
+    gameconfig.player_at_computer = True
     header = 'Welcome to TERMINAL-A' # give it a name eventually
     options = ['read_', 'write_', 'save_']
     index = menu(header, options, bgnd_color=libtcod.dark_azure,
         fgnd_color=libtcod.lighter_sky, sel_color=libtcod.light_azure)
+    if options[index] == 'read_':
+        floppy = None
+        for item in gameconfig.player.player.inventory:
+            if item.inv_id == 'floppy disc':
+                floppy = item
+                break
+        if floppy is not None:
+            floppy.item.use()
+            cli_window(floppy.item.special)
     if options[index] == 'write_':
         cli_window()
+    gameconfig.player_at_computer = False
 
 def conversation(header, npc_name):
     # basic test conversation

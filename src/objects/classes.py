@@ -109,6 +109,8 @@ class Player:
             item.owner.y = y
             gameconfig.objects.append(item.owner)
             gameconfig.item_count += 1
+            if gameconfig.item_count > gameconfig.level_item_count:
+                gameconfig.level_item_count = gameconfig.item_count
             return("You DROPPED a " + item.owner.name.upper() + ".")
 
     def consume_item_inventory(self, item):
@@ -256,14 +258,15 @@ class RepulsedNPC:
 
 class Item:
     # an Object that can be picked up and used
-    def __init__(self, use_function=None):
+    def __init__(self, special=None, use_function=None):
+        self.special = special
         self.use_function = use_function
 
     def use(self):
         if self.use_function is None:
             return('The ' + self.owner.name.upper() + ' cannot be used.')
         else:
-            if self.use_function() != 'cancelled':
+            if self.use_function(self) != 'cancelled':
                 gameconfig.player.player.consume_item_inventory(self)
 
 class InventoryItem:

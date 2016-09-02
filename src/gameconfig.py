@@ -40,8 +40,11 @@ stairs_down = None
 game_msgs = []
 game_level = 1
 game_levels = []
-start_npc_count = npc_count = 0
-start_item_count = item_count = 0
+level_npc_count = npc_count = 0
+level_item_count = item_count = 0
+
+#flags
+player_at_computer = False
 
 # libtcod settings
 libtcod.console_set_custom_font('data/fonts/arial10x10.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)

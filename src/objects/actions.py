@@ -46,7 +46,14 @@ def objects_in_fov():
             fov_objects.append(obj)
     return fov_objects
 
-def throw_coffee():
+def read_write_file(floppy):
+    #if in_computer()
+    if gameconfig.player_at_computer: #in computer
+        return(floppy.special)
+    message("Can't use that here. Try finding a computer.", libtcod.white)
+    return 'cancelled'
+
+def throw_coffee(coffee):
     #find closest npc (inside a maximum range) and damage it
     target = closest_npc(gameconfig.COFFEE_RANGE)
     if target is None:  #no enemy found within maximum range
