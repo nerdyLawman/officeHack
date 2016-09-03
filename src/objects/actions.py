@@ -12,7 +12,9 @@ def player_death(player):
 
 def npc_death(npc):
     # npc death
-    message(npc.name.upper() + ' is DEAD! You gain ' + str(npc.fighter.xp) + 'XP!', libtcod.cyan)
+    xp = npc.fighter.xp
+    if npc.fighter.drone is True: gameconfig.level_drones.remove(npc)
+    message(npc.name.upper() + ' is DEAD! You gain ' + str(xp) + 'XP!', libtcod.cyan)
     npc.char = '%'
     npc.color = libtcod.dark_red
     npc.blocks = False
@@ -21,6 +23,7 @@ def npc_death(npc):
     npc.name = 'remains of ' + npc.name.upper()
     send_to_back(npc)
     gameconfig.npc_count -= 1
+    return xp
 
 def drone_death(drone):
     # kill the drone and switch back to the player

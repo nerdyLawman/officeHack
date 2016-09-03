@@ -2,7 +2,7 @@ import libtcodpy as libtcod
 import math
 import gameconfig
 from objects.actions import npc_death, player_death, drone_death
-from interface.menus import conversation, terminal
+from interface.menus import conversation, terminal, menu, message
 from interface.rendering import send_to_back
 from maps.helpers import is_blocked
 
@@ -85,7 +85,6 @@ class Player:
             if obj.x == x and obj.y == y:
                 if obj.fighter:
                     self.owner.fighter.attack(obj)
-                    break
                 if hasattr(obj.ai, 'interact'): #if interactable
                     obj.ai.interact_function()
                     break
@@ -94,6 +93,26 @@ class Player:
         if not is_blocked(self.owner.x+dx, self.owner.y+dy):
             self.owner.move(dx, dy)
 
+    def check_level_up(self):
+        level_up_xp = gameconfig.LEVEL_UP_BASE + self.level + gameconfig.LEVEL_UP_FACTOR
+        if self.owner.fighter.xp >= level_up_xp:
+            # level up
+            self.level += 1
+            self.owner.fighter.xp -= level_up_xp
+            message('Your skills increase. LEVEL UP! Now at level: ' + str(self.level) + '.', libtcod.yellow)
+    
+            choice = 'no selection'
+            while choice == 'no selection':
+                choice = menu('Level up! Chose a stat to raise!\n',
+                    ['Constitution: +10 HP', 'Stregnth: +1 STR', 'Agility: +1 DEX'], 24)
+            if choice == 0:
+                self.owner.fighter.max_hp += 10
+                self.owner.fighter.hp += 10
+            elif choice == 1:
+                self.owner.fighter.power += 1
+            elif choice == 2:
+                self.owner.fighter.defense += 1
+        
     def add_item_inventory(self, item):
         inv_item = self.get_inventory_item(item)
         if inv_item is not None:
@@ -146,15 +165,13 @@ class Fighter:
             self.hp -= damage
         if self.hp <= 0:
             if self.owner.player == None:
-                # if you kill em, gain exp
-                npc_death(self.owner)
-                #player.fighter.xp += self.xp
-                #check_level_up()
+                return npc_death(self.owner) #returns xp int
             else:
                 if self.drone is True:
                     drone_death(self.owner)
                 else:
                     player_death(self.owner)
+        return None
 
     def heal(self, amount):
         self.hp += amount
@@ -163,9 +180,11 @@ class Fighter:
 
     def attack(self, target):
         damage = self.power - target.fighter.defense
-
         if damage > 0:
-            target.fighter.take_damage(damage)
+            death_xp = target.fighter.take_damage(damage)
+            if death_xp is not None:
+                gameconfig.player.fighter.xp += death_xp
+                gameconfig.player.player.check_level_up()
             return(self.owner.name.upper() + ' attacks ' + target.name + ' for ' + str(damage) + ' hit points.', libtcod.orange)
         else:
             return(self.owner.name.upper() + ' attacks ' + target.name + ' but it has no effect!', libtcod.cyan)
