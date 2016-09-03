@@ -1,8 +1,9 @@
 import libtcodpy as libtcod
 import math
 import gameconfig
-from objects.actions import npc_death, player_death, send_to_back
+from objects.actions import npc_death, player_death
 from interface.menus import conversation, terminal
+from interface.rendering import send_to_back
 from maps.helpers import is_blocked
 
 class Object:
@@ -146,7 +147,6 @@ class Fighter:
             if self.owner.player == None:
                 # if you kill em, gain exp
                 npc_death(self.owner)
-                send_to_back(self.owner)
                 #player.fighter.xp += self.xp
                 #check_level_up()
             else:
@@ -223,7 +223,7 @@ class StationaryNPC:
 
     def interact_function(self):
         if self.interact == 'terminal':
-            terminal()
+            terminal(self)
         else:
             return None
 

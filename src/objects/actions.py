@@ -1,11 +1,6 @@
 import libtcodpy as libtcod
 import gameconfig
-from interface.helpers import message
-
-def send_to_back(target):
-    #gotta get objects here somehow
-    gameconfig.objects.remove(target)
-    gameconfig.objects.insert(0, target)
+from interface.rendering import message, send_to_back, render_all, remote_render
 
 def player_death(player):
     # you ded
@@ -23,6 +18,7 @@ def npc_death(npc):
     npc.fighter = None
     npc.ai = None
     npc.name = 'remains of ' + npc.name.upper()
+    send_to_back(npc)
     gameconfig.npc_count -= 1
 
 def closest_npc(max_range):
@@ -38,6 +34,19 @@ def closest_npc(max_range):
                 closest_dist = dist
     return closest_npc
 
+def random_object():
+    # return a random object
+    return gameconfig.objects[libtcod.random_get_int(0,1,len(gameconfig.objects)-1)]
+
+def random_object_from(collection):
+    return collection[libtcod.random_get_int(0,1,len(collection)-1)]
+
+def random_object_from_except(collection, exception):
+    _collection = collection
+    if exception in _collection: _collection.remove(exception)
+    if len(_collection) > 0: return _collection[libtcod.random_get_int(0,1,len(collection)-1)]
+    return None
+
 def objects_in_fov():
     # get all that you can see
     fov_objects = []
@@ -52,6 +61,12 @@ def read_write_file(floppy):
         return(floppy.special)
     message("Can't use that here. Try finding a computer.", libtcod.white)
     return 'cancelled'
+
+def remote_view(target):
+    # move FOV to another location for a turn
+    remote_render(target)
+    libtcod.console_wait_for_keypress(True)
+    render_all(True)
 
 def throw_coffee(coffee):
     #find closest npc (inside a maximum range) and damage it

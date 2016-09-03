@@ -1,27 +1,6 @@
 import gameconfig
 import libtcodpy as libtcod
-from objects.classes import Object, Fighter
-
-def player_move_or_attack(player, dx, dy):
-    global fov_recompute
-
-    #the coordinates the player is moving to/attacking
-    x = player.x + dx
-    y = player.y + dy
-
-    #try to find an attackable object there
-    target = None
-    for object in objects:
-        if object.fighter and object.x == x and object.y == y:
-            target = object
-            break
-
-    #attack if target found, move otherwise
-    if target is not None:
-        player.fighter.attack(target)
-    else:
-        player.move(dx, dy)
-        fov_recompute = True
+from objects.classes import Object, Player, Fighter
 
 def check_level_up():
     level_up_xp = LEVEL_UP_BASE + player.level + LEVEL_UP_FACTOR

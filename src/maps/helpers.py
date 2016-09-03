@@ -27,19 +27,6 @@ def random_dict_entry(dict_list):
         if dice <= running_sum:
             return d
 
-def get_leveldata(objects):
-    # returns counts of NPCs and Items --todo return instead of assignment
-    start_npc_count = 0
-    start_item_count = 0
-    for obj in objects:
-        if obj.ai:
-            start_npc_count += 1
-        if obj.item:
-            start_item_count += 1
-    npc_count = start_npc_count
-    item_count = start_item_count
-    return start_npc_count, npc_count, start_item_count, item_count
-
 def in_fov(fov_map, x, y):
     return libtcod.map_is_in_fov(fov_map, x, y)
 
