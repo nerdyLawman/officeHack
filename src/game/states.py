@@ -1,7 +1,7 @@
 import libtcodpy as libtcod
 import shelve
 import gameconfig
-from interface.helpers import render_all, clear_console, message, message_box
+from interface.rendering import render_all, clear_console, message
 from game.controls import handle_keys
 from maps.mapping import make_map
 from objects.classes import Fighter, Player, Object

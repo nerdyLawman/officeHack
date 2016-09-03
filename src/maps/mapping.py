@@ -2,6 +2,7 @@ import libtcodpy as libtcod
 import gameconfig
 from maps.components import Tile, RectRoom
 from maps.helpers import random_choice, random_choice_index, random_dict_entry
+from interface.rendering import send_to_back
 from objects.classes import Object, Fighter, BaseNPC, Talker, StationaryNPC, Item
 from game import color_themes, game_items, game_npcs
 
@@ -28,10 +29,6 @@ def create_v_tunnel(y1, y2, x):
     for y in range(min(y1, y2), max(y1, y2) + 1):
         gameconfig.level_map[x][y].blocked = False
         gameconfig.level_map[x][y].block_sight = False
-
-def send_to_back(item):
-    gameconfig.objects.remove(item)
-    gameconfig.objects.insert(0, item)
 
 def initialize_fov():
     # set initial FOV condition

@@ -1,7 +1,7 @@
 import libtcodpy as libtcod
 import gameconfig
-from interface.helpers import render_all, message, message_box, menu
-from interface.menus import inventory_menu, main_menu
+from interface.rendering import render_all, message
+from interface.menus import inventory_menu, main_menu, message_box, menu
 from objects.actions import objects_in_fov
 
 def handle_keys():
