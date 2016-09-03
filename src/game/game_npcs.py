@@ -47,7 +47,7 @@ computer = {
     'color' : libtcod.dark_pink,
     'base_col' : libtcod.dark_pink,
     'interact' : 'terminal',
-    'chance' : 50,
+    'chance' : 80,
 }
 
 stationary_objects = [computer]

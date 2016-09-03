@@ -1,7 +1,7 @@
 import libtcodpy as libtcod
 import math
 import gameconfig
-from objects.actions import npc_death, player_death
+from objects.actions import npc_death, player_death, drone_death
 from interface.menus import conversation, terminal
 from interface.rendering import send_to_back
 from maps.helpers import is_blocked
@@ -151,7 +151,10 @@ class Fighter:
                 #player.fighter.xp += self.xp
                 #check_level_up()
             else:
-                player_death(self.owner)
+                if self.drone is True:
+                    drone_death(self.owner)
+                else:
+                    player_death(self.owner)
 
     def heal(self, amount):
         self.hp += amount

@@ -91,7 +91,7 @@ def handle_keys():
         # show character info
         if gameconfig.key_char == 'c':
             level_up_xp = gameconfig.LEVEL_UP_BASE + _p.player.level * gameconfig.LEVEL_UP_FACTOR
-            message_box('Character Information\n\nLevel: ' + str(_p.player.level) + '\nExperience: ' + str(_p.fighter.xp) +
+            message_box(_p.name.upper() + ' Information\n\nLevel: ' + str(_p.player.level) + '\nExperience: ' + str(_p.fighter.xp) +
                 '\nExperience to level up: ' + str(level_up_xp) + '\n\nMaximum HP: ' + str(_p.fighter.max_hp) +
                 '\nAttack: ' + str(_p.fighter.power) + '\nDefense: ' + str(_p.fighter.defense), 24)
 

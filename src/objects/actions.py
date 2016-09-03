@@ -22,6 +22,20 @@ def npc_death(npc):
     send_to_back(npc)
     gameconfig.npc_count -= 1
 
+def drone_death(drone):
+    # kill the drone and switch back to the player
+    gameconfig.player.player = gameconfig.real_player.player
+    gameconfig.player.player.inventory = list(gameconfig.real_inventory)
+    gameconfig.real_inventory = None #just so we're not storing a useless list
+    gameconfig.player.fighter = gameconfig.real_player.fighter
+    gameconfig.player.player.owner = gameconfig.real_player
+    gameconfig.player.fighter.owner = gameconfig.real_player
+    gameconfig.player = gameconfig.real_player
+    npc_death(drone)
+    gameconfig.level_drones.remove(drone)
+    render_all(True)
+    gameconfig.player_at_computer = False
+
 def closest_npc(max_range):
     # find closest enemy to max range and in FOV
     closest_npc = None
@@ -72,17 +86,14 @@ def remote_view(target):
 def remote_control(target):
     # switch player control
     gameconfig.player_at_computer = False
-    old_player = gameconfig.player
-    old_target_ai = target.ai
+    gameconfig.real_player = gameconfig.player
+    gameconfig.real_inventory = list(gameconfig.player.player.inventory)
     target.player = gameconfig.player.player
+    target.player.inventory = []
     target.player.owner = target
     target.ai = None
     gameconfig.player = target
-    #gameconfig.objects.remove(target)
     render_all(True)
-    #target.player = None
-    #gameconfig.player = old_player
-
 
 def throw_coffee(coffee):
     #find closest npc (inside a maximum range) and damage it

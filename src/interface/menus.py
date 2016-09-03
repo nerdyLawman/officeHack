@@ -133,6 +133,7 @@ def terminal(station):
     options = ['read_', 'write_', 'save_', 'remote_', 'drone_']
     index = menu(header, options, bgnd_color=libtcod.dark_azure,
         fgnd_color=libtcod.lighter_sky, sel_color=libtcod.light_azure)
+    if index is None: return
     if options[index] == 'read_':
         floppy = None
         for item in gameconfig.player.player.inventory:
@@ -151,7 +152,7 @@ def terminal(station):
             remote_view(target)
         else:
             message('no other terminals to remote view')
-    if options[index] == 'drone_':
+    if options[index] == 'drone_' and gameconfig.player.fighter.drone is False:
         target = random_from_except(gameconfig.level_drones, gameconfig.player)
         if target is not None:
             message('remote controlling ' + target.name)
