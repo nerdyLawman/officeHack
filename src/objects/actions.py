@@ -44,7 +44,6 @@ def random_from(collection):
 
 def random_from_except(collection, exception):
     _collection = list(collection) # local copy of list
-    print(_collection)
     if exception in _collection: _collection.remove(exception)
     if len(_collection) > 1: return _collection[randint(0,len(_collection)-1)]
     return None
@@ -69,6 +68,21 @@ def remote_view(target):
     remote_render(target)
     libtcod.console_wait_for_keypress(True)
     render_all(True)
+
+def remote_control(target):
+    # switch player control
+    gameconfig.player_at_computer = False
+    old_player = gameconfig.player
+    old_target_ai = target.ai
+    target.player = gameconfig.player.player
+    target.player.owner = target
+    target.ai = None
+    gameconfig.player = target
+    #gameconfig.objects.remove(target)
+    render_all(True)
+    #target.player = None
+    #gameconfig.player = old_player
+
 
 def throw_coffee(coffee):
     #find closest npc (inside a maximum range) and damage it

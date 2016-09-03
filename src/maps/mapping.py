@@ -1,7 +1,7 @@
 import libtcodpy as libtcod
 import gameconfig
 from maps.components import Tile, RectRoom
-from maps.helpers import random_choice, random_choice_index, random_dict_entry
+from maps.helpers import random_choice, random_choice_index, random_dict_entry, true_or_false
 from interface.rendering import send_to_back
 from objects.classes import Object, Fighter, BaseNPC, Talker, StationaryNPC, Item
 from game import color_themes, game_items, game_npcs
@@ -57,12 +57,13 @@ def place_objects(room):
                 npc_ai = BaseNPC()
             npc = Object(x, y, dice.get('char'),
                 game_npcs.names[libtcod.random_get_int(0,1,len(game_npcs.names)-1)], dice.get('color'), blocks=True,
-                fighter=Fighter(hp=dice.get('hp'), defense=dice.get('defense'), power=dice.get('power'), xp=dice.get('xp')),
-                ai=npc_ai)
-
+                fighter=Fighter(hp=dice.get('hp'), defense=dice.get('defense'), power=dice.get('power'), xp=dice.get('xp'),
+                drone=true_or_false(30)), ai=npc_ai)
             gameconfig.objects.append(npc)
             gameconfig.level_npc_count += 1
             send_to_back(npc)
+            if npc.fighter.drone is True:
+                gameconfig.level_drones.append(npc)
 
     gameconfig.npc_count = gameconfig.level_npc_count
 

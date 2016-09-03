@@ -133,12 +133,13 @@ class Player:
 
 class Fighter:
     # Object with combat-related properties and methods
-    def __init__(self, hp, defense, power, xp):
+    def __init__(self, hp, defense, power, xp, drone=False):
         self.max_hp = hp
         self.hp = hp
         self.defense = defense
         self.power = power
         self.xp = xp
+        self.drone = drone
 
     def take_damage(self, damage):
         if damage > 0:
