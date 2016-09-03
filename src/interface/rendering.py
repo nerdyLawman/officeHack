@@ -39,7 +39,7 @@ def remote_render(target):
     libtcod.console_blit(gameconfig.con, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.SCREEN_HEIGHT, 0, 0, 0)
     libtcod.console_set_default_background(gameconfig.panel, gameconfig.LEVEL_BKGND)
     libtcod.console_clear(gameconfig.panel)
-    single_message('PRESS ESC TO EXIT')
+    single_message('REMOTE VIEWING: ' + target.name + '.\nPRESS ESC TO EXIT')
     libtcod.console_blit(gameconfig.panel, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.PANEL_HEIGHT, 0, 0, gameconfig.PANEL_Y)
     libtcod.console_flush()
     for obj in objects: clear_object(obj, gameconfig.con)

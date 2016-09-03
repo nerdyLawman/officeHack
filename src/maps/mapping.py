@@ -77,7 +77,9 @@ def place_objects(room):
             if dice:
                 item = Object(x, y, dice.get('char'), dice.get('name'), dice.get('color'), blocks=True,
                     ai=StationaryNPC(base_color=dice.get('color'),interact=dice.get('interact')))
-
+                if dice.get('interact') == 'terminal':
+                    gameconfig.level_terminals.append(item)
+                    item.name = 'TERMINAL STATION 1X00G5 - 00' + str(len(gameconfig.level_terminals)) 
                 gameconfig.objects.append(item)
                 send_to_back(item)
 

@@ -223,7 +223,7 @@ class StationaryNPC:
 
     def interact_function(self):
         if self.interact == 'terminal':
-            terminal()
+            terminal(self)
         else:
             return None
 

@@ -38,6 +38,15 @@ def random_object():
     # return a random object
     return gameconfig.objects[libtcod.random_get_int(0,1,len(gameconfig.objects)-1)]
 
+def random_object_from(collection):
+    return collection[libtcod.random_get_int(0,1,len(collection)-1)]
+
+def random_object_from_except(collection, exception):
+    _collection = collection
+    if exception in _collection: _collection.remove(exception)
+    if len(_collection) > 0: return _collection[libtcod.random_get_int(0,1,len(collection)-1)]
+    return None
+
 def objects_in_fov():
     # get all that you can see
     fov_objects = []

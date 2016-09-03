@@ -4,7 +4,7 @@ import time
 import textwrap
 from interface.cli import cli_window
 from interface.rendering import message
-from objects.actions import read_write_file, random_object, remote_view
+from objects.actions import read_write_file, random_object_from_except, remote_view
 
 def highlight_selection(window, bgnd_color, sel_color, selected, width, height, header_height, x, y):
     libtcod.console_set_default_background(window, bgnd_color)
@@ -126,10 +126,10 @@ def inventory_menu(header, inventory):
     if index is None or len(inventory) == 0: return None
     return inventory[index].item
 
-def terminal(header=''):
+def terminal(station):
     # computer terminal
     gameconfig.player_at_computer = True
-    header = 'Welcome to TERMINAL-A' # give it a name eventually
+    header = 'Welcome to ' + station.owner.name # give it a name eventually
     options = ['read_', 'write_', 'save_', 'remote_']
     index = menu(header, options, bgnd_color=libtcod.dark_azure,
         fgnd_color=libtcod.lighter_sky, sel_color=libtcod.light_azure)
@@ -145,9 +145,12 @@ def terminal(header=''):
     if options[index] == 'write_':
         cli_window()
     if options[index] == 'remote_':
-        target = random_object()
-        message('remote viewing' + target.name)
-        remote_view(target)
+        target = random_object_from_except(gameconfig.level_terminals, station)
+        if target is not None:
+            message('remote viewing' + target.name)
+            remote_view(target)
+        else:
+            message('no other terminals to remote view')
         
     gameconfig.player_at_computer = False
 
