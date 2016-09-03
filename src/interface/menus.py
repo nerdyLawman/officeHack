@@ -4,7 +4,7 @@ import time
 import textwrap
 from interface.cli import cli_window
 from interface.rendering import message
-from objects.actions import read_write_file, random_object_from_except, remote_view
+from objects.actions import read_write_file, random_from_except, remote_view
 
 def highlight_selection(window, bgnd_color, sel_color, selected, width, height, header_height, x, y):
     libtcod.console_set_default_background(window, bgnd_color)
@@ -145,7 +145,7 @@ def terminal(station):
     if options[index] == 'write_':
         cli_window()
     if options[index] == 'remote_':
-        target = random_object_from_except(gameconfig.level_terminals, station)
+        target = random_from_except(gameconfig.level_terminals, station.owner)
         if target is not None:
             message('remote viewing' + target.name)
             remote_view(target)

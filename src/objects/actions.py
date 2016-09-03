@@ -1,5 +1,6 @@
 import libtcodpy as libtcod
 import gameconfig
+from random import randint
 from interface.rendering import message, send_to_back, render_all, remote_render
 
 def player_death(player):
@@ -36,15 +37,16 @@ def closest_npc(max_range):
 
 def random_object():
     # return a random object
-    return gameconfig.objects[libtcod.random_get_int(0,1,len(gameconfig.objects)-1)]
+    return gameconfig.objects[libtcod.randint(0,len(gameconfig.objects)-1)]
 
-def random_object_from(collection):
-    return collection[libtcod.random_get_int(0,1,len(collection)-1)]
+def random_from(collection):
+    return collection[libtcod.randint(0,len(collection)-1)]
 
-def random_object_from_except(collection, exception):
-    _collection = collection
+def random_from_except(collection, exception):
+    _collection = list(collection) # local copy of list
+    print(_collection)
     if exception in _collection: _collection.remove(exception)
-    if len(_collection) > 0: return _collection[libtcod.random_get_int(0,1,len(collection)-1)]
+    if len(_collection) > 1: return _collection[randint(0,len(_collection)-1)]
     return None
 
 def objects_in_fov():
