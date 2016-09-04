@@ -41,6 +41,10 @@ def remote_render(target):
     libtcod.console_clear(gameconfig.panel)
     single_message('REMOTE VIEWING: ' + target.name + '.\nPRESS ESC TO EXIT')
     libtcod.console_blit(gameconfig.panel, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.PANEL_HEIGHT, 0, 0, gameconfig.PANEL_Y)
+    if gameconfig.REMOTE_FILTER:
+        render_station_filter()
+        libtcod.console_blit(gameconfig.filter, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.SCREEN_HEIGHT, 0, 0, 0, 0.2, 0.2)
+        libtcod.console_clear(gameconfig.filter)
     libtcod.console_flush()
     for obj in objects: clear_object(obj, gameconfig.con)
 
@@ -67,6 +71,12 @@ def render_all(fov_recompute):
     render_hud()
     render_messages()
     libtcod.console_blit(gameconfig.panel, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.PANEL_HEIGHT, 0, 0, gameconfig.PANEL_Y)
+
+    # filters
+    if gameconfig.DRONE_FILTER:
+        render_drone_filter()
+        libtcod.console_blit(gameconfig.filter, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.SCREEN_HEIGHT, 0, 0, 0, 0.2, 0.2)
+        libtcod.console_clear(gameconfig.filter)
 
     # clean up
     libtcod.console_flush()
@@ -133,6 +143,16 @@ def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color):
     libtcod.console_set_default_foreground(gameconfig.panel, libtcod.white)
     libtcod.console_print_ex(gameconfig.panel, x + total_width / 2, y, libtcod.BKGND_NONE, libtcod.CENTER,
         name + ': ' + str(value) + '/' + str(maximum))
+
+def render_drone_filter():
+    libtcod.console_set_default_background(gameconfig.filter, libtcod.green)
+    libtcod.console_rect(gameconfig.filter, 0, 0, gameconfig.SCREEN_WIDTH,
+        gameconfig.SCREEN_HEIGHT, False, libtcod.BKGND_SCREEN)
+
+def render_station_filter():
+    libtcod.console_set_default_background(gameconfig.filter, libtcod.red)
+    libtcod.console_rect(gameconfig.filter, 0, 0, gameconfig.SCREEN_WIDTH,
+        gameconfig.SCREEN_HEIGHT, False, libtcod.BKGND_SCREEN)
 
 def message(new_msg, color=libtcod.white):
     # play by play message display

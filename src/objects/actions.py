@@ -36,6 +36,7 @@ def drone_death(drone):
     gameconfig.player = gameconfig.real_player
     npc_death(drone)
     gameconfig.level_drones.remove(drone)
+    gameconfig.DRONE_FILTER = False
     render_all(True)
     gameconfig.player_at_computer = False
 
@@ -82,8 +83,10 @@ def read_write_file(floppy):
 
 def remote_view(target):
     # move FOV to another location for a turn
+    gameconfig.REMOTE_FILTER = True
     remote_render(target)
     libtcod.console_wait_for_keypress(True)
+    gameconfig.REMOTE_FILTER = False
     render_all(True)
 
 def remote_control(target):
@@ -96,6 +99,7 @@ def remote_control(target):
     target.player.owner = target
     target.ai = None
     gameconfig.player = target
+    gameconfig.DRONE_FILTER = True
     render_all(True)
 
 def throw_coffee(coffee):

@@ -146,20 +146,14 @@ def terminal(station):
     if options[index] == 'write_':
         cli_window()
     if options[index] == 'remote_':
-        cli_window(drone)
-        #target = random_from_except(gameconfig.level_terminals, station.owner)
-        #if target is not None:
-        #    message('remote viewing ' + target.name)
-        #    remote_view(target)
-        #else:
-        #    message('no other terminals to remote view')
-    if options[index] == 'drone_' and gameconfig.player.fighter.drone is False:
-        target = random_from_except(gameconfig.level_drones, gameconfig.player)
+        target = random_from_except(gameconfig.level_terminals, station.owner)
         if target is not None:
-            message('remote controlling ' + target.name)
-            remote_control(target)
+            message('remote viewing ' + target.name)
+            remote_view(target)
         else:
-            message('no drones to control.')
+            message('no other terminals to remote view')
+    if options[index] == 'drone_' and gameconfig.player.fighter.drone is False:
+        cli_window('drone')
         
     gameconfig.player_at_computer = False
 

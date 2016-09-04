@@ -28,6 +28,7 @@ MSG_HEIGHT = PANEL_HEIGHT - 1
 # public game vars
 con = libtcod.console_new(MAP_WIDTH, MAP_HEIGHT)
 panel = libtcod.console_new(SCREEN_WIDTH, PANEL_HEIGHT)
+filter = libtcod.console_new(SCREEN_WIDTH, SCREEN_HEIGHT)
 key = libtcod.Key()
 mouse = libtcod.Mouse()
 objects = []
@@ -85,3 +86,7 @@ STAIRS_COLOR = libtcod.black
 LEVEL_BKGND = libtcod.black
 MENU_BKGND = libtcod.darkest_gray
 MENU_SELECT_BKGND = libtcod.amber
+
+# FILTERS
+DRONE_FILTER = False
+REMOTE_FILTER = False
