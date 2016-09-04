@@ -1,5 +1,6 @@
-import gameconfig
 import libtcodpy as libtcod
+import gameconfig
+from random import randint
 
 def random_choice_index(chances):
     # returns a random index
@@ -26,6 +27,23 @@ def random_dict_entry(dict_list):
         running_sum += d.get('chance')
         if dice <= running_sum:
             return d
+
+def make_person():
+    if randint(0, 1) < 1:
+        gender = 'F'
+        portrait = 'data/img/fportrait.png'
+        namestxt = 'data/banks/femaleNames.txt'
+    else:
+        gender = 'M'
+        portrait = 'data/img/mportrait.png'
+        namestxt = 'data/banks/maleNames.txt'
+    with open (namestxt, 'r') as namefile:
+        names=namefile.readlines()
+        return names[randint(1,len(names)-1)][:-1], gender, portrait
+
+def true_or_false(chance):
+    if randint(0,100) <= chance: return True
+    return False
 
 def in_fov(fov_map, x, y):
     return libtcod.map_is_in_fov(fov_map, x, y)

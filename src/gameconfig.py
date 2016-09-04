@@ -34,6 +34,8 @@ objects = []
 level_terminals = []
 level_drones = []
 player = None
+real_player = None
+real_inventory = []
 level_map = None
 fov_map = None
 color_theme = None
@@ -44,6 +46,8 @@ game_level = 1
 game_levels = []
 level_npc_count = npc_count = 0
 level_item_count = item_count = 0
+
+drone_holder = None
 
 #flags
 player_at_computer = False
@@ -57,7 +61,7 @@ libtcod.sys_set_fps(LIMIT_FPS) #FPS
 CONFUSE_NUM_TURNS = 5
 REPULSED_NUM_TURNS = 7
 COFFEE_RANGE = 4
-TALK_RECHARGE = 3
+TALK_RECHARGE = 5
 TALK_RANGE = 2
 
 # FOV
@@ -73,7 +77,7 @@ MAX_ROOM_NPCS = 3
 MAX_ROOM_ITEMS = 2
 
 #EXP AND LV
-LEVEL_UP_BASE = 100
+LEVEL_UP_BASE = 50
 LEVEL_UP_FACTOR = 50
 
 # COLORS

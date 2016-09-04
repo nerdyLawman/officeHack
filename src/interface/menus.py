@@ -4,7 +4,7 @@ import time
 import textwrap
 from interface.cli import cli_window
 from interface.rendering import message
-from objects.actions import read_write_file, random_object_from_except, remote_view
+from objects.actions import read_write_file, random_from_except, remote_view, remote_control
 
 def highlight_selection(window, bgnd_color, sel_color, selected, width, height, header_height, x, y):
     libtcod.console_set_default_background(window, bgnd_color)
@@ -130,9 +130,10 @@ def terminal(station):
     # computer terminal
     gameconfig.player_at_computer = True
     header = 'Welcome to ' + station.owner.name # give it a name eventually
-    options = ['read_', 'write_', 'save_', 'remote_']
+    options = ['read_', 'write_', 'save_', 'remote_', 'drone_']
     index = menu(header, options, bgnd_color=libtcod.dark_azure,
         fgnd_color=libtcod.lighter_sky, sel_color=libtcod.light_azure)
+    if index is None: return
     if options[index] == 'read_':
         floppy = None
         for item in gameconfig.player.player.inventory:
@@ -145,20 +146,28 @@ def terminal(station):
     if options[index] == 'write_':
         cli_window()
     if options[index] == 'remote_':
-        target = random_object_from_except(gameconfig.level_terminals, station)
+        cli_window(drone)
+        #target = random_from_except(gameconfig.level_terminals, station.owner)
+        #if target is not None:
+        #    message('remote viewing ' + target.name)
+        #    remote_view(target)
+        #else:
+        #    message('no other terminals to remote view')
+    if options[index] == 'drone_' and gameconfig.player.fighter.drone is False:
+        target = random_from_except(gameconfig.level_drones, gameconfig.player)
         if target is not None:
-            message('remote viewing' + target.name)
-            remote_view(target)
+            message('remote controlling ' + target.name)
+            remote_control(target)
         else:
-            message('no other terminals to remote view')
+            message('no drones to control.')
         
     gameconfig.player_at_computer = False
 
-def conversation(header, npc_name):
+def conversation(header, npc_name, npc_portrait):
     # basic test conversation
 
     # messy portrait bullshit
-    img = libtcod.image_load('data/img/portrait2x.png') # this should ultimately be an attribute the object posesses.
+    img = libtcod.image_load(npc_portrait)
     portrait = libtcod.console_new(50, 20)
     libtcod.console_set_default_background(portrait, gameconfig.MENU_BKGND)
     libtcod.console_set_default_foreground(portrait, libtcod.white)

@@ -1,5 +1,6 @@
 import libtcodpy as libtcod
 import gameconfig
+from random import randint
 from interface.rendering import message, send_to_back, render_all, remote_render
 
 def player_death(player):
@@ -11,7 +12,9 @@ def player_death(player):
 
 def npc_death(npc):
     # npc death
-    message(npc.name.upper() + ' is DEAD! You gain ' + str(npc.fighter.xp) + 'XP!', libtcod.cyan)
+    xp = npc.fighter.xp
+    if npc.fighter.drone is True: gameconfig.level_drones.remove(npc)
+    message(npc.name.upper() + ' is DEAD! You gain ' + str(xp) + 'XP!', libtcod.cyan)
     npc.char = '%'
     npc.color = libtcod.dark_red
     npc.blocks = False
@@ -20,6 +23,21 @@ def npc_death(npc):
     npc.name = 'remains of ' + npc.name.upper()
     send_to_back(npc)
     gameconfig.npc_count -= 1
+    return xp
+
+def drone_death(drone):
+    # kill the drone and switch back to the player
+    gameconfig.player.player = gameconfig.real_player.player
+    gameconfig.player.player.inventory = list(gameconfig.real_inventory)
+    gameconfig.real_inventory = None #just so we're not storing a useless list
+    gameconfig.player.fighter = gameconfig.real_player.fighter
+    gameconfig.player.player.owner = gameconfig.real_player
+    gameconfig.player.fighter.owner = gameconfig.real_player
+    gameconfig.player = gameconfig.real_player
+    npc_death(drone)
+    gameconfig.level_drones.remove(drone)
+    render_all(True)
+    gameconfig.player_at_computer = False
 
 def closest_npc(max_range):
     # find closest enemy to max range and in FOV
@@ -36,15 +54,15 @@ def closest_npc(max_range):
 
 def random_object():
     # return a random object
-    return gameconfig.objects[libtcod.random_get_int(0,1,len(gameconfig.objects)-1)]
+    return gameconfig.objects[libtcod.randint(0,len(gameconfig.objects)-1)]
 
-def random_object_from(collection):
-    return collection[libtcod.random_get_int(0,1,len(collection)-1)]
+def random_from(collection):
+    return collection[libtcod.randint(0,len(collection)-1)]
 
-def random_object_from_except(collection, exception):
-    _collection = collection
+def random_from_except(collection, exception):
+    _collection = list(collection) # local copy of list
     if exception in _collection: _collection.remove(exception)
-    if len(_collection) > 0: return _collection[libtcod.random_get_int(0,1,len(collection)-1)]
+    if len(_collection) > 1: return _collection[randint(0,len(_collection)-1)]
     return None
 
 def objects_in_fov():
@@ -66,6 +84,18 @@ def remote_view(target):
     # move FOV to another location for a turn
     remote_render(target)
     libtcod.console_wait_for_keypress(True)
+    render_all(True)
+
+def remote_control(target):
+    # switch player control
+    gameconfig.player_at_computer = False
+    gameconfig.real_player = gameconfig.player
+    gameconfig.real_inventory = list(gameconfig.player.player.inventory)
+    target.player = gameconfig.player.player
+    target.player.inventory = []
+    target.player.owner = target
+    target.ai = None
+    gameconfig.player = target
     render_all(True)
 
 def throw_coffee(coffee):

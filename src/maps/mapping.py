@@ -1,7 +1,7 @@
 import libtcodpy as libtcod
 import gameconfig
 from maps.components import Tile, RectRoom
-from maps.helpers import random_choice, random_choice_index, random_dict_entry
+from maps.helpers import random_choice, random_choice_index, random_dict_entry, make_person, true_or_false
 from interface.rendering import send_to_back
 from objects.classes import Object, Fighter, BaseNPC, Talker, StationaryNPC, Item
 from game import color_themes, game_items, game_npcs
@@ -55,14 +55,16 @@ def place_objects(room):
                 npc_ai = Talker()
             else:
                 npc_ai = BaseNPC()
-            npc = Object(x, y, dice.get('char'),
-                game_npcs.names[libtcod.random_get_int(0,1,len(game_npcs.names)-1)], dice.get('color'), blocks=True,
-                fighter=Fighter(hp=dice.get('hp'), defense=dice.get('defense'), power=dice.get('power'), xp=dice.get('xp')),
-                ai=npc_ai)
-
+            npc_name, npc_gender, npc_portrait = make_person()
+            npc = Object(x, y, dice.get('char'), npc_name, dice.get('color'), blocks=True,
+                fighter=Fighter(hp=dice.get('hp'), defense=dice.get('defense'), power=dice.get('power'), xp=dice.get('xp'),
+                drone=true_or_false(30), gender=npc_gender, portrait=npc_portrait), ai=npc_ai)
             gameconfig.objects.append(npc)
             gameconfig.level_npc_count += 1
             send_to_back(npc)
+            if npc.fighter.drone is True:
+                gameconfig.level_drones.append(npc)
+                npc.fighter.codeword = 'oswald'
 
     gameconfig.npc_count = gameconfig.level_npc_count
 
@@ -79,7 +81,7 @@ def place_objects(room):
                     ai=StationaryNPC(base_color=dice.get('color'),interact=dice.get('interact')))
                 if dice.get('interact') == 'terminal':
                     gameconfig.level_terminals.append(item)
-                    item.name = 'TERMINAL STATION 1X00G5 - 00' + str(len(gameconfig.level_terminals)) 
+                    item.name = 'TERMINAL STATION 1X00G5-00' + str(len(gameconfig.level_terminals)) 
                 gameconfig.objects.append(item)
                 send_to_back(item)
 

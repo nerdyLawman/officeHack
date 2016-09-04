@@ -1,65 +1,66 @@
 import libtcodpy as libtcod
 import math
 import gameconfig
-from objects.actions import npc_death, player_death
-from interface.menus import conversation, terminal
+from objects.actions import npc_death, player_death, drone_death
+from interface.menus import conversation, terminal, menu, message
 from interface.rendering import send_to_back
 from maps.helpers import is_blocked
 
 class Object:
     # generic object
-    def __init__(self, x, y, char, name, color, info="Coming Soon", blocks=False, player=None, fighter=None, ai=None, item=None):
-      self.x = x
-      self.y = y
-      self.char = char
-      self.name = name
-      self.color = color
-      self.info = info
-      self.blocks = blocks
-
-      self.player = player
-      if self.player:
-        self.player.owner = self
-
-      self.fighter = fighter
-      if self.fighter:
-          self.fighter.owner = self
-
-      self.ai = ai
-      if self.ai:
-          self.ai.owner = self
-
-      self.item = item
-      if self.item:
-          self.item.owner = self
+    def __init__(self, x, y, char, name, color, info="Coming Soon",
+        blocks=False, player=None, fighter=None, ai=None, item=None):
+        self.x = x
+        self.y = y
+        self.char = char
+        self.name = name
+        self.color = color
+        self.info = info
+        self.blocks = blocks
+        
+        self.player = player
+        if self.player:
+            self.player.owner = self
+        
+        self.fighter = fighter
+        if self.fighter:
+            self.fighter.owner = self
+        
+        self.ai = ai
+        if self.ai:
+            self.ai.owner = self
+        
+        self.item = item
+        if self.item:
+            self.item.owner = self
 
     def move(self, dx, dy):
         if not is_blocked(self.x + dx, self.y + dy):
-          self.x += dx
-          self.y += dy
+            self.x += dx
+            self.y += dy
 
     def move_towards(self, target_x, target_y):
-      dx = target_x - self.x
-      dy = target_y - self.y
-      distance = math.sqrt(dx ** 2 + dy ** 2)
-
-      dx = int(round(dx / distance))
-      dy = int(round(dx / distance))
-      self.move(dx, dy)
+        dx = target_x - self.x
+        dy = target_y - self.y
+        distance = math.sqrt(dx ** 2 + dy ** 2)
+        
+        dx = int(round(dx / distance))
+        dy = int(round(dx / distance))
+        self.move(dx, dy)
 
     def move_away(self, target_x, target_y):
-      dx = target_x - self.x
-      dy = target_y - self.y
-      distance = math.sqrt(dx ** 2 + dy ** 2)
-
-      dx = int(round(dx / distance)) * -1
-      dy = int(round(dx / distance)) * -1
-      self.move(dx, dy)
+        dx = target_x - self.x
+        dy = target_y - self.y
+        distance = math.sqrt(dx ** 2 + dy ** 2)
+        
+        dx = int(round(dx / distance)) * -1
+        dy = int(round(dx / distance)) * -1
+        self.move(dx, dy)
 
     def distance_to(self, other):
-      dx = other.x - self.x
-      dy = other.y - self.y
-      return math.sqrt(dx ** 2 + dy ** 2)
+        dx = other.x - self.x
+        dy = other.y - self.y
+        return math.sqrt(dx ** 2 + dy ** 2)
 
     def change_ai(self, new_ai):
         old_ai = self.ai
@@ -85,7 +86,6 @@ class Player:
             if obj.x == x and obj.y == y:
                 if obj.fighter:
                     self.owner.fighter.attack(obj)
-                    break
                 if hasattr(obj.ai, 'interact'): #if interactable
                     obj.ai.interact_function()
                     break
@@ -94,6 +94,26 @@ class Player:
         if not is_blocked(self.owner.x+dx, self.owner.y+dy):
             self.owner.move(dx, dy)
 
+    def check_level_up(self):
+        level_up_xp = gameconfig.LEVEL_UP_BASE + self.level + gameconfig.LEVEL_UP_FACTOR
+        if self.owner.fighter.xp >= level_up_xp:
+            # level up
+            self.level += 1
+            self.owner.fighter.xp -= level_up_xp
+            message('Your skills increase. LEVEL UP! Now at level: ' + str(self.level) + '.', libtcod.yellow)
+    
+            choice = 'no selection'
+            while choice == 'no selection':
+                choice = menu('Level up! Chose a stat to raise!\n',
+                    ['Constitution: +10 HP', 'Stregnth: +1 STR', 'Agility: +1 DEX'], 24)
+            if choice == 0:
+                self.owner.fighter.max_hp += 10
+                self.owner.fighter.hp += 10
+            elif choice == 1:
+                self.owner.fighter.power += 1
+            elif choice == 2:
+                self.owner.fighter.defense += 1
+        
     def add_item_inventory(self, item):
         inv_item = self.get_inventory_item(item)
         if inv_item is not None:
@@ -133,24 +153,31 @@ class Player:
 
 class Fighter:
     # Object with combat-related properties and methods
-    def __init__(self, hp, defense, power, xp):
+    def __init__(self, hp, defense, power, xp,
+        drone=False, codeword=None, gender='M', portrait='data/img/portrait2.png'):
         self.max_hp = hp
         self.hp = hp
         self.defense = defense
         self.power = power
         self.xp = xp
+        self.drone = drone
+        self.codeword = codeword
+        self.gender = gender
+        self.portrait = portrait
 
     def take_damage(self, damage):
         if damage > 0:
             self.hp -= damage
         if self.hp <= 0:
+            self.hp = 0
             if self.owner.player == None:
-                # if you kill em, gain exp
-                npc_death(self.owner)
-                #player.fighter.xp += self.xp
-                #check_level_up()
+                return npc_death(self.owner) #returns xp int
             else:
-                player_death(self.owner)
+                if self.drone is True:
+                    drone_death(self.owner)
+                else:
+                    player_death(self.owner)
+        return None
 
     def heal(self, amount):
         self.hp += amount
@@ -159,9 +186,11 @@ class Fighter:
 
     def attack(self, target):
         damage = self.power - target.fighter.defense
-
         if damage > 0:
-            target.fighter.take_damage(damage)
+            death_xp = target.fighter.take_damage(damage)
+            if death_xp is not None:
+                gameconfig.player.fighter.xp += death_xp
+                gameconfig.player.player.check_level_up()
             return(self.owner.name.upper() + ' attacks ' + target.name + ' for ' + str(damage) + ' hit points.', libtcod.orange)
         else:
             return(self.owner.name.upper() + ' attacks ' + target.name + ' but it has no effect!', libtcod.cyan)
@@ -194,7 +223,7 @@ class Talker:
                 depth = libtcod.random_get_int(0, 1, 5)
                 while depth > 0:
                     topic = topics[libtcod.random_get_int(0, 1, len(topics)-1)]
-                    conversation(topic, self.owner.name)
+                    conversation(topic, self.owner.name, self.owner.fighter.portrait)
                     depth -= 1
 
 class BaseNPC:
