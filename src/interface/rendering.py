@@ -54,7 +54,6 @@ def render_all(fov_recompute):
     fov_map = gameconfig.fov_map
 
     if fov_recompute: render_map(level_map, fov_map, player)
-        
     # draw all objects in the list
     render_objects(objects, player, fov_map)
 

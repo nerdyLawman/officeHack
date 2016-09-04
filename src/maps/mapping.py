@@ -64,6 +64,7 @@ def place_objects(room):
             send_to_back(npc)
             if npc.fighter.drone is True:
                 gameconfig.level_drones.append(npc)
+                npc.fighter.codeword = 'oswald'
 
     gameconfig.npc_count = gameconfig.level_npc_count
 

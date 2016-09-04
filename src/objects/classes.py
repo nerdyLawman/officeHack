@@ -154,13 +154,14 @@ class Player:
 class Fighter:
     # Object with combat-related properties and methods
     def __init__(self, hp, defense, power, xp,
-        drone=False, gender='M', portrait='data/img/portrait2.png'):
+        drone=False, codeword=None, gender='M', portrait='data/img/portrait2.png'):
         self.max_hp = hp
         self.hp = hp
         self.defense = defense
         self.power = power
         self.xp = xp
         self.drone = drone
+        self.codeword = codeword
         self.gender = gender
         self.portrait = portrait
 
