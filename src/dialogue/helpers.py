@@ -24,7 +24,7 @@ def get_dialogue_element(el_id):
 def cont_dialogue(element, npc):
     # basic test conversation
     # messy portrait bullshit
-    img = libtcod.image_load('data/img/portrait2x.png') # this should ultimately be an attribute the object posesses.
+    img = libtcod.image_load('data/img/fportrait.png') # this should ultimately be an attribute the object posesses.
     portrait = libtcod.console_new(50, 20)
     libtcod.console_set_default_background(portrait, gameconfig.MENU_BKGND)
     libtcod.console_set_default_foreground(portrait, libtcod.white)
