@@ -1,9 +1,8 @@
 import libtcodpy as libtcod
 
-names = ['Seth', 'Peter', 'Ms. Suzy', 'Mary', 'Mark', 'Sophie', 'Alan',
-        'Jeff', 'Martin', 'Mr. Frank', 'Donna', 'Deanie', 'Dr. Tod']
+male_names = ['Seth', 'Peter', 'Super Hans', 'Jeremy', 'Chad', 'Carl', 'Alan', 'Vincent', 'Darin', 'Art', 'Mr. Frank', 'Bumpus McNasty', 'Todd',]
+female_names = ['Sophie', 'Suzie', 'Pam', 'Angela', 'Erin', 'Emily', 'Vicky', 'Marshawn', 'Veronica', 'Kim', 'Kathleen', 'Stephanie', 'Ms. Daphne']
 
-#fighter hp=6, defense=0, power=2, xp=10
 npc_generic_1 = {
     'char' : 'D',
     'color' : libtcod.sky,
@@ -11,7 +10,18 @@ npc_generic_1 = {
     'defense' : 0,
     'power' : 2,
     'xp' : 10,
-    'chance' : 70,
+    'chance' : 60,
+    'ai' : 'base',
+}
+
+npc_generic_2 = {
+    'char' : 'F',
+    'color' : libtcod.darker_sky,
+    'hp' : 8,
+    'defense' : 0,
+    'power' : 3,
+    'xp' : 12,
+    'chance' : 10,
     'ai' : 'base',
 }
 
@@ -38,7 +48,7 @@ npc_boss = {
     'ai' : 'base',
 }
 
-NPC_classes = [ npc_generic_1, npc_talker, npc_boss ]
+NPC_classes = [ npc_generic_1, npc_generic_2, npc_talker, npc_boss ]
 
 
 computer = {

@@ -51,8 +51,8 @@ def handle_keys():
         if gameconfig.key_char == 'l':
             header = "SELECT an OBJECT in you FOV for more INFORMATION.\n"
             options = objects_in_fov()
-            selected_object = options[menu(header, [obj.name.upper() for obj in objects_in_fov()])]
-            if selected_object is not None: message_box(selected_object.info)
+            selected_object = menu(header, [obj.name.upper() for obj in options])
+            if selected_object is not None: message_box(options[selected_object].info)
 
         # pick up an item
         if gameconfig.key_char == 'g':

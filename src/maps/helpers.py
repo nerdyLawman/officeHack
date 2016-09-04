@@ -28,6 +28,19 @@ def random_dict_entry(dict_list):
         if dice <= running_sum:
             return d
 
+def make_person():
+    if randint(0, 1) < 1:
+        gender = 'F'
+        portrait = 'data/img/fportrait.png'
+        namestxt = 'data/banks/femaleNames.txt'
+    else:
+        gender = 'M'
+        portrait = 'data/img/mportrait.png'
+        namestxt = 'data/banks/maleNames.txt'
+    with open (namestxt, 'r') as namefile:
+        names=namefile.readlines()
+        return names[randint(1,len(names)-1)][:-1], gender, portrait
+
 def true_or_false(chance):
     if randint(0,100) <= chance: return True
     return False

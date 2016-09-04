@@ -162,11 +162,11 @@ def terminal(station):
         
     gameconfig.player_at_computer = False
 
-def conversation(header, npc_name):
+def conversation(header, npc_name, npc_portrait):
     # basic test conversation
 
     # messy portrait bullshit
-    img = libtcod.image_load('data/img/portrait2x.png') # this should ultimately be an attribute the object posesses.
+    img = libtcod.image_load(npc_portrait)
     portrait = libtcod.console_new(50, 20)
     libtcod.console_set_default_background(portrait, gameconfig.MENU_BKGND)
     libtcod.console_set_default_foreground(portrait, libtcod.white)
