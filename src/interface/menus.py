@@ -154,12 +154,6 @@ def terminal(station):
             message('no other terminals to remote view')
     if options[index] == 'drone_' and gameconfig.player.fighter.drone is False:
         cli_window('drone')
-        #target = random_from_except(gameconfig.level_drones, gameconfig.player)
-        #if target is not None:
-        #    message('remote controlling ' + target.name)
-        #    remote_control(target)
-        #else:
-        #    message('no drones to control.')
         
     gameconfig.player_at_computer = False
 

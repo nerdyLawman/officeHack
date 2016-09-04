@@ -1,6 +1,7 @@
 import libtcodpy as libtcod
 import gameconfig
 import textwrap
+from objects.actions import remote_control
 
 cursor = '_'
 prompt = '$'
@@ -37,6 +38,7 @@ def command_entry(command):
 
 def cli_window(command=None):
     global window
+    running = True
     bgnd_color = libtcod.dark_azure
     fgnd_color = libtcod.light_sky
     if not command: command = prompt + cursor
@@ -48,8 +50,8 @@ def cli_window(command=None):
     libtcod.console_rect(window, 0, 0, width, height, True, libtcod.BKGND_SET)
     libtcod.console_print_ex(window, 1, 1, libtcod.BKGND_NONE, libtcod.LEFT, 'HAPPY TERMINAL V1.0 - 1993')
     text = ['Enter a command to begin. Help for options.']
-    cli_refresh(text, command) #update screen
-    while True:
+    while running:
+        cli_refresh(text, command) #update screen
         flag = True
         while flag is True and command not in special_commands:
             command, flag = command_entry(command)
@@ -61,7 +63,7 @@ def cli_window(command=None):
         elif command == 'save':
             text.append('saved!')
         elif command == 'drone':
-            drone_commander(text)
+            running = drone_commander(text)
         elif command == 'help':
             helptext = ['type help for options', 'type save to save', 'type exit to exit', 'press ANY KEY.']
             text[:] = helptext
@@ -71,25 +73,54 @@ def cli_window(command=None):
         command = prompt + cursor
         cli_refresh(text, command)
 
+def valid_drone_name(name):
+    valid_names = [drone.name.upper() for drone in gameconfig.level_drones]
+    if name.upper() in valid_names: return True
+    return False
+
+def fetch_drone(name):
+    valid_names = [drone.name.upper() for drone in gameconfig.level_drones]
+    if name.upper() in valid_names: return gameconfig.level_drones[valid_names.index(name.upper())]
+    return None
+
 def drone_commander(text):
-    command = prompt + cursor
+    print(drone.name for drone in gameconfig.level_drones)
     text[:] = []
     text.append('WELCOME TO DRONE COMMANDER V0.75')
     text.append('enter name of drone to drone into.')
-    cli_refresh(text, command)
-    while True:
+    command = prompt + cursor
+    selected_drone = None
+    running = True
+    while running:
+        cli_refresh(text, command)
         flag = True
         while flag is True:
             command, flag = command_entry(command)
             cli_refresh(text, command)
-            
-        if command == 'dave':
-            text.append('dave is an acceptable name, enter codeword')
-        elif command == 'exit':
-            text.append('DRONE COMMANDER EXITED.')
-            return None
-        else:
-            text.append('No DRONES match this entry.')
+        if selected_drone:
+            if command == 'spam':
+                running = False
+            else:
+                text.append('INCORRECT CODE')
+                text.append('Select another DRONE.')
+                selected_drone = None
+        else:    
+            if valid_drone_name(command):
+                selected_drone = fetch_drone(command)
+                text.append(command.upper() + ' is an acceptable name, enter codeword')
+            elif command == 'listing' or command == 'list':
+                if len(gameconfig.level_drones) > 0:
+                    for drone in gameconfig.level_drones:
+                        text.append(drone.name.upper())
+                else:
+                    text.append('No DRONES on this level.')
+            elif command == 'exit':
+                text.append('DRONE COMMANDER EXITED.')
+                return None
+            else:
+                text.append('No DRONES match this entry.')
         command = prompt + cursor
         cli_refresh(text, command)
         
+    if selected_drone: remote_control(selected_drone)
+    return running
