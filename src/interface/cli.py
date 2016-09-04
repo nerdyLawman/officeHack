@@ -40,7 +40,7 @@ def cli_window(command=None):
     bgnd_color = libtcod.dark_azure
     fgnd_color = libtcod.light_sky
     if not command: command = prompt + cursor
-
+    special_commands = ['exit', 'save', 'help', 'drone']
     window = libtcod.console_new(width, height)
     libtcod.console_set_default_background(window, bgnd_color)
     libtcod.console_set_default_foreground(window, fgnd_color)
@@ -51,7 +51,7 @@ def cli_window(command=None):
     cli_refresh(text, command) #update screen
     while True:
         flag = True
-        while flag is True:
+        while flag is True and command not in special_commands:
             command, flag = command_entry(command)
             cli_refresh(text, command)
             
@@ -85,9 +85,11 @@ def drone_commander(text):
             
         if command == 'dave':
             text.append('dave is an acceptable name, enter codeword')
-        if command == 'exit':
+        elif command == 'exit':
             text.append('DRONE COMMANDER EXITED.')
             return None
+        else:
+            text.append('No DRONES match this entry.')
         command = prompt + cursor
         cli_refresh(text, command)
         
