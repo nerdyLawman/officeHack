@@ -9,7 +9,7 @@ from game import game_messages
 #TEST DIALOGUE
 from dialogue.dialogues import level_1
 from dialogue.helpers import init_dialogue
-init_dialogue(level_1['test'])
+#init_dialogue(level_1['test'])
 
 choice = main_menu()
 
