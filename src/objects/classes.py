@@ -5,8 +5,6 @@ from objects.actions import npc_death, player_death, drone_death
 from interface.menus import terminal, menu, message
 from interface.rendering import send_to_back
 from maps.helpers import is_blocked
-
-#TEST DIALOGUE
 from dialogue import dialogues
 from dialogue import helpers as dialogue_helpers
 
