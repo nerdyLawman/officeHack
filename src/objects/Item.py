@@ -1,5 +1,8 @@
 import gameconfig
 
+# ---------------------------------------------------------------------
+# [ ITEM CLASS ] ------------------------------------------------------
+# ---------------------------------------------------------------------
 class Item:
     # an Object that can be picked up and used
     def __init__(self, special=None, use_function=None, is_instant=False):

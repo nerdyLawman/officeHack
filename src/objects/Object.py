@@ -3,8 +3,10 @@ import math
 from maps.helpers import is_blocked
 from objects.Ai import RepulsedNPC
 
+# ---------------------------------------------------------------------
+# [ BASE OBJECT ] -----------------------------------------------------
+# ---------------------------------------------------------------------
 class Object:
-    # generic object
     def __init__(self, x, y, char, name, color, info="Coming Soon",
         blocks=False, player=None, fighter=None, ai=None, item=None):
         self.x = x

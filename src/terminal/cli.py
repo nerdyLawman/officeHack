@@ -96,15 +96,21 @@ def cli_window(command=None, selector=None):
         
         if running is True: cli_refresh(text, command)
 
+
+# ---------------------------------------------------------------------
+# [ FILE I/O ] --------------------------------------------------------
+# ---------------------------------------------------------------------
 def valid_disc_name(name):
     valid_names = [disc.inv_id.upper() for disc in gameconfig.saved_discs]
     if name.upper() in valid_names: return True
     return False
 
+
 def insert_disc(name):
     valid_names = [disc.inv_id.upper() for disc in gameconfig.saved_discs]
     if name.upper() in valid_names: return gameconfig.saved_discs[valid_names.index(name.upper())]
     return None
+
 
 def file_rw(text, infloppy=None):
     #if in_computer()
@@ -153,6 +159,9 @@ def file_rw(text, infloppy=None):
     return running
 
 
+# ---------------------------------------------------------------------
+# [ DRONE CONTROL ] ---------------------------------------------------
+# ---------------------------------------------------------------------
 def valid_drone_name(name):
     valid_names = [drone.name.upper() for drone in gameconfig.level_drones]
     if name.upper() in valid_names: return True
@@ -228,15 +237,21 @@ def drone_exit(text):
         if running is True: cli_refresh(text, command)
     return running
 
+
+# ---------------------------------------------------------------------
+# [ REMOTE HACKING ] --------------------------------------------------
+# ---------------------------------------------------------------------
 def valid_station_name(name):
     valid_names = [station.name.upper() for station in gameconfig.level_terminals]
     if name.upper() in valid_names: return True
     return False
 
+
 def fetch_station(name):
     valid_names = [station.name.upper() for station in gameconfig.level_terminals]
     if name.upper() in valid_names: return gameconfig.level_terminals[valid_names.index(name.upper())]
     return None
+
 
 def remote_patch(text):
     text.append('WELCOME TO REMOTE LOOK V0.75')

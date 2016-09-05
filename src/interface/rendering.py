@@ -3,6 +3,9 @@ import gameconfig
 import textwrap
 from maps.helpers import in_fov
 
+# ---------------------------------------------------------------------
+# [ RENDERING UTILITIES ] ---------------------------------------------
+# ---------------------------------------------------------------------
 def draw_object(obj, con):
     # draws a object (char) to specified screenspace
     libtcod.console_set_default_foreground(con, obj.color)

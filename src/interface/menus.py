@@ -7,6 +7,9 @@ from interface.rendering import message, render_drone_filter
 from objects.actions import random_from_except
 from terminal.cli import cli_window
 
+# ---------------------------------------------------------------------
+# [ MENU FUNCTIONS ] --------------------------------------------------
+# ---------------------------------------------------------------------
 def highlight_selection(window, bgnd_color, sel_color, selected, width, height, header_height, x, y):
     # highlights menu line corresponding to selected
     libtcod.console_set_default_background(window, bgnd_color)
@@ -15,6 +18,7 @@ def highlight_selection(window, bgnd_color, sel_color, selected, width, height, 
     libtcod.console_rect(window, 0, selected+header_height, width, 1, False, libtcod.BKGND_SCREEN)
     libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 1.0)
     libtcod.console_flush()
+
 
 def menu(header, options, width=gameconfig.MENU_WIDTH, bgnd_color=None, fgnd_color=None, sel_color=None):
     # base selection menu
@@ -92,13 +96,12 @@ def menu(header, options, width=gameconfig.MENU_WIDTH, bgnd_color=None, fgnd_col
         if key.vk == libtcod.KEY_ESCAPE:
             return None
 
-def message_box(text, width=gameconfig.MENU_WIDTH):
-    # popup message box
-    menu(text, [], width)
 
+# ---------------------------------------------------------------------
+# [ SPECIFIC MENUS ] --------------------------------------------------
+# ---------------------------------------------------------------------
 def main_menu():
     # start game menu - logic handled in officehack.py
-
     #background image for menu
     img = libtcod.image_load('data/img/bg.png')
     libtcod.image_blit_2x(img, 0, 0, 0)
@@ -113,16 +116,17 @@ def main_menu():
 
     return menu('', ['New Game', 'Continue', 'Quit'], gameconfig.MAIN_MENU_WIDTH)
 
+
 def inventory_menu(header, inventory):
     # inventory menu
     if len(inventory) == 0: options = [game_messages.EMPTY_INVENTORY]
-    else:
-        options = [item.inv_id + ' [' + str(item.count) +']' for item in inventory]
+    else: options = [item.inv_id + ' [' + str(item.count) +']' for item in inventory]
     index = menu(header, options)
     if index is None or len(inventory) == 0: return None
     return inventory[index].item
 
-def terminal_window(station):
+
+def terminal_menu(station):
     # computer terminal station
     gameconfig.player_at_computer = True
     header = game_messages.TERMINAL_WELCOME + station.owner.name # give it a name eventually
@@ -152,3 +156,11 @@ def terminal_window(station):
         cli_window('drone')
 
     gameconfig.player_at_computer = False
+
+
+# ---------------------------------------------------------------------
+# [ EXTRA MENUS ] -----------------------------------------------------
+# ---------------------------------------------------------------------
+def message_box(text, width=gameconfig.MENU_WIDTH):
+    # popup message box
+    menu(text, [], width)

@@ -2,8 +2,11 @@ from libtcod import libtcodpy as libtcod
 import gameconfig
 from dialogue import dialogues
 from dialogue.Dialogue import Dialogue
-from interface.menus import terminal_window
+from interface.menus import terminal_menu
 
+# ---------------------------------------------------------------------
+# [ BASE NPC ] --------------------------------------------------------
+# ---------------------------------------------------------------------
 class BaseNPC:
     # basic NPC ai
     def take_turn(self):
@@ -14,6 +17,10 @@ class BaseNPC:
             elif gameconfig.player.fighter.hp > 0:
                 npc.fighter.attack(gameconfig.player)
 
+
+# ---------------------------------------------------------------------
+# [ TALKER NPC ] ------------------------------------------------------
+# ---------------------------------------------------------------------
 class TalkerNPC:
     # an NPC that just wont shut up
     def __init__(self, recharge=gameconfig.TALK_RECHARGE):
@@ -35,6 +42,10 @@ class TalkerNPC:
                     dialogue.start()
                     depth -= 1
 
+
+# ---------------------------------------------------------------------
+# [ STATIONARY NPC ] --------------------------------------------------
+# ---------------------------------------------------------------------
 class StationaryNPC:
     # stationary NPC
     def __init__(self, base_color, blink_color=gameconfig.WHITE, interact=None):
@@ -50,11 +61,14 @@ class StationaryNPC:
 
     def interact_function(self):
         if self.interact == 'terminal':
-            terminal_window(self)
+            terminal_menu(self)
         else:
             return None
 
-# states of NPCs
+
+# ---------------------------------------------------------------------
+# [ NPC STATES ] ------------------------------------------------------
+# ---------------------------------------------------------------------
 class ConfusedNPC:
     # an NPC that is totally out of control!
     def __init__(self, old_ai, num_turns=gameconfig.CONFUSE_NUM_TURNS):
@@ -68,6 +82,7 @@ class ConfusedNPC:
         else:
             self.owner.ai = self.old_ai
             return('The ' + self.owner.name.upper() + ' is no longer CONFUSED.', libtcod.red)
+
 
 class RepulsedNPC:
     # an NPC that is totally out of control!

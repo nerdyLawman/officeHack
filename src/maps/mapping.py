@@ -10,10 +10,14 @@ from objects.Object import Object
 from objects.Ai import BaseNPC, TalkerNPC, StationaryNPC
 from objects.Item import Item
 
+# ---------------------------------------------------------------------
+# [ MAPPING UTILITIES ] -----------------------------------------------
+# ---------------------------------------------------------------------
 def is_blocked(x, y):
     if gameconfig.level_map[x][y].blocked:
         return True
     return False
+
 
 def create_room(room):
     # basic room
@@ -22,17 +26,20 @@ def create_room(room):
             gameconfig.level_map[x][y].blocked = False
             gameconfig.level_map[x][y].block_sight = False
 
+
 def create_h_tunnel(x1, x2, y):
     # horizontal tunnel
     for x in range(min(x1, x2), max(x1, x2) + 1):
         gameconfig.level_map[x][y].blocked = False
         gameconfig.level_map[x][y].block_sight = False
 
+
 def create_v_tunnel(y1, y2, x):
     # vertical tunnel
     for y in range(min(y1, y2), max(y1, y2) + 1):
         gameconfig.level_map[x][y].blocked = False
         gameconfig.level_map[x][y].block_sight = False
+
 
 def initialize_fov():
     # set initial FOV condition
@@ -43,6 +50,10 @@ def initialize_fov():
                 not gameconfig.level_map[x][y].block_sight,
                 not gameconfig.level_map[x][y].blocked)
 
+
+# ---------------------------------------------------------------------
+# [ OBJECT PLACEMENT ] ------------------------------------------------
+# ---------------------------------------------------------------------
 def place_objects(room):
     # random number of NPCS per room
     num_npcs = libtcod.random_get_int(0, 0, gameconfig.MAX_ROOM_NPCS)
@@ -61,8 +72,9 @@ def place_objects(room):
                 npc_ai = BaseNPC()
             npc_name, npc_gender, npc_portrait = make_person()
             npc = Object(x, y, dice.get('char'), npc_name, dice.get('color'), blocks=True,
-                fighter=Fighter(hp=dice.get('hp'), defense=dice.get('defense'), power=dice.get('power'), xp=dice.get('xp'),
-                drone=true_or_false(30), gender=npc_gender, portrait=npc_portrait), ai=npc_ai)
+                fighter=Fighter(hp=dice.get('hp'), defense=dice.get('defense'),
+                power=dice.get('power'), xp=dice.get('xp'), drone=true_or_false(30),
+                gender=npc_gender, portrait=npc_portrait), ai=npc_ai)
             gameconfig.objects.append(npc)
             gameconfig.level_npc_count += 1
             send_to_back(npc)
@@ -106,6 +118,9 @@ def place_objects(room):
 
     gameconfig.item_count = gameconfig.level_item_count
 
+# ---------------------------------------------------------------------
+# [ MAKE MAP ] --------------------------------------------------------
+# ---------------------------------------------------------------------
 def make_map():
     # generate the level map
     gameconfig.objects[:] = [gameconfig.player]

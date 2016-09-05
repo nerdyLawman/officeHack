@@ -10,7 +10,7 @@ def handle_keys():
     # primary game controls
     _p = gameconfig.player #for ease of ref
 
-    # Exit
+    # Exit ------------------------------------------
     if gameconfig.key.vk == libtcod.KEY_ESCAPE:
         if gameconfig.DRONE_FLAG is True:
             cli_window('exitdrone')
@@ -40,7 +40,7 @@ def handle_keys():
         message(game_messages.WAIT_MESSAGE, libtcod.white)
         pass
 
-    else: # additional game commands  -----------------------------------------------------
+    else: # additional game commands  -------------------------------------
         gameconfig.key_char = chr(gameconfig.key.c)
         available_commands = [
             'h - HELP MENU',

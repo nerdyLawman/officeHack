@@ -3,12 +3,15 @@ import gameconfig
 from interface.menus import message, menu
 from maps.helpers import is_blocked
 
+# ---------------------------------------------------------------------
+# [ PLAYER CLASS ] ----------------------------------------------------
+# ---------------------------------------------------------------------
 class Player:
-    # the player
     def __init__(self, inventory, level=1):
         self.inventory = inventory
         self.level = level
 
+    
     def move_or_attack(self, dx, dy):
         #the coordinates the player is moving to/attacking
         x = self.owner.x + dx
@@ -27,6 +30,7 @@ class Player:
         #attack if target found, move otherwise
         if not is_blocked(self.owner.x+dx, self.owner.y+dy):
             self.owner.move(dx, dy)
+
 
     def check_level_up(self):
         level_up_xp = gameconfig.LEVEL_UP_BASE + self.level + gameconfig.LEVEL_UP_FACTOR
@@ -48,6 +52,7 @@ class Player:
             elif choice == 2:
                 self.owner.fighter.defense += 1
 
+
     def add_item_inventory(self, item):
         inv_item = self.get_inventory_item(item)
         if inv_item is not None:
@@ -57,6 +62,7 @@ class Player:
         gameconfig.objects.remove(item.owner)
         gameconfig.item_count -= 1
         return("You PICKED UP a " + item.owner.name.upper() + ".")
+
 
     def drop_item_inventory(self, item, x, y):
         if self.consume_item_inventory(item):
@@ -68,6 +74,7 @@ class Player:
                 gameconfig.level_item_count = gameconfig.item_count
             return("You DROPPED a " + item.owner.name.upper() + ".")
 
+
     def consume_item_inventory(self, item):
         inv_item = self.get_inventory_item(item)
         if inv_item is not None:
@@ -78,6 +85,7 @@ class Player:
             return True
         return False
 
+
     def get_inventory_item(self, item):
         if len(self.inventory) > 0:
             for i in self.inventory:
@@ -85,6 +93,10 @@ class Player:
                     return i
         return None
 
+
+# ---------------------------------------------------------------------
+# [ PLAYER INVENTORY ] ------------------------------------------------
+# ---------------------------------------------------------------------
 class InventoryItem:
     # an item listing that goes in the player's inventory
     def __init__(self, inv_id, item, count=1):

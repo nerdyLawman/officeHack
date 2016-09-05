@@ -2,6 +2,9 @@ from libtcod import libtcodpy as libtcod
 import gameconfig
 from objects.death import npc_death, drone_death, player_death
 
+# ---------------------------------------------------------------------
+# [ FIGHTER CLASS ] ---------------------------------------------------
+# ---------------------------------------------------------------------
 class Fighter:
     # Object with combat-related properties and methods
     def __init__(self, hp, defense, power, xp,
@@ -16,24 +19,23 @@ class Fighter:
         self.gender = gender
         self.portrait = portrait
 
+
     def take_damage(self, damage):
-        if damage > 0:
-            self.hp -= damage
+        if damage > 0: self.hp -= damage
+        
         if self.hp <= 0:
             self.hp = 0
-            if self.owner.player == None:
-                return npc_death(self.owner) #returns xp int
+            if self.owner.player == None: return npc_death(self.owner)
             else:
-                if self.drone is True:
-                    drone_death(self.owner)
-                else:
-                    player_death(self.owner)
+                if self.drone is True: drone_death(self.owner)
+                else: player_death(self.owner)
         return None
+
 
     def heal(self, amount):
         self.hp += amount
-        if self.hp > self.max_hp:
-            self.hp = self.max_hp
+        if self.hp > self.max_hp: self.hp = self.max_hp
+
 
     def attack(self, target):
         damage = self.power - target.fighter.defense

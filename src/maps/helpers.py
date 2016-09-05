@@ -13,11 +13,13 @@ def random_choice_index(chances):
             return choice
         choice += 1
 
+
 def random_choice(chances_dict):
     # returns a string of a random selection
     chances = chances_dict.values()
     strings = chances_dict.keys()
     return strings[random_choice_index(chances)]
+
 
 def random_dict_entry(dict_list):
     # returns a random dictionary entry from a list of dictionaries based on 'chance'
@@ -27,6 +29,7 @@ def random_dict_entry(dict_list):
         running_sum += d.get('chance')
         if dice <= running_sum:
             return d
+
 
 def make_person():
     if randint(0, 1) < 1:
@@ -41,12 +44,15 @@ def make_person():
         names=namefile.readlines()
         return names[randint(1,len(names)-1)][:-1], gender, portrait
 
+
 def true_or_false(chance):
     if randint(0,100) <= chance: return True
     return False
 
+
 def in_fov(fov_map, x, y):
     return libtcod.map_is_in_fov(fov_map, x, y)
+
 
 def is_blocked(x, y):
     # test if tile is blocked
@@ -58,7 +64,7 @@ def is_blocked(x, y):
             return True
     return False
 
+
 def check_map_blocked(x, y):
-    if level_map[x][y].blocked:
-        return True
+    if level_map[x][y].blocked: return True
     return False
