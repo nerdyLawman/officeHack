@@ -1,5 +1,5 @@
 import gameconfig
-from interface.helpers import menu
+from interface.menus import menu
 import libtcodpy as libtcod
 import json
 

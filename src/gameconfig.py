@@ -48,8 +48,6 @@ game_levels = []
 level_npc_count = npc_count = 0
 level_item_count = item_count = 0
 
-drone_holder = None
-
 #flags
 player_at_computer = False
 
@@ -88,5 +86,5 @@ MENU_BKGND = libtcod.darkest_gray
 MENU_SELECT_BKGND = libtcod.amber
 
 # FILTERS
-DRONE_FILTER = False
-REMOTE_FILTER = False
+DRONE_FLAG = False
+REMOTE_FLAG = False

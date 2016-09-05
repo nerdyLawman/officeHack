@@ -3,8 +3,8 @@ import gameconfig
 import time
 import textwrap
 from interface.cli import cli_window
-from interface.rendering import message
-from objects.actions import read_write_file, random_from_except, remote_view, remote_control
+from interface.rendering import message, render_drone_filter
+from objects.actions import read_write_file, random_from_except
 
 def highlight_selection(window, bgnd_color, sel_color, selected, width, height, header_height, x, y):
     libtcod.console_set_default_background(window, bgnd_color)
@@ -134,6 +134,7 @@ def terminal(station):
     index = menu(header, options, bgnd_color=libtcod.dark_azure,
         fgnd_color=libtcod.lighter_sky, sel_color=libtcod.light_azure)
     if index is None: return
+    
     if options[index] == 'read_':
         floppy = None
         for item in gameconfig.player.player.inventory:
@@ -143,15 +144,13 @@ def terminal(station):
         if floppy is not None:
             floppy.item.use()
             cli_window(floppy.item.special)
+    
     if options[index] == 'write_':
         cli_window()
+    
     if options[index] == 'remote_':
-        target = random_from_except(gameconfig.level_terminals, station.owner)
-        if target is not None:
-            message('remote viewing ' + target.name)
-            remote_view(target)
-        else:
-            message('no other terminals to remote view')
+        cli_window('remote')
+    
     if options[index] == 'drone_' and gameconfig.player.fighter.drone is False:
         cli_window('drone')
 
