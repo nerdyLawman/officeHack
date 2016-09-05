@@ -113,7 +113,7 @@ def drone_commander(text):
         while flag is True:
             command, flag = command_entry(command)
             cli_refresh(text, command)
-        text.append(command)
+        text.append(prompt+command)
         if selected_drone:
             if command == 'spam':
                 running = False
@@ -154,7 +154,7 @@ def drone_exit(text):
         while flag is True:
             command, flag = command_entry(command)
             cli_refresh(text, command)
-        text.append(command)
+        text.append(prompt+command)
         if command == 'exit' or command == 'quit':
             remote_control(gameconfig.real_player)
             gameconfig.DRONE_FLAG = False
@@ -189,7 +189,7 @@ def remote_patch(text):
             command, flag = command_entry(command)
             cli_refresh(text, command)
         #if valid_station_name(command):
-        text.append(command)
+        text.append(prompt+command)
         if command == 'random':
             #selected_station = fetch_station(command)
             selected_station = gameconfig.level_terminals[randint(0, len(gameconfig.level_terminals)-1)]

@@ -2,6 +2,7 @@ import libtcodpy as libtcod
 import gameconfig
 from random import randint
 from interface.rendering import message, send_to_back, render_all, remote_render
+from interface.cli import cli_window
 
 def player_death(player):
     # you ded
@@ -38,7 +39,8 @@ def drone_death(drone):
     gameconfig.level_drones.remove(drone)
     gameconfig.DRONE_FLAG = False
     render_all(True)
-    gameconfig.player_at_computer = False
+    #cli_window('drone') eventually get it so you go back to the terminal after drone death
+    gameconfig.player_at_computer = True
 
 def closest_npc(max_range):
     # find closest enemy to max range and in FOV
