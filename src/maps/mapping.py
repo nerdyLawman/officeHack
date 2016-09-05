@@ -104,7 +104,9 @@ def place_objects(room):
 
 def make_map():
     # generate the level map
-    gameconfig.objects = [gameconfig.player]
+    gameconfig.objects[:] = [gameconfig.player]
+    gameconfig.level_drones[:] = []
+    gameconfig.level_terminals[:] = []
     rooms = []
     num_rooms = 0
     gameconfig.level_npc_count = 0

@@ -2,7 +2,7 @@ import libtcodpy as libtcod
 import gameconfig
 import textwrap
 from random import randint
-from objects.actions import remote_control, remote_look
+from objects.actions import remote_control, revert_control, remote_look
 
 cursor = '_'
 prompt = '$'
@@ -156,7 +156,7 @@ def drone_exit(text):
             cli_refresh(text, command)
         text.append(prompt+command)
         if command == 'exit' or command == 'quit':
-            remote_control(gameconfig.real_player)
+            revert_control(gameconfig.player, gameconfig.real_player)
             gameconfig.DRONE_FLAG = False
             # will eventually have to do some housekeeping for the poor drone
             running = False

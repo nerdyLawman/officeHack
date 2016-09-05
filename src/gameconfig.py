@@ -36,6 +36,7 @@ level_terminals = []
 level_drones = []
 player = None
 real_player = None
+drone_holder = None
 real_inventory = []
 level_map = None
 fov_map = None

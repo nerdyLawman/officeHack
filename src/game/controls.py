@@ -15,8 +15,7 @@ def handle_keys():
             cli_window('exitdrone')
         else:
             choice = main_menu()
-            if choice == 2:
-                return 'exit'
+            if choice == 2: return 'exit'
             return 'no turn'
 
     # 8-D movement arrorw gameconfig.keys or numpad
