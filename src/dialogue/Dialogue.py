@@ -1,6 +1,6 @@
 import gameconfig
 from interface.menus import menu
-import libtcodpy as libtcod
+from libtcod import libtcodpy as libtcod
 import json
 
 

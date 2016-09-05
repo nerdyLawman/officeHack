@@ -1,4 +1,4 @@
-import libtcodpy as libtcod
+from libtcod import libtcodpy as libtcod
 import gameconfig
 from interface.rendering import message, send_to_back
 from terminal.interactions import revert_control

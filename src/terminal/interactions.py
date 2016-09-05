@@ -1,4 +1,4 @@
-import libtcodpy as libtcod
+from libtcod import libtcodpy as libtcod
 import gameconfig
 from interface.rendering import render_all, remote_render
 

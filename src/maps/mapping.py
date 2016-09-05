@@ -1,4 +1,4 @@
-import libtcodpy as libtcod
+from libtcod import libtcodpy as libtcod
 import gameconfig
 from maps.components import Tile, RectRoom
 from maps.helpers import random_choice, random_choice_index, random_dict_entry, make_person, true_or_false

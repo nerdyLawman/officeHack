@@ -1,4 +1,4 @@
-import libtcodpy as libtcod
+from libtcod import libtcodpy as libtcod
 
 # GAME TITLE
 CONSOLE_TITLE = 'offICE_HACK//'

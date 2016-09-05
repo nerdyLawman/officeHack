@@ -1,4 +1,4 @@
-import libtcodpy as libtcod
+from libtcod import libtcodpy as libtcod
 import gameconfig
 from dialogue import dialogues
 from dialogue.Dialogue import Dialogue

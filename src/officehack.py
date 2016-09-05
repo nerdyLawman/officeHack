@@ -1,4 +1,4 @@
-import libtcodpy as libtcod
+from libtcod import libtcodpy as libtcod
 import gameconfig
 from interface.menus import main_menu, message_box
 from interface.rendering import message

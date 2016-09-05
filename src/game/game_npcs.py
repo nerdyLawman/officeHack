@@ -1,4 +1,4 @@
-import libtcodpy as libtcod
+from libtcod import libtcodpy as libtcod
 
 male_names = ['Seth', 'Peter', 'Super Hans', 'Jeremy', 'Chad', 'Carl', 'Alan', 'Vincent', 'Darin', 'Art', 'Mr. Frank', 'Bumpus McNasty', 'Todd',]
 female_names = ['Sophie', 'Suzie', 'Pam', 'Angela', 'Erin', 'Emily', 'Vicky', 'Marshawn', 'Veronica', 'Kim', 'Kathleen', 'Stephanie', 'Ms. Daphne']
