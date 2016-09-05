@@ -1,7 +1,7 @@
 from libtcod import libtcodpy as libtcod
 import gameconfig
 from random import randint
-from interface.rendering import message, send_to_back, render_all, remote_render
+from interface.rendering import message, send_to_back, render_all
 
 def closest_npc(max_range):
     # find closest enemy to max range and in FOV

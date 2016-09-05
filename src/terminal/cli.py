@@ -37,7 +37,7 @@ def command_entry(command):
 
     return prompt + command + cursor, True #redraw cursor
 
-def cli_window(command=None):
+def cli_window(command=None, selector=None):
     global window
     running = True
     bgnd_color = libtcod.dark_azure
@@ -70,6 +70,7 @@ def cli_window(command=None):
         
         elif command == 'read':
             text[:] = []
+            if hasattr(selector, 'special'): text.append(selector.special)
             running = file_rw(text)
         
         elif command == 'remote':
@@ -95,21 +96,32 @@ def cli_window(command=None):
         
         if running is True: cli_refresh(text, command)
 
-def file_rw(text):
+def valid_disc_name(name):
+    valid_names = [disc.inv_id.upper() for disc in gameconfig.saved_discs]
+    if name.upper() in valid_names: return True
+    return False
+
+def insert_disc(name):
+    valid_names = [disc.inv_id.upper() for disc in gameconfig.saved_discs]
+    if name.upper() in valid_names: return gameconfig.saved_discs[valid_names.index(name.upper())]
+    return None
+
+def file_rw(text, infloppy=None):
     #if in_computer()
     text.append('WELCOME TO DRONE FILE RW V0.75')
     command = prompt + cursor
-    floppy = None
+    if infloppy: floppy = infloppy
+    else: floppy = next((inv for inv in gameconfig.player.player.inventory if inv.inv_id == 'floppy disc'), None)
     running = True
-    for inv in gameconfig.player.player.inventory:
-        if inv.inv_id == 'floppy disc':
-            floppy = inv
+    save_flag = False
+        
     if floppy is None:
-        text.append('no floppy discs to read or write.')
-        running = False
+        text.append('SELECT FLOPPY TO LOAD.')
     else:
+        save_flag = True
         text.append('FLOPPY CONTENTS: ' + floppy.item.special)
         text.append('enter name to save floppy as:')
+    
     while running:
         cli_refresh(text, command)
         flag = True
@@ -117,14 +129,25 @@ def file_rw(text):
             command, flag = command_entry(command)
             cli_refresh(text, command)
         text.append(prompt+command)
-        if command == 'exit' or command == 'quit':
-            running = False
-        elif command == 'list' or command == 'listing':
-            for disc in gameconfig.saved_floppies:
-                text.append(disc.inv_id)
+        if save_flag:
+            floppy_write(floppy, command + ' disc')
+            text.append('saved floppy as: ' + command + ' disc.')
+            save_flag = False
         else:
-            floppy_write(floppy, command)
-            text.append('saved floppy as: ' + command + '.txt')
+            if command == 'exit' or command == 'quit':
+                running = False
+            elif command == 'list' or command == 'listing':
+                for disc in gameconfig.saved_discs:
+                    text.append(disc.inv_id)
+            elif command == 'identify':
+                floppy = next((inv for inv in gameconfig.player.player.inventory if inv.inv_id == 'floppy disc'), None)
+                if floppy: text.append('FLOPPY CONTENTS: ' + floppy.item.special)
+                else: text.append('no unidentified discs')
+            elif valid_disc_name(command):
+                floppy = insert_disc(command)
+                text.append('FLOPPY CONTENTS: ' + floppy.item.special)
+            else:
+                text.append('invalid command')
         command = prompt + cursor
         if running is True: cli_refresh(text, command)
     return running
@@ -230,7 +253,6 @@ def remote_patch(text):
         #if valid_station_name(command):
         text.append(prompt+command)
         if command == 'random':
-            #selected_station = fetch_station(command)
             selected_station = gameconfig.level_terminals[randint(0, len(gameconfig.level_terminals)-1)]
             running = False
         elif command == 'listing' or command == 'list':

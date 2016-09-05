@@ -1,17 +1,18 @@
 from libtcod import libtcodpy as libtcod
 import gameconfig
-from interface.rendering import render_all, remote_render, message
+from interface.rendering import render_all, message
 
 def floppy_write(floppy, name):
     #if in_computer()
-    floppy.inv_id = name
-    gameconfig.saved_floppies.append(floppy)
+    floppy.inv_id = name # have to change this to handle having quantities of floppies but can't be bothered at the moment
+    gameconfig.saved_discs.append(floppy)
     floppy.item.use()
 
 def remote_look(target):
     # move FOV to another location for a turn
     gameconfig.REMOTE_FLAG = True
-    remote_render(target)
+    gameconfig.remote_target = target.name
+    render_all(True)
     libtcod.console_wait_for_keypress(True)
     gameconfig.REMOTE_FLAG = False
     render_all(True)
