@@ -1,13 +1,12 @@
 from libtcod import libtcodpy as libtcod
 import gameconfig
-from interface.rendering import render_all, remote_render
+from interface.rendering import render_all, remote_render, message
 
-def read_write_file(floppy):
+def floppy_write(floppy, name):
     #if in_computer()
-    if gameconfig.player_at_computer: #in computer
-        return(floppy.special)
-    message("Can't use that here. Try finding a computer.", libtcod.white)
-    return 'cancelled'
+    floppy.inv_id = name
+    gameconfig.saved_floppies.append(floppy)
+    floppy.item.use()
 
 def remote_look(target):
     # move FOV to another location for a turn

@@ -1,3 +1,4 @@
+from libtcod import libtcodpy as libtcod
 import gameconfig
 from interface.menus import message, menu
 from maps.helpers import is_blocked

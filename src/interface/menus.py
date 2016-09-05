@@ -142,8 +142,7 @@ def terminal_window(station):
                 floppy = item
                 break
         if floppy is not None:
-            floppy.item.use()
-            cli_window(floppy.item.special)
+            cli_window('read')
     
     if options[index] == 'write_':
         cli_window()

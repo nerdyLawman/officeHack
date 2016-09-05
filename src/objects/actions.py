@@ -39,6 +39,12 @@ def objects_in_fov():
 
 def read_document(document):
     message('The document reads: ' + document.special)
+    
+def floppy_overwrite(floppy):
+    if not gameconfig.player_at_computer: #in computer
+        message("Can't use that here. Try finding a computer.", libtcod.white)
+        return 'cancelled'
+    message('floppy disc renamed.')
 
 def throw_coffee(coffee):
     #find closest npc (inside a maximum range) and damage it

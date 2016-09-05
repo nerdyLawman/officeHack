@@ -38,6 +38,7 @@ player = None
 real_player = None
 drone_holder = None
 real_inventory = []
+saved_floppies = []
 level_map = None
 fov_map = None
 color_theme = None

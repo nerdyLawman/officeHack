@@ -1,12 +1,11 @@
 from libtcod import libtcodpy as libtcod
-from objects.actions import throw_coffee, read_document
-from terminal.interactions import read_write_file
+from objects.actions import throw_coffee, read_document, floppy_overwrite
 
 floppy_disc =   { 'char' : '!',
     'name' : 'floppy disc',
     'color' : libtcod.light_lime,
     'special' : 'FooBar you F001!',
-    'use' : read_write_file,
+    'use' : floppy_overwrite,
     'instant': False,
     'chance': 60,
 }

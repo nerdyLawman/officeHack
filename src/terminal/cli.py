@@ -2,7 +2,7 @@ from libtcod import libtcodpy as libtcod
 import gameconfig
 import textwrap
 from random import randint
-from terminal.interactions import remote_control, revert_control, remote_look
+from terminal.interactions import remote_control, revert_control, remote_look, floppy_write
 
 cursor = '_'
 prompt = '$'
@@ -43,7 +43,7 @@ def cli_window(command=None):
     bgnd_color = libtcod.dark_azure
     fgnd_color = libtcod.light_sky
     if not command: command = prompt + cursor
-    special_commands = ['exit', 'save', 'help', 'drone', 'exitdrone', 'remote']
+    special_commands = ['exit', 'save', 'read', 'help', 'drone', 'exitdrone', 'remote']
     window = libtcod.console_new(width, height)
     libtcod.console_set_default_background(window, bgnd_color)
     libtcod.console_set_default_foreground(window, fgnd_color)
@@ -68,6 +68,10 @@ def cli_window(command=None):
         elif command == 'save':
             text.append('saved!')
         
+        elif command == 'read':
+            text[:] = []
+            running = file_rw(text)
+        
         elif command == 'remote':
             text[:] = []
             running = remote_patch(text)
@@ -90,6 +94,41 @@ def cli_window(command=None):
         command = prompt + cursor
         
         if running is True: cli_refresh(text, command)
+
+def file_rw(text):
+    #if in_computer()
+    text.append('WELCOME TO DRONE FILE RW V0.75')
+    command = prompt + cursor
+    floppy = None
+    running = True
+    for inv in gameconfig.player.player.inventory:
+        if inv.inv_id == 'floppy disc':
+            floppy = inv
+    if floppy is None:
+        text.append('no floppy discs to read or write.')
+        running = False
+    else:
+        text.append('FLOPPY CONTENTS: ' + floppy.item.special)
+        text.append('enter name to save floppy as:')
+    while running:
+        cli_refresh(text, command)
+        flag = True
+        while flag is True:
+            command, flag = command_entry(command)
+            cli_refresh(text, command)
+        text.append(prompt+command)
+        if command == 'exit' or command == 'quit':
+            running = False
+        elif command == 'list' or command == 'listing':
+            for disc in gameconfig.saved_floppies:
+                text.append(disc.inv_id)
+        else:
+            floppy_write(floppy, command)
+            text.append('saved floppy as: ' + command + '.txt')
+        command = prompt + cursor
+        if running is True: cli_refresh(text, command)
+    return running
+
 
 def valid_drone_name(name):
     valid_names = [drone.name.upper() for drone in gameconfig.level_drones]
