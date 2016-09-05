@@ -85,6 +85,7 @@ STAIRS_COLOR = libtcod.black
 LEVEL_BKGND = libtcod.black
 MENU_BKGND = libtcod.darkest_gray
 MENU_SELECT_BKGND = libtcod.amber
+WHITE = libtcod.white
 
 # FILTERS
 DRONE_FLAG = False

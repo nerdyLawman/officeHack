@@ -3,8 +3,12 @@ import gameconfig
 from maps.components import Tile, RectRoom
 from maps.helpers import random_choice, random_choice_index, random_dict_entry, make_person, true_or_false
 from interface.rendering import send_to_back
-from objects.classes import Object, Fighter, BaseNPC, Talker, StationaryNPC, Item
 from game import color_themes, game_items, game_npcs
+from objects.Player import Player
+from objects.Fighter import Fighter
+from objects.Object import Object
+from objects.Ai import BaseNPC, TalkerNPC, StationaryNPC
+from objects.Item import Item
 
 def is_blocked(x, y):
     if gameconfig.level_map[x][y].blocked:
@@ -52,7 +56,7 @@ def place_objects(room):
         if not is_blocked(x, y):
             dice = random_dict_entry(game_npcs.NPC_classes)
             if dice.get('ai') == 'talk':
-                npc_ai = Talker()
+                npc_ai = TalkerNPC()
             else:
                 npc_ai = BaseNPC()
             npc_name, npc_gender, npc_portrait = make_person()

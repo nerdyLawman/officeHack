@@ -1,5 +1,6 @@
 import libtcodpy as libtcod
-from objects.actions import throw_coffee, read_write_file
+from objects.actions import throw_coffee
+from terminal.interactions import read_write_file
 
 floppy_disc =   { 'char' : '!',
     'name' : 'floppy disc',

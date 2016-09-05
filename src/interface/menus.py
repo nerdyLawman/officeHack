@@ -2,9 +2,9 @@ import libtcodpy as libtcod
 import gameconfig
 import time
 import textwrap
-from interface.cli import cli_window
 from interface.rendering import message, render_drone_filter
-from objects.actions import read_write_file, random_from_except
+from objects.actions import random_from_except
+from terminal.cli import cli_window
 
 def highlight_selection(window, bgnd_color, sel_color, selected, width, height, header_height, x, y):
     libtcod.console_set_default_background(window, bgnd_color)
@@ -126,7 +126,7 @@ def inventory_menu(header, inventory):
     if index is None or len(inventory) == 0: return None
     return inventory[index].item
 
-def terminal(station):
+def terminal_window(station):
     # computer terminal
     gameconfig.player_at_computer = True
     header = 'Welcome to ' + station.owner.name # give it a name eventually

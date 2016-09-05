@@ -2,7 +2,7 @@ import libtcodpy as libtcod
 import gameconfig
 import textwrap
 from random import randint
-from objects.actions import remote_control, revert_control, remote_look
+from terminal.interactions import remote_control, revert_control, remote_look
 
 cursor = '_'
 prompt = '$'

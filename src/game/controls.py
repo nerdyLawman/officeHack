@@ -3,7 +3,7 @@ import gameconfig
 from interface.rendering import render_all, message
 from interface.menus import inventory_menu, main_menu, message_box, menu
 from objects.actions import objects_in_fov
-from interface.cli import cli_window
+from terminal.cli import cli_window
 
 def handle_keys():
     # primary game controls
