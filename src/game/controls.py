@@ -65,6 +65,7 @@ def handle_keys():
                     if len(_p.player.inventory) >= 26:
                         return('Your INVENTORY is FULL! Cannot PICK UP ' + self.owner.name.upper() + '.', libtcod.pink)
                     else:
+                        if obj.item.is_instant is True: obj.item.use()
                         message(_p.player.add_item_inventory(obj.item))
 
         # drop item

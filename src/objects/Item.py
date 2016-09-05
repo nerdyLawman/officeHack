@@ -2,9 +2,10 @@ import gameconfig
 
 class Item:
     # an Object that can be picked up and used
-    def __init__(self, special=None, use_function=None):
+    def __init__(self, special=None, use_function=None, is_instant=False):
         self.special = special
         self.use_function = use_function
+        self.is_instant = is_instant
 
     def use(self):
         if self.use_function is None:

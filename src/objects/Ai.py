@@ -15,6 +15,7 @@ class BaseNPC:
                 npc.fighter.attack(gameconfig.player)
 
 class TalkerNPC:
+    # an NPC that just wont shut up
     def __init__(self, recharge=gameconfig.TALK_RECHARGE):
         self.recharge = recharge
 

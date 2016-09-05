@@ -98,7 +98,7 @@ def place_objects(room):
             # place item
             dice = random_dict_entry(game_items.ITEMS)
             item = Object(x, y, dice.get('char'), dice.get('name'), dice.get('color'),
-                item=Item(special=dice.get('special'),use_function=dice.get('use')))
+                item=Item(special=dice.get('special'), use_function=dice.get('use'), is_instant=dice.get('instant')))
 
             gameconfig.objects.append(item)
             gameconfig.level_item_count += 1

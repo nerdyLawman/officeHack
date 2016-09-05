@@ -2,6 +2,7 @@ from libtcod import libtcodpy as libtcod
 import gameconfig
 from interface.rendering import message, send_to_back
 from terminal.interactions import revert_control
+from terminal.cli import cli_window
 
 def player_death(player):
     # you ded
@@ -31,5 +32,5 @@ def drone_death(drone):
     gameconfig.level_drones.remove(drone)
     npc_death(drone)
     gameconfig.DRONE_FLAG = False
-    #cli_window('drone') eventually get it so you go back to the terminal after drone death
+    cli_window('drone') # spits you back to the drone commander window
     gameconfig.player_at_computer = True

@@ -37,6 +37,9 @@ def objects_in_fov():
             fov_objects.append(obj)
     return fov_objects
 
+def read_document(document):
+    message('The document reads: ' + document.special)
+
 def throw_coffee(coffee):
     #find closest npc (inside a maximum range) and damage it
     target = closest_npc(gameconfig.COFFEE_RANGE)

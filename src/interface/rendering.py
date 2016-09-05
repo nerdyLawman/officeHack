@@ -30,6 +30,7 @@ def send_to_back(item):
     gameconfig.objects.insert(0, item)
 
 def remote_render(target):
+    # reders the screen with a filter is remote viewing
     player = gameconfig.player
     objects = gameconfig.objects
     level_map = gameconfig.level_map
@@ -50,9 +51,8 @@ def remote_render(target):
 
 def render_all(fov_recompute):
     # main fucntion which draws all objects on the screen every cycle
-
-    #local renders for convenience
-    player = gameconfig.player
+    
+    player = gameconfig.player #local renders for convenience
     objects = gameconfig.objects
     level_map = gameconfig.level_map
     fov_map = gameconfig.fov_map
