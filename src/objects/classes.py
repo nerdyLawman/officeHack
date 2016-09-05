@@ -6,7 +6,7 @@ from interface.menus import terminal, menu, message
 from interface.rendering import send_to_back
 from maps.helpers import is_blocked
 from dialogue import dialogues
-from dialogue import helpers as dialogue_helpers
+from dialogue.Dialogue import Dialogue
 
 class Object:
     # generic object
@@ -224,8 +224,9 @@ class Talker:
                 self.recharge = 0
                 depth = libtcod.random_get_int(0, 1, 5)
                 while depth > 0:
-                    dialogue_element = dialogues.level_1[libtcod.random_get_int(0, 1, len(dialogues.level_1)-1)]
-                    dialogue_helpers.init_dialogue(dialogue_element, npc)
+                    dialogue_str = dialogues.level_1[libtcod.random_get_int(0, 1, len(dialogues.level_1)-1)]
+                    dialogue = Dialogue(dialogue_str, npc)
+                    dialogue.start()
                     depth -= 1
 
 class BaseNPC:
