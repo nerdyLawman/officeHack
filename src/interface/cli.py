@@ -1,7 +1,8 @@
 import libtcodpy as libtcod
 import gameconfig
 import textwrap
-from objects.actions import remote_control
+from random import randint
+from objects.actions import remote_control, revert_control, remote_look
 
 cursor = '_'
 prompt = '$'
@@ -42,7 +43,7 @@ def cli_window(command=None):
     bgnd_color = libtcod.dark_azure
     fgnd_color = libtcod.light_sky
     if not command: command = prompt + cursor
-    special_commands = ['exit', 'save', 'help', 'drone']
+    special_commands = ['exit', 'save', 'help', 'drone', 'exitdrone', 'remote']
     window = libtcod.console_new(width, height)
     libtcod.console_set_default_background(window, bgnd_color)
     libtcod.console_set_default_foreground(window, fgnd_color)
@@ -56,22 +57,39 @@ def cli_window(command=None):
         while flag is True and command not in special_commands:
             command, flag = command_entry(command)
             cli_refresh(text, command)
-            
+        
+        if command != '': text.append(prompt+command)    
+        if len(text) > height/2 - 7: del text[:2]
+        
         if command == 'exit' or command == 'quit':
             text.append('exited')
-            return None
+            running = False
+        
         elif command == 'save':
             text.append('saved!')
+        
+        elif command == 'remote':
+            text[:] = []
+            running = remote_patch(text)
+        
         elif command == 'drone':
+            text[:] = []
             running = drone_commander(text)
+        
+        elif command == 'exitdrone':
+            text[:] = []
+            running = drone_exit(text)
+        
         elif command == 'help':
             helptext = ['type help for options', 'type save to save', 'type exit to exit', 'press ANY KEY.']
             text[:] = helptext
             cli_refresh(text, command)
+        
         else:
             text.append('invalid command')
         command = prompt + cursor
-        cli_refresh(text, command)
+        
+        if running is True: cli_refresh(text, command)
 
 def valid_drone_name(name):
     valid_names = [drone.name.upper() for drone in gameconfig.level_drones]
@@ -84,8 +102,6 @@ def fetch_drone(name):
     return None
 
 def drone_commander(text):
-    print(drone.name for drone in gameconfig.level_drones)
-    text[:] = []
     text.append('WELCOME TO DRONE COMMANDER V0.75')
     text.append('enter name of drone to drone into.')
     command = prompt + cursor
@@ -97,6 +113,7 @@ def drone_commander(text):
         while flag is True:
             command, flag = command_entry(command)
             cli_refresh(text, command)
+        text.append(prompt+command)
         if selected_drone:
             if command == 'spam':
                 running = False
@@ -116,11 +133,81 @@ def drone_commander(text):
                     text.append('No DRONES on this level.')
             elif command == 'exit':
                 text.append('DRONE COMMANDER EXITED.')
-                return None
+                return False
             else:
                 text.append('No DRONES match this entry.')
         command = prompt + cursor
-        cli_refresh(text, command)
+        if running is True: cli_refresh(text, command)
         
     if selected_drone: remote_control(selected_drone)
     return running
+
+def drone_exit(text):
+    text.append('WELCOME TO DRONE COMMANDER V0.75')
+    text.append('QUIT or RESUME')
+    command = prompt + cursor
+    selected_drone = None
+    running = True
+    while running:
+        cli_refresh(text, command)
+        flag = True
+        while flag is True:
+            command, flag = command_entry(command)
+            cli_refresh(text, command)
+        text.append(prompt+command)
+        if command == 'exit' or command == 'quit':
+            revert_control(gameconfig.player, gameconfig.real_player)
+            gameconfig.DRONE_FLAG = False
+            # will eventually have to do some housekeeping for the poor drone
+            running = False
+        elif command == 'resume':
+            running = False
+        command = prompt + cursor
+        if running is True: cli_refresh(text, command)
+    return running
+
+def valid_station_name(name):
+    valid_names = [station.name.upper() for station in gameconfig.level_terminals]
+    if name.upper() in valid_names: return True
+    return False
+
+def fetch_station(name):
+    valid_names = [station.name.upper() for station in gameconfig.level_terminals]
+    if name.upper() in valid_names: return gameconfig.level_terminals[valid_names.index(name.upper())]
+    return None
+
+def remote_patch(text):
+    text.append('WELCOME TO REMOTE LOOK V0.75')
+    text.append('enter name of station to patch.')
+    command = prompt + cursor
+    selected_station = None
+    running = True
+    while running:
+        cli_refresh(text, command)
+        flag = True
+        while flag is True:
+            command, flag = command_entry(command)
+            cli_refresh(text, command)
+        #if valid_station_name(command):
+        text.append(prompt+command)
+        if command == 'random':
+            #selected_station = fetch_station(command)
+            selected_station = gameconfig.level_terminals[randint(0, len(gameconfig.level_terminals)-1)]
+            running = False
+        elif command == 'listing' or command == 'list':
+            if len(gameconfig.level_terminals) > 1:
+                for station in gameconfig.level_terminals:
+                    text.append(station.name.upper())
+            else:
+                text.append('no other stations on this level')
+        elif command == 'exit':
+            text.append('REMOTE LOOK EXITED.')
+            return None
+        else:
+            text.append('Invalid entry.')
+        command = prompt + cursor
+        if running is True: cli_refresh(text, command)
+    
+    if selected_station: remote_look(selected_station)
+    return running
+        

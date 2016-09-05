@@ -27,18 +27,12 @@ def npc_death(npc):
 
 def drone_death(drone):
     # kill the drone and switch back to the player
-    gameconfig.player.player = gameconfig.real_player.player
-    gameconfig.player.player.inventory = list(gameconfig.real_inventory)
-    gameconfig.real_inventory = None #just so we're not storing a useless list
-    gameconfig.player.fighter = gameconfig.real_player.fighter
-    gameconfig.player.player.owner = gameconfig.real_player
-    gameconfig.player.fighter.owner = gameconfig.real_player
-    gameconfig.player = gameconfig.real_player
+    revert_control(drone, gameconfig.real_player)
     npc_death(drone)
-    gameconfig.level_drones.remove(drone)
-    gameconfig.DRONE_FILTER = False
+    gameconfig.DRONE_FLAG = False
     render_all(True)
-    gameconfig.player_at_computer = False
+    #cli_window('drone') eventually get it so you go back to the terminal after drone death
+    gameconfig.player_at_computer = True
 
 def closest_npc(max_range):
     # find closest enemy to max range and in FOV
@@ -81,25 +75,51 @@ def read_write_file(floppy):
     message("Can't use that here. Try finding a computer.", libtcod.white)
     return 'cancelled'
 
-def remote_view(target):
+def remote_look(target):
     # move FOV to another location for a turn
-    gameconfig.REMOTE_FILTER = True
+    gameconfig.REMOTE_FLAG = True
     remote_render(target)
     libtcod.console_wait_for_keypress(True)
-    gameconfig.REMOTE_FILTER = False
+    gameconfig.REMOTE_FLAG = False
     render_all(True)
+
+def revert_control(drone, real_player):
+    # switch back to the real player
+    drone = gameconfig.drone_holder
+    drone.ai = gameconfig.drone_holder.ai
+    #drone.ai.owner = gameconfig.drone_holder
+    drone.fighter.owner = gameconfig.drone_holder
+    drone.player.owner = None
+    drone.player = None
+    gameconfig.level_drones.append(drone) #put em back in the running
+    
+    gameconfig.player.player = real_player.player
+    gameconfig.player.player.inventory = list(gameconfig.real_inventory)
+    gameconfig.real_inventory = None #just so we're not storing a useless list
+    gameconfig.player.fighter = real_player.fighter
+    gameconfig.player.player.owner = real_player
+    gameconfig.player.fighter.owner = real_player
+    gameconfig.player = real_player
 
 def remote_control(target):
     # switch player control
+    gameconfig.drone_holder = target
+    gameconfig.drone_holder.ai = target.ai
+    gameconfig.drone_holder.ai.owner = target
+    gameconfig.drone_holder.fighter.owner = target
+    gameconfig.level_drones.remove(target)
+    
     gameconfig.player_at_computer = False
     gameconfig.real_player = gameconfig.player
     gameconfig.real_inventory = list(gameconfig.player.player.inventory)
+    
     target.player = gameconfig.player.player
     target.player.inventory = []
     target.player.owner = target
     target.ai = None
+    
     gameconfig.player = target
-    gameconfig.DRONE_FILTER = True
+    gameconfig.DRONE_FLAG = True
     render_all(True)
 
 def throw_coffee(coffee):

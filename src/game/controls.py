@@ -3,6 +3,7 @@ import gameconfig
 from interface.rendering import render_all, message
 from interface.menus import inventory_menu, main_menu, message_box, menu
 from objects.actions import objects_in_fov
+from interface.cli import cli_window
 
 def handle_keys():
     # primary game controls
@@ -10,10 +11,12 @@ def handle_keys():
 
     # Exit
     if gameconfig.key.vk == libtcod.KEY_ESCAPE:
-        choice = main_menu()
-        if choice == 2:
-            return 'exit'
-        return 'no turn'
+        if gameconfig.DRONE_FLAG is True:
+            cli_window('exitdrone')
+        else:
+            choice = main_menu()
+            if choice == 2: return 'exit'
+            return 'no turn'
 
     # 8-D movement arrorw gameconfig.keys or numpad
     if gameconfig.key.vk == libtcod.KEY_UP or gameconfig.key.vk == libtcod.KEY_KP8:
