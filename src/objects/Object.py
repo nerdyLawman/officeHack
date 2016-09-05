@@ -1,6 +1,7 @@
 import gameconfig
 import math
 from maps.helpers import is_blocked
+from objects.Ai import RepulsedNPC
 
 class Object:
     # generic object
