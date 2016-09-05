@@ -2,9 +2,11 @@ import libtcodpy as libtcod
 import math
 import gameconfig
 from objects.actions import npc_death, player_death, drone_death
-from interface.menus import conversation, terminal, menu, message
+from interface.menus import terminal, menu, message
 from interface.rendering import send_to_back
 from maps.helpers import is_blocked
+from dialogue import dialogues
+from dialogue import helpers as dialogue_helpers
 
 class Object:
     # generic object
@@ -17,19 +19,19 @@ class Object:
         self.color = color
         self.info = info
         self.blocks = blocks
-        
+
         self.player = player
         if self.player:
             self.player.owner = self
-        
+
         self.fighter = fighter
         if self.fighter:
             self.fighter.owner = self
-        
+
         self.ai = ai
         if self.ai:
             self.ai.owner = self
-        
+
         self.item = item
         if self.item:
             self.item.owner = self
@@ -43,7 +45,7 @@ class Object:
         dx = target_x - self.x
         dy = target_y - self.y
         distance = math.sqrt(dx ** 2 + dy ** 2)
-        
+
         dx = int(round(dx / distance))
         dy = int(round(dx / distance))
         self.move(dx, dy)
@@ -52,7 +54,7 @@ class Object:
         dx = target_x - self.x
         dy = target_y - self.y
         distance = math.sqrt(dx ** 2 + dy ** 2)
-        
+
         dx = int(round(dx / distance)) * -1
         dy = int(round(dx / distance)) * -1
         self.move(dx, dy)
@@ -101,7 +103,7 @@ class Player:
             self.level += 1
             self.owner.fighter.xp -= level_up_xp
             message('Your skills increase. LEVEL UP! Now at level: ' + str(self.level) + '.', libtcod.yellow)
-    
+
             choice = 'no selection'
             while choice == 'no selection':
                 choice = menu('Level up! Chose a stat to raise!\n',
@@ -113,7 +115,7 @@ class Player:
                 self.owner.fighter.power += 1
             elif choice == 2:
                 self.owner.fighter.defense += 1
-        
+
     def add_item_inventory(self, item):
         inv_item = self.get_inventory_item(item)
         if inv_item is not None:
@@ -222,8 +224,8 @@ class Talker:
                 self.recharge = 0
                 depth = libtcod.random_get_int(0, 1, 5)
                 while depth > 0:
-                    topic = topics[libtcod.random_get_int(0, 1, len(topics)-1)]
-                    conversation(topic, self.owner.name, self.owner.fighter.portrait)
+                    dialogue_element = dialogues.level_1[libtcod.random_get_int(0, 1, len(dialogues.level_1)-1)]
+                    dialogue_helpers.init_dialogue(dialogue_element, npc)
                     depth -= 1
 
 class BaseNPC:
