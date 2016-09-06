@@ -38,4 +38,5 @@ class SoundPlayer:
             self.sound.fadeout(2000)
             self.sound_path = 'data/sound/' + new_track + '.wav'
             self.sound = pygame.mixer.Sound(self.sound_path)
+            self.sound.set_volume(self.volume)
             self.play()
