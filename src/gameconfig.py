@@ -98,8 +98,8 @@ REMOTE_FLAG = False
 SOUND = 'enabled' # 'enabled', 'disabled'
 
 VOLUME = {
-    'MUSIC': 0.5,
-    'SOUND_FX': 0.3
+    'MUSIC': 0.0,
+    'SOUND_FX': 0.2
 }
 
 CURRENT_TRACK = None
