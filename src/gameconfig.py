@@ -1,4 +1,5 @@
 from libtcod import libtcodpy as libtcod
+from random import randint
 
 # GAME INFO -----------------------------
 CONSOLE_TITLE = 'offICE_HACK//'
@@ -92,7 +93,17 @@ DRONE_FLAG = False
 REMOTE_FLAG = False
 
 # SOUND -----------------------------------
-LIVE_SOUNDS = []
+CURRENT_TRACK = None
+
+BACKGROUND_MUSIC = {
+  'terminal': 'terminal',
+  'level_1' : 'intro'
+}
+
+SOUND_FX = {
+   'dialogue': 'blip' + str(randint(1,6)),
+   'attack'  : 'hit' + str(randint(1,3))
+}
 
 
 # ---------------------------------------------------------------------

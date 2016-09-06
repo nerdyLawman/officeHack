@@ -43,6 +43,7 @@ def command_entry(command):
 def cli_window(command=None, selector=None):
     global window
     running = True
+    gameconfig.CURRENT_TRACK.switch_track(gameconfig.BACKGROUND_MUSIC['terminal'])
     bgnd_color = libtcod.dark_azure
     fgnd_color = libtcod.light_sky
     if not command: command = prompt + cursor
@@ -54,59 +55,63 @@ def cli_window(command=None, selector=None):
     libtcod.console_rect(window, 0, 0, width, height, True, libtcod.BKGND_SET)
     libtcod.console_print_ex(window, 1, 1, libtcod.BKGND_NONE, libtcod.LEFT, game_messages.TERMINAL_TITLE)
     text = [game_messages.TERMINAL_START_MESSAGE]
-    
+
     while running:
         cli_refresh(text, command) #update screen
         flag = True
         while flag is True and command not in special_commands:
             command, flag = command_entry(command)
             cli_refresh(text, command)
-        
-        if command != '': text.append(prompt+command)    
+
+        if command != '': text.append(prompt+command)
         if len(text) > height/2 - 7: del text[:2]
-        
+
         # EXIT -------------------------
         if command == 'exit' or command == 'quit':
             text.append('exited')
             running = False
-        
+
         # SAVE --------------------------
         elif command == 'save':
             text.append('saved!')
-        
+
         # READ ----------------------
         elif command == 'read':
             text[:] = []
             if hasattr(selector, 'special'): text.append(selector.special)
             running = file_rw(text)
-        
+
         # REMOTE -----------------------
         elif command == 'remote':
             text[:] = []
             running = remote_patch(text)
-        
+
         # DRONE -------------------------
         elif command == 'drone':
             text[:] = []
             running = drone_commander(text)
-        
+
         # EXIT DRONE ---------------------
         elif command == 'exitdrone':
             text[:] = []
             running = drone_exit(text)
-        
+
         # HELP ------------------------
         elif command == 'help':
             helptext = ['type help for options', 'type save to save', 'type exit to exit', 'press ANY KEY.']
             text[:] = helptext
             cli_refresh(text, command)
-        
+
         # INVALID COMMAND ----------------
         else:
             text.append('invalid command')
         command = prompt + cursor
-        
-        if running is True: cli_refresh(text, command)
+
+        if running is True:
+            cli_refresh(text, command)
+        else:
+            gameconfig.CURRENT_TRACK.switch_track(gameconfig.BACKGROUND_MUSIC['level_1'])
+
 
 
 # ---------------------------------------------------------------------
@@ -132,14 +137,14 @@ def file_rw(text, infloppy=None):
     else: floppy = next((inv for inv in gameconfig.player.player.inventory if inv.inv_id == 'floppy disc'), None)
     running = True
     save_flag = False
-        
+
     if floppy is None:
         text.append('SELECT FLOPPY TO LOAD.')
     else:
         save_flag = True
         text.append('FLOPPY CONTENTS: ' + floppy.item.special)
         text.append('enter name to save floppy as:')
-    
+
     while running:
         cli_refresh(text, command)
         flag = True
@@ -204,7 +209,7 @@ def drone_commander(text):
                 text.append('INCORRECT CODE')
                 text.append('Select another DRONE.')
                 selected_drone = None
-        else:    
+        else:
             if valid_drone_name(command):
                 selected_drone = fetch_drone(command)
                 text.append(command.upper() + ' is an acceptable name, enter codeword')
@@ -221,7 +226,7 @@ def drone_commander(text):
                 text.append('No DRONES match this entry.')
         command = prompt + cursor
         if running is True: cli_refresh(text, command)
-        
+
     if selected_drone: remote_control(selected_drone)
     return running
 
@@ -295,7 +300,6 @@ def remote_patch(text):
             text.append('Invalid entry.')
         command = prompt + cursor
         if running is True: cli_refresh(text, command)
-    
+
     if selected_station: remote_look(selected_station)
     return running
-        

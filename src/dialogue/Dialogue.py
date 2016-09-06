@@ -9,7 +9,7 @@ from random import randint
 class Dialogue:
 
     def __init__(self, dialogue, npc):
-        blip = SoundPlayer('blip' + str(randint(1,4)))
+        blip = SoundPlayer('blip' + str(randint(1,6)))
         blip.play()
         self.current_dialogue = json.loads(dialogue)
         self.npc = npc
@@ -55,7 +55,7 @@ class Dialogue:
             if i['text'] == choices[index]:
                 el = self.get_dialogue_element(i['followup'])
                 if el is not None:
-                    blip2 = SoundPlayer('blip' + str(randint(1,4)))
+                    blip2 = SoundPlayer(gameconfig.SOUND_FX['dialogue'])
                     blip2.play()
                     self._set_current_element(i['followup'])
                     self._next()

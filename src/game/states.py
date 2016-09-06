@@ -80,8 +80,7 @@ def play_game():
     fov_recompute = True
 
     # bg music
-    intro_song = SoundPlayer('intro', -1)
-    gameconfig.LIVE_SOUNDS.append(intro_song)
+    intro_song = SoundPlayer(gameconfig.BACKGROUND_MUSIC['level_1'], loop = True)
     intro_song.play()
 
     while not libtcod.console_is_window_closed():
