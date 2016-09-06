@@ -2,7 +2,7 @@ from libtcod import libtcodpy as libtcod
 import shelve
 import gameconfig
 from game import game_messages
-from interface.rendering import render_all, clear_console, message
+from interface.rendering import render_all, clear_console, message, fetch_message
 from game.controls import handle_keys
 from maps.mapping import make_map
 from objects.Player import Player
@@ -138,9 +138,9 @@ def down_level():
 
 def new_level():
     # go to new level
-    message(game_messages.LEVEL_REST_MESSAGE, gameconfig.GAME_UPDATE_COLOR)
+    fetch_message('LEVEL_REST_MESSAGE')
     gameconfig.player.fighter.heal(gameconfig.player.fighter.max_hp / 2) # heal half HP
-    message(game_messages.LEVEL_CONTINUE_MESSAGE, gameconfig.CAUTION_COLOR)
+    fetch_message('LEVEL_CONTINUE_MESSAGE')
     gameconfig.game_level += 1
 
     # create new level

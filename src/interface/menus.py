@@ -22,7 +22,7 @@ def highlight_selection(window, bgnd_color, sel_color, selected, width, height, 
 
 def menu(header, options, width=gameconfig.MENU_WIDTH, bgnd_color=None, fgnd_color=None, sel_color=None):
     # base selection menu
-    
+
     # color inits
     if bgnd_color is None: bgnd_color = gameconfig.MENU_BKGND
     if fgnd_color is None: fgnd_color = libtcod.white
@@ -66,11 +66,11 @@ def menu(header, options, width=gameconfig.MENU_WIDTH, bgnd_color=None, fgnd_col
 
         if options: # selection loop
             if key.vk == libtcod.KEY_DOWN or key.vk == libtcod.KEY_UP:
-                
+
                 if key.vk == libtcod.KEY_DOWN:
                     if selected < len(options): selected += 1
                     else: selected = 1
-                
+
                 if key.vk == libtcod.KEY_UP:
                     if selected > 1: selected -= 1
                     else: selected = len(options)
@@ -131,26 +131,26 @@ def terminal_menu(station):
     gameconfig.player_at_computer = True
     header = game_messages.TERMINAL_WELCOME + station.owner.name # give it a name eventually
     options = ['read_', 'write_', 'remote_', 'drone_']
-    
+
     index = menu(header, options, bgnd_color=gameconfig.TERMINAL_BKGND,
         fgnd_color=gameconfig.TERMINAL_FRGND, sel_color=gameconfig.TERMINAL_SELECT_BKGND)
-    
+
     if index is None: return
-    
+
     # READ ----------------------------
     if options[index] == 'read_':
         floppy = next((inv for inv in gameconfig.player.player.inventory if inv.inv_id == 'floppy disc'), None)
         if floppy is not None: cli_window('read', floppy)
         else: cli_window('read')
-    
+
     # WRITE ----------------------------
     if options[index] == 'write_':
         cli_window()
-        
+
     # REMOTE --------------------------
     if options[index] == 'remote_':
         cli_window('remote')
-    
+
     # DRONE ---------------------------
     if options[index] == 'drone_' and gameconfig.player.fighter.drone is False:
         cli_window('drone')

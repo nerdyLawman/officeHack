@@ -90,6 +90,7 @@ remote_target = None
 # FILTER FLAGS ----------------------------
 DRONE_FLAG = False
 REMOTE_FLAG = False
+VISION_FLAG = None # takes an image unlike the other two
 
 # ---------------------------------------------------------------------
 # [ VOLUME CONFIG VARIABLES ] -----------------------------------------
@@ -98,7 +99,7 @@ REMOTE_FLAG = False
 SOUND = 'enabled' # 'enabled', 'disabled'
 
 VOLUME = {
-    'MUSIC': 0.0,
+    'MUSIC': 0.1,
     'SOUND_FX': 0.2
 }
 

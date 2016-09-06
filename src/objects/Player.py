@@ -12,7 +12,7 @@ class Player:
         self.inventory = inventory
         self.level = level
 
-    
+
     def move_or_attack(self, dx, dy):
         #the coordinates the player is moving to/attacking
         x = self.owner.x + dx
@@ -79,9 +79,17 @@ class Player:
             return(game_messages.DROPPED_MESSAGE + item.owner.name.upper() + '.')
 
 
+    def identify_item_inventory(self, item, name):
+        inv_item = self.get_inventory_item(item)
+        if inv_item:
+            identified_item = InventoryItem(name, item)
+            self.inventory.append(identified_item)
+            return identified_item
+
+
     def consume_item_inventory(self, item):
         inv_item = self.get_inventory_item(item)
-        if inv_item is not None:
+        if inv_item:
             if inv_item.count > 1:
                 inv_item.subtract_count()
             else:

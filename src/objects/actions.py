@@ -48,6 +48,12 @@ def objects_in_fov():
 # [ OBJECT USE ACTIONS ] ----------------------------------------------
 # ---------------------------------------------------------------------
 
+# VIEW -----------------
+def gaze_upon(view):
+    #display image in render_all
+    gameconfig.VISION_FLAG = view.special
+    message('You look peacefully out the window.')
+
 # DOCUMENT --------------------
 def read_document(document):
     message('The document reads: ' + document.special)
