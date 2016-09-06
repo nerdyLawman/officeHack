@@ -11,8 +11,6 @@ from objects.Object import Object
 from sound.SoundPlayer import SoundPlayer
 
 
-#sound test
-import pyglet
 def new_game():
     # create the player and first level and add them to the game
     player_component = Player(inventory=[])
@@ -76,13 +74,15 @@ def load_game():
     file.close()
 
 def play_game():
-    #soundtest !dja
-    sound_player = SoundPlayer('intro')
-    sound_player.play()
     # main game loop
     game_state = 'playing'
     player_action = None
     fov_recompute = True
+
+    # bg music
+    intro_song = SoundPlayer('intro', -1)
+    gameconfig.LIVE_SOUNDS.append(intro_song)
+    intro_song.play()
 
     while not libtcod.console_is_window_closed():
         libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS|libtcod.EVENT_MOUSE,gameconfig.key,gameconfig.mouse)
@@ -92,7 +92,6 @@ def play_game():
 
         # exit
         if player_action == 'exit':
-            sound_player.stop()
             save_game()
             break
 

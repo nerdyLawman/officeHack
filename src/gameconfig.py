@@ -91,6 +91,9 @@ remote_target = None
 DRONE_FLAG = False
 REMOTE_FLAG = False
 
+# SOUND -----------------------------------
+LIVE_SOUNDS = []
+
 
 # ---------------------------------------------------------------------
 # [ GAMEPLAY CONFIG VARIABLES ] ---------------------------------------
