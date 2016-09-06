@@ -1,6 +1,5 @@
-import libtcodpy as libtcod
+from libtcod import libtcodpy as libtcod
 
-# THEMES
 DEFAULT_THEME = { 'color_dark_wall' : libtcod.Color(0, 0, 100),
     'color_light_wall' : libtcod.Color(130, 110, 50),
     'color_dark_ground' : libtcod.Color(50, 50, 100),

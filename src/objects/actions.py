@@ -1,44 +1,15 @@
-import libtcodpy as libtcod
+from libtcod import libtcodpy as libtcod
 import gameconfig
 from random import randint
-from interface.rendering import message, send_to_back, render_all, remote_render
+from interface.rendering import message, send_to_back, render_all
 
-def player_death(player):
-    # you ded
-    message('You have DIED!', libtcod.white)
-    player.char = '%'
-    player.color = libtcod.dark_red
-    return 'dead' #game_state
-
-def npc_death(npc):
-    # npc death
-    xp = npc.fighter.xp
-    if npc.fighter.drone is True: gameconfig.level_drones.remove(npc)
-    message(npc.name.upper() + ' is DEAD! You gain ' + str(xp) + 'XP!', libtcod.cyan)
-    npc.char = '%'
-    npc.color = libtcod.dark_red
-    npc.blocks = False
-    npc.fighter = None
-    npc.ai = None
-    npc.name = 'remains of ' + npc.name.upper()
-    send_to_back(npc)
-    gameconfig.npc_count -= 1
-    return xp
-
-def drone_death(drone):
-    # kill the drone and switch back to the player
-    revert_control(drone, gameconfig.real_player)
-    npc_death(drone)
-    gameconfig.DRONE_FLAG = False
-    render_all(True)
-    #cli_window('drone') eventually get it so you go back to the terminal after drone death
-    gameconfig.player_at_computer = True
-
+# ---------------------------------------------------------------------
+# [ ACTION UTILITIES ] ------------------------------------------------
+# ---------------------------------------------------------------------
 def closest_npc(max_range):
     # find closest enemy to max range and in FOV
     closest_npc = None
     closest_dist = max_range + 1
-
     for obj in gameconfig.objects:
         if obj.fighter and not obj == gameconfig.player and libtcod.map_is_in_fov(gameconfig.fov_map, obj.x, obj.y):
             dist = gameconfig.player.distance_to(obj)
@@ -47,18 +18,22 @@ def closest_npc(max_range):
                 closest_dist = dist
     return closest_npc
 
+
 def random_object():
     # return a random object
     return gameconfig.objects[libtcod.randint(0,len(gameconfig.objects)-1)]
 
+
 def random_from(collection):
     return collection[libtcod.randint(0,len(collection)-1)]
+
 
 def random_from_except(collection, exception):
     _collection = list(collection) # local copy of list
     if exception in _collection: _collection.remove(exception)
     if len(_collection) > 1: return _collection[randint(0,len(_collection)-1)]
     return None
+
 
 def objects_in_fov():
     # get all that you can see
@@ -68,60 +43,24 @@ def objects_in_fov():
             fov_objects.append(obj)
     return fov_objects
 
-def read_write_file(floppy):
-    #if in_computer()
-    if gameconfig.player_at_computer: #in computer
-        return(floppy.special)
-    message("Can't use that here. Try finding a computer.", libtcod.white)
-    return 'cancelled'
 
-def remote_look(target):
-    # move FOV to another location for a turn
-    gameconfig.REMOTE_FLAG = True
-    remote_render(target)
-    libtcod.console_wait_for_keypress(True)
-    gameconfig.REMOTE_FLAG = False
-    render_all(True)
+# ---------------------------------------------------------------------
+# [ OBJECT USE ACTIONS ] ----------------------------------------------
+# ---------------------------------------------------------------------
 
-def revert_control(drone, real_player):
-    # switch back to the real player
-    drone = gameconfig.drone_holder
-    drone.ai = gameconfig.drone_holder.ai
-    #drone.ai.owner = gameconfig.drone_holder
-    drone.fighter.owner = gameconfig.drone_holder
-    drone.player.owner = None
-    drone.player = None
-    gameconfig.level_drones.append(drone) #put em back in the running
-    
-    gameconfig.player.player = real_player.player
-    gameconfig.player.player.inventory = list(gameconfig.real_inventory)
-    gameconfig.real_inventory = None #just so we're not storing a useless list
-    gameconfig.player.fighter = real_player.fighter
-    gameconfig.player.player.owner = real_player
-    gameconfig.player.fighter.owner = real_player
-    gameconfig.player = real_player
+# DOCUMENT --------------------
+def read_document(document):
+    message('The document reads: ' + document.special)
 
-def remote_control(target):
-    # switch player control
-    gameconfig.drone_holder = target
-    gameconfig.drone_holder.ai = target.ai
-    gameconfig.drone_holder.ai.owner = target
-    gameconfig.drone_holder.fighter.owner = target
-    gameconfig.level_drones.remove(target)
-    
-    gameconfig.player_at_computer = False
-    gameconfig.real_player = gameconfig.player
-    gameconfig.real_inventory = list(gameconfig.player.player.inventory)
-    
-    target.player = gameconfig.player.player
-    target.player.inventory = []
-    target.player.owner = target
-    target.ai = None
-    
-    gameconfig.player = target
-    gameconfig.DRONE_FLAG = True
-    render_all(True)
 
+# FLOPPY DISC -----------------
+def floppy_overwrite(floppy):
+    if not gameconfig.player_at_computer: #in computer
+        message("Can't use that here. Try finding a computer.", libtcod.white)
+        return 'cancelled'
+    message('floppy disc renamed.')
+
+# COFFEE ---------------------
 def throw_coffee(coffee):
     #find closest npc (inside a maximum range) and damage it
     target = closest_npc(gameconfig.COFFEE_RANGE)

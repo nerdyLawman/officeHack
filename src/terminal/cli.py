@@ -1,11 +1,12 @@
-import libtcodpy as libtcod
+from libtcod import libtcodpy as libtcod
 import gameconfig
 import textwrap
+from game import game_messages
 from random import randint
-from objects.actions import remote_control, revert_control, remote_look
+from terminal.interactions import remote_control, revert_control, remote_look, floppy_write
 
-cursor = '_'
-prompt = '$'
+cursor = gameconfig.TERMINAL_CURSOR
+prompt = gameconfig.TERMINAL_PROMPT
 width = gameconfig.SCREEN_WIDTH
 height = gameconfig.SCREEN_HEIGHT
 x = gameconfig.SCREEN_WIDTH/2 - width/2
@@ -20,6 +21,7 @@ def cli_refresh(text, command, header_height=2):
     libtcod.console_print_ex(window, 1, header_height+line_pos, libtcod.BKGND_NONE, libtcod.LEFT, command)
     libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 1.0)
     libtcod.console_flush()
+
 
 def command_entry(command):
     key = libtcod.console_wait_for_keypress(True)
@@ -37,20 +39,22 @@ def command_entry(command):
 
     return prompt + command + cursor, True #redraw cursor
 
-def cli_window(command=None):
+
+def cli_window(command=None, selector=None):
     global window
     running = True
     bgnd_color = libtcod.dark_azure
     fgnd_color = libtcod.light_sky
     if not command: command = prompt + cursor
-    special_commands = ['exit', 'save', 'help', 'drone', 'exitdrone', 'remote']
+    special_commands = ['exit', 'save', 'read', 'help', 'drone', 'exitdrone', 'remote']
     window = libtcod.console_new(width, height)
     libtcod.console_set_default_background(window, bgnd_color)
     libtcod.console_set_default_foreground(window, fgnd_color)
     # header
     libtcod.console_rect(window, 0, 0, width, height, True, libtcod.BKGND_SET)
-    libtcod.console_print_ex(window, 1, 1, libtcod.BKGND_NONE, libtcod.LEFT, 'HAPPY TERMINAL V1.0 - 1993')
-    text = ['Enter a command to begin. Help for options.']
+    libtcod.console_print_ex(window, 1, 1, libtcod.BKGND_NONE, libtcod.LEFT, game_messages.TERMINAL_TITLE)
+    text = [game_messages.TERMINAL_START_MESSAGE]
+    
     while running:
         cli_refresh(text, command) #update screen
         flag = True
@@ -61,36 +65,115 @@ def cli_window(command=None):
         if command != '': text.append(prompt+command)    
         if len(text) > height/2 - 7: del text[:2]
         
+        # EXIT -------------------------
         if command == 'exit' or command == 'quit':
             text.append('exited')
             running = False
         
+        # SAVE --------------------------
         elif command == 'save':
             text.append('saved!')
         
+        # READ ----------------------
+        elif command == 'read':
+            text[:] = []
+            if hasattr(selector, 'special'): text.append(selector.special)
+            running = file_rw(text)
+        
+        # REMOTE -----------------------
         elif command == 'remote':
             text[:] = []
             running = remote_patch(text)
         
+        # DRONE -------------------------
         elif command == 'drone':
             text[:] = []
             running = drone_commander(text)
         
+        # EXIT DRONE ---------------------
         elif command == 'exitdrone':
             text[:] = []
             running = drone_exit(text)
         
+        # HELP ------------------------
         elif command == 'help':
             helptext = ['type help for options', 'type save to save', 'type exit to exit', 'press ANY KEY.']
             text[:] = helptext
             cli_refresh(text, command)
         
+        # INVALID COMMAND ----------------
         else:
             text.append('invalid command')
         command = prompt + cursor
         
         if running is True: cli_refresh(text, command)
 
+
+# ---------------------------------------------------------------------
+# [ FILE I/O ] --------------------------------------------------------
+# ---------------------------------------------------------------------
+def valid_disc_name(name):
+    valid_names = [disc.inv_id.upper() for disc in gameconfig.saved_discs]
+    if name.upper() in valid_names: return True
+    return False
+
+
+def insert_disc(name):
+    valid_names = [disc.inv_id.upper() for disc in gameconfig.saved_discs]
+    if name.upper() in valid_names: return gameconfig.saved_discs[valid_names.index(name.upper())]
+    return None
+
+
+def file_rw(text, infloppy=None):
+    #if in_computer()
+    text.append('WELCOME TO DRONE FILE RW V0.75')
+    command = prompt + cursor
+    if infloppy: floppy = infloppy
+    else: floppy = next((inv for inv in gameconfig.player.player.inventory if inv.inv_id == 'floppy disc'), None)
+    running = True
+    save_flag = False
+        
+    if floppy is None:
+        text.append('SELECT FLOPPY TO LOAD.')
+    else:
+        save_flag = True
+        text.append('FLOPPY CONTENTS: ' + floppy.item.special)
+        text.append('enter name to save floppy as:')
+    
+    while running:
+        cli_refresh(text, command)
+        flag = True
+        while flag is True:
+            command, flag = command_entry(command)
+            cli_refresh(text, command)
+        text.append(prompt+command)
+        if save_flag:
+            floppy_write(floppy, command + ' disc')
+            text.append('saved floppy as: ' + command + ' disc.')
+            save_flag = False
+        else:
+            if command == 'exit' or command == 'quit':
+                running = False
+            elif command == 'list' or command == 'listing':
+                for disc in gameconfig.saved_discs:
+                    text.append(disc.inv_id)
+            elif command == 'identify':
+                floppy = next((inv for inv in gameconfig.player.player.inventory if inv.inv_id == 'floppy disc'), None)
+                if floppy: text.append('FLOPPY CONTENTS: ' + floppy.item.special)
+                else: text.append('no unidentified discs')
+            elif valid_disc_name(command):
+                floppy = insert_disc(command)
+                text.append('FLOPPY CONTENTS: ' + floppy.item.special)
+            else:
+                text.append('invalid command')
+        command = prompt + cursor
+        if running is True: cli_refresh(text, command)
+    return running
+
+
+# ---------------------------------------------------------------------
+# [ DRONE CONTROL ] ---------------------------------------------------
+# ---------------------------------------------------------------------
 def valid_drone_name(name):
     valid_names = [drone.name.upper() for drone in gameconfig.level_drones]
     if name.upper() in valid_names: return True
@@ -166,15 +249,21 @@ def drone_exit(text):
         if running is True: cli_refresh(text, command)
     return running
 
+
+# ---------------------------------------------------------------------
+# [ REMOTE HACKING ] --------------------------------------------------
+# ---------------------------------------------------------------------
 def valid_station_name(name):
     valid_names = [station.name.upper() for station in gameconfig.level_terminals]
     if name.upper() in valid_names: return True
     return False
 
+
 def fetch_station(name):
     valid_names = [station.name.upper() for station in gameconfig.level_terminals]
     if name.upper() in valid_names: return gameconfig.level_terminals[valid_names.index(name.upper())]
     return None
+
 
 def remote_patch(text):
     text.append('WELCOME TO REMOTE LOOK V0.75')
@@ -191,7 +280,6 @@ def remote_patch(text):
         #if valid_station_name(command):
         text.append(prompt+command)
         if command == 'random':
-            #selected_station = fetch_station(command)
             selected_station = gameconfig.level_terminals[randint(0, len(gameconfig.level_terminals)-1)]
             running = False
         elif command == 'listing' or command == 'list':

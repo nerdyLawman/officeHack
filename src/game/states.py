@@ -1,35 +1,48 @@
-import libtcodpy as libtcod
+from libtcod import libtcodpy as libtcod
 import shelve
 import gameconfig
+from game import game_messages
 from interface.rendering import render_all, clear_console, message
 from game.controls import handle_keys
 from maps.mapping import make_map
-from objects.classes import Fighter, Player, Object
+from objects.Player import Player
+from objects.Fighter import Fighter
+from objects.Object import Object
 from sound.SoundPlayer import SoundPlayer
 
 
 #sound test
 import pyglet
-
-
 def new_game():
-    # create player
+    # create the player and first level and add them to the game
     player_component = Player(inventory=[])
-    fighter_component = Fighter(hp=30, defense=1, power=5, xp=0)
-    gameconfig.player = Object(0, 0, '@', 'Hero', libtcod.white, blocks=True, player=player_component, fighter=fighter_component)
 
-    # creat level map
-    make_map()
+    fighter_component = Fighter(hp = gameconfig.START_HP,
+        defense = gameconfig.START_DEFENSE,
+        power = gameconfig.START_POWER,
+        xp = 0)
+    # create player
+    gameconfig.player = Object(0, 0,
+        char = gameconfig.HERO_CHAR,
+        name = gameconfig.HERO_NAME,
+        color = gameconfig.HERO_COLOR,
+        blocks=True,
+        player = player_component,
+        fighter = fighter_component)
+
+    make_map() # create level map
 
     # add first level to game_levels
-    first_level = [ gameconfig.objects,
+    first_level = [gameconfig.objects,
         gameconfig.level_map,
         gameconfig.stairs_up,
         gameconfig.stairs_down,
         gameconfig.color_theme,
-        gameconfig.fov_map
-    ]
+        gameconfig.fov_map]
     gameconfig.game_levels.append(first_level)
+
+    # DEBUG ---------------------
+    if gameconfig.DEBUG: print(player)
 
 def save_game():
     # open new empty shelve - overwrites old
@@ -70,27 +83,33 @@ def play_game():
     game_state = 'playing'
     player_action = None
     fov_recompute = True
+
     while not libtcod.console_is_window_closed():
         libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS|libtcod.EVENT_MOUSE,gameconfig.key,gameconfig.mouse)
 
         render_all(fov_recompute)
         player_action = handle_keys()
 
+        # exit
         if player_action == 'exit':
             sound_player.stop()
             save_game()
             break
+
+        # levels
         if player_action == 'stairs up': up_level()
         if player_action == 'stairs new': new_level()
         if player_action == 'stairs down': down_level()
 
+        # playing
         if game_state == 'playing' and player_action != 'no turn':
             fov_recompute = True
+            # move AI
             for obj in gameconfig.objects:
-                if obj.ai:
-                    obj.ai.take_turn()
+                if obj.ai: obj.ai.take_turn()
 
 def up_level():
+    # go up 1 game level
     gameconfig.game_level -= 1
     golevel = gameconfig.game_level - 1
     gameconfig.objects = gameconfig.game_levels[golevel][0]
@@ -99,13 +118,13 @@ def up_level():
     gameconfig.stairs_down = gameconfig.game_levels[golevel][3]
     gameconfig.color_theme = gameconfig.game_levels[golevel][4]
     gameconfig.fov_map = gameconfig.game_levels[golevel][5]
-
     # player position
     gameconfig.player.x = gameconfig.stairs_down.x
     gameconfig.player.y = gameconfig.stairs_down.y
     clear_console(gameconfig.con)
 
 def down_level():
+    # go down 1 game level
     gameconfig.game_level += 1
     golevel = gameconfig.game_level - 1
     gameconfig.objects = gameconfig.game_levels[golevel][0]
@@ -114,28 +133,25 @@ def down_level():
     gameconfig.stairs_down = gameconfig.game_levels[golevel][3]
     gameconfig.color_theme = gameconfig.game_levels[golevel][4]
     gameconfig.fov_map = gameconfig.game_levels[golevel][5]
-
     # player position
     gameconfig.player.x = gameconfig.stairs_up.x
     gameconfig.player.y = gameconfig.stairs_up.y
     clear_console(gameconfig.con)
 
 def new_level():
-    # go to next level
-    message('You take a moment to rest and recover your strength.', libtcod.light_cyan)
-    gameconfig.player.fighter.heal(gameconfig.player.fighter.max_hp / 2)
-    message('After a moment of peace, you descend deeper into the depths of horror.', libtcod.dark_red)
+    # go to new level
+    message(gamemessages.LEVEL_REST_MESSAGE, gameconfig.GAME_UPDATE_COLOR)
+    gameconfig.player.fighter.heal(gameconfig.player.fighter.max_hp / 2) # heal half HP
+    message(gamemessages.LEVEL_CONTINUE_MESSAGE, gameconfig.CAUTION_COLOR)
     gameconfig.game_level += 1
 
     # create new level
     clear_console(gameconfig.con)
     make_map()
-
-    new_level = [ gameconfig.objects,
+    new_level = [gameconfig.objects,
         gameconfig.level_map,
         gameconfig.stairs_up,
         gameconfig.stairs_down,
         gameconfig.color_theme,
-        gameconfig.fov_map
-    ]
+        gameconfig.fov_map]
     gameconfig.game_levels.append(new_level)
