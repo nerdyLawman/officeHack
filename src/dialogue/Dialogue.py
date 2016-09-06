@@ -9,7 +9,7 @@ from random import randint
 class Dialogue:
 
     def __init__(self, dialogue, npc):
-        blip = SoundPlayer('blip' + str(randint(1,6)))
+        blip = SoundPlayer(gameconfig.SOUND_FX['dialogue'])
         blip.play()
         self.current_dialogue = json.loads(dialogue)
         self.npc = npc

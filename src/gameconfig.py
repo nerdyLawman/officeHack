@@ -1,5 +1,4 @@
 from libtcod import libtcodpy as libtcod
-from random import randint
 
 # GAME INFO -----------------------------
 CONSOLE_TITLE = 'offICE_HACK//'
@@ -92,7 +91,17 @@ remote_target = None
 DRONE_FLAG = False
 REMOTE_FLAG = False
 
-# SOUND -----------------------------------
+# ---------------------------------------------------------------------
+# [ VOLUME CONFIG VARIABLES ] -----------------------------------------
+# ---------------------------------------------------------------------
+
+SOUND = 'enabled' # 'enabled', 'disabled'
+
+VOLUME = {
+    'MUSIC': 0.5,
+    'SOUND_FX': 0.3
+}
+
 CURRENT_TRACK = None
 
 BACKGROUND_MUSIC = {
@@ -100,11 +109,20 @@ BACKGROUND_MUSIC = {
   'level_1' : 'intro'
 }
 
-SOUND_FX = {
-   'dialogue': 'blip' + str(randint(1,6)),
-   'attack'  : 'hit' + str(randint(1,3))
-}
+## if sound type has multiple randomly generated effects, include name prefix and
+## the number of files with the given prefix. if there is only one file associated
+## with the sound type, include the filename minus the extension as a string.
 
+SOUND_FX = {
+   'dialogue': {
+       'name': 'blip',
+       'number': 6
+   },
+   'attack': {
+       'name': 'hit',
+       'number': 3
+   }
+}
 
 # ---------------------------------------------------------------------
 # [ GAMEPLAY CONFIG VARIABLES ] ---------------------------------------
