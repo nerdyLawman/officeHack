@@ -138,9 +138,9 @@ def down_level():
 
 def new_level():
     # go to new level
-    message(gamemessages.LEVEL_REST_MESSAGE, gameconfig.GAME_UPDATE_COLOR)
+    message(game_messages.LEVEL_REST_MESSAGE, gameconfig.GAME_UPDATE_COLOR)
     gameconfig.player.fighter.heal(gameconfig.player.fighter.max_hp / 2) # heal half HP
-    message(gamemessages.LEVEL_CONTINUE_MESSAGE, gameconfig.CAUTION_COLOR)
+    message(game_messages.LEVEL_CONTINUE_MESSAGE, gameconfig.CAUTION_COLOR)
     gameconfig.game_level += 1
 
     # create new level
