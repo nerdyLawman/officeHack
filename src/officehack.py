@@ -4,8 +4,10 @@ from interface.menus import main_menu, message_box
 from interface.rendering import message
 from game.states import new_game, play_game, save_game, load_game
 from game import game_messages
+from sound.SoundPlayer import SoundPlayer
 
 choice = main_menu()
+
 
 while not libtcod.console_is_window_closed():
     # NEW GAME

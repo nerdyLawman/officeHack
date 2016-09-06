@@ -8,11 +8,13 @@ from maps.mapping import make_map
 from objects.Player import Player
 from objects.Fighter import Fighter
 from objects.Object import Object
+from sound.SoundPlayer import SoundPlayer
+
 
 def new_game():
     # create the player and first level and add them to the game
     player_component = Player(inventory=[])
-    
+
     fighter_component = Fighter(hp = gameconfig.START_HP,
         defense = gameconfig.START_DEFENSE,
         power = gameconfig.START_POWER,
@@ -36,7 +38,7 @@ def new_game():
         gameconfig.color_theme,
         gameconfig.fov_map]
     gameconfig.game_levels.append(first_level)
-    
+
     # DEBUG ---------------------
     if gameconfig.DEBUG: print(player)
 
@@ -76,23 +78,27 @@ def play_game():
     game_state = 'playing'
     player_action = None
     fov_recompute = True
-    
+
+    # bg music
+    intro_song = SoundPlayer(gameconfig.BACKGROUND_MUSIC['level_1'], loop = True)
+    intro_song.play()
+
     while not libtcod.console_is_window_closed():
         libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS|libtcod.EVENT_MOUSE,gameconfig.key,gameconfig.mouse)
 
         render_all(fov_recompute)
         player_action = handle_keys()
-        
+
         # exit
         if player_action == 'exit':
             save_game()
             break
-        
+
         # levels
         if player_action == 'stairs up': up_level()
         if player_action == 'stairs new': new_level()
         if player_action == 'stairs down': down_level()
-        
+
         # playing
         if game_state == 'playing' and player_action != 'no turn':
             fov_recompute = True
@@ -132,9 +138,9 @@ def down_level():
 
 def new_level():
     # go to new level
-    message(gamemessages.LEVEL_REST_MESSAGE, gameconfig.GAME_UPDATE_COLOR) 
+    message(game_messages.LEVEL_REST_MESSAGE, gameconfig.GAME_UPDATE_COLOR)
     gameconfig.player.fighter.heal(gameconfig.player.fighter.max_hp / 2) # heal half HP
-    message(gamemessages.LEVEL_CONTINUE_MESSAGE, gameconfig.CAUTION_COLOR)
+    message(game_messages.LEVEL_CONTINUE_MESSAGE, gameconfig.CAUTION_COLOR)
     gameconfig.game_level += 1
 
     # create new level
