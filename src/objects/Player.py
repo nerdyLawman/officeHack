@@ -1,5 +1,6 @@
 from libtcod import libtcodpy as libtcod
 import gameconfig
+from game import game_messages
 from interface.menus import message, menu
 from maps.helpers import is_blocked
 
@@ -38,7 +39,7 @@ class Player:
             # level up
             self.level += 1
             self.owner.fighter.xp -= level_up_xp
-            message('Your skills increase. LEVEL UP! Now at level: ' + str(self.level) + '.', libtcod.yellow)
+            message(game_messages.PLAYER_LEVEL_UP + str(self.level) + '.', libtcod.yellow)
 
             choice = 'no selection'
             while choice == 'no selection':
@@ -53,6 +54,9 @@ class Player:
                 self.owner.fighter.defense += 1
 
 
+# ---------------------------------------------------------------------
+# [ PLAYER INVENTORY ] ------------------------------------------------
+# ---------------------------------------------------------------------
     def add_item_inventory(self, item):
         inv_item = self.get_inventory_item(item)
         if inv_item is not None:
@@ -72,7 +76,7 @@ class Player:
             gameconfig.item_count += 1
             if gameconfig.item_count > gameconfig.level_item_count:
                 gameconfig.level_item_count = gameconfig.item_count
-            return("You DROPPED a " + item.owner.name.upper() + ".")
+            return(game_messages.DROPPED_MESSAGE + item.owner.name.upper() + '.')
 
 
     def consume_item_inventory(self, item):
@@ -95,7 +99,7 @@ class Player:
 
 
 # ---------------------------------------------------------------------
-# [ PLAYER INVENTORY ] ------------------------------------------------
+# [ PLAYER INVENTORY ITEM ] -------------------------------------------
 # ---------------------------------------------------------------------
 class InventoryItem:
     # an item listing that goes in the player's inventory

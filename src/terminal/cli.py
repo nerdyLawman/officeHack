@@ -1,11 +1,12 @@
 from libtcod import libtcodpy as libtcod
 import gameconfig
 import textwrap
+from game import game_messages
 from random import randint
 from terminal.interactions import remote_control, revert_control, remote_look, floppy_write
 
-cursor = '_'
-prompt = '$'
+cursor = gameconfig.TERMINAL_CURSOR
+prompt = gameconfig.TERMINAL_PROMPT
 width = gameconfig.SCREEN_WIDTH
 height = gameconfig.SCREEN_HEIGHT
 x = gameconfig.SCREEN_WIDTH/2 - width/2
@@ -20,6 +21,7 @@ def cli_refresh(text, command, header_height=2):
     libtcod.console_print_ex(window, 1, header_height+line_pos, libtcod.BKGND_NONE, libtcod.LEFT, command)
     libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 1.0)
     libtcod.console_flush()
+
 
 def command_entry(command):
     key = libtcod.console_wait_for_keypress(True)
@@ -37,6 +39,7 @@ def command_entry(command):
 
     return prompt + command + cursor, True #redraw cursor
 
+
 def cli_window(command=None, selector=None):
     global window
     running = True
@@ -49,8 +52,9 @@ def cli_window(command=None, selector=None):
     libtcod.console_set_default_foreground(window, fgnd_color)
     # header
     libtcod.console_rect(window, 0, 0, width, height, True, libtcod.BKGND_SET)
-    libtcod.console_print_ex(window, 1, 1, libtcod.BKGND_NONE, libtcod.LEFT, 'HAPPY TERMINAL V1.0 - 1993')
-    text = ['Enter a command to begin. Help for options.']
+    libtcod.console_print_ex(window, 1, 1, libtcod.BKGND_NONE, libtcod.LEFT, game_messages.TERMINAL_TITLE)
+    text = [game_messages.TERMINAL_START_MESSAGE]
+    
     while running:
         cli_refresh(text, command) #update screen
         flag = True
@@ -61,35 +65,43 @@ def cli_window(command=None, selector=None):
         if command != '': text.append(prompt+command)    
         if len(text) > height/2 - 7: del text[:2]
         
+        # EXIT -------------------------
         if command == 'exit' or command == 'quit':
             text.append('exited')
             running = False
         
+        # SAVE --------------------------
         elif command == 'save':
             text.append('saved!')
         
+        # READ ----------------------
         elif command == 'read':
             text[:] = []
             if hasattr(selector, 'special'): text.append(selector.special)
             running = file_rw(text)
         
+        # REMOTE -----------------------
         elif command == 'remote':
             text[:] = []
             running = remote_patch(text)
         
+        # DRONE -------------------------
         elif command == 'drone':
             text[:] = []
             running = drone_commander(text)
         
+        # EXIT DRONE ---------------------
         elif command == 'exitdrone':
             text[:] = []
             running = drone_exit(text)
         
+        # HELP ------------------------
         elif command == 'help':
             helptext = ['type help for options', 'type save to save', 'type exit to exit', 'press ANY KEY.']
             text[:] = helptext
             cli_refresh(text, command)
         
+        # INVALID COMMAND ----------------
         else:
             text.append('invalid command')
         command = prompt + cursor
