@@ -5,6 +5,12 @@ from interface.rendering import render_all, clear_console, message
 from game.controls import handle_keys
 from maps.mapping import make_map
 from objects.classes import Fighter, Player, Object
+from sound.SoundPlayer import SoundPlayer
+
+
+#sound test
+import pyglet
+
 
 def new_game():
     # create player
@@ -57,6 +63,9 @@ def load_game():
     file.close()
 
 def play_game():
+    #soundtest !dja
+    sound_player = SoundPlayer('intro')
+    sound_player.play()
     # main game loop
     game_state = 'playing'
     player_action = None
@@ -68,6 +77,7 @@ def play_game():
         player_action = handle_keys()
 
         if player_action == 'exit':
+            sound_player.stop()
             save_game()
             break
         if player_action == 'stairs up': up_level()
