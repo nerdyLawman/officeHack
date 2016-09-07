@@ -52,6 +52,7 @@ def handle_keys():
             ', - GO UP or DOWN STAIRS',
             '. - GO UP or DOWN STAIRS',
             'f - TOGGLE FULLSCREEN',
+            'w - TOGGLE WORK-SAFE MODE',
         ]
 
         # HELP MENU --------------------------------- [h]
@@ -61,7 +62,8 @@ def handle_keys():
         # FOV LOOK ------------------------------- [l]
         elif gameconfig.key_char == 'l':
             options = objects_in_fov()
-            selected_object = menu(game_messages.LOOK_HEADER, [obj.name.upper() for obj in options])
+            selected_object = menu(game_messages.LOOK_HEADER,
+                [obj.name.upper() for obj in options], icons=[obj for obj in options])
             if selected_object is not None: message_box(options[selected_object].info)
 
         # PICK UP ITEM ------------------------- [g]
@@ -109,12 +111,13 @@ def handle_keys():
         elif gameconfig.key_char == 'f':
             libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
 
+        # TOGGLE WORK-SAFE MODE -------------- [w]
         elif gameconfig.key_char == 'w':
             gameconfig.WORK_FLAG = True
             render_all(True)
             libtcod.console_wait_for_keypress(True)
             gameconfig.WORK_FLAG = None
-            message('You RESUME to REAL WORK.')
+            message('You RESUME your REAL WORK.')
             render_all(True)
 
         return('no turn') # nothing valid happened

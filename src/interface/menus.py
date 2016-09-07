@@ -3,7 +3,7 @@ import gameconfig
 import time
 import textwrap
 from game import game_messages
-from interface.rendering import message, render_drone_filter
+from interface.rendering import message, render_drone_filter, draw_object_at
 from objects.actions import random_from_except
 from terminal.cli import cli_window
 
@@ -20,7 +20,7 @@ def highlight_selection(window, bgnd_color, sel_color, selected, width, height, 
     libtcod.console_flush()
 
 
-def menu(header, options, width=gameconfig.MENU_WIDTH, bgnd_color=None, fgnd_color=None, sel_color=None):
+def menu(header, options, width=gameconfig.MENU_WIDTH, bgnd_color=None, fgnd_color=None, sel_color=None, icons=None):
     # base selection menu
 
     # color inits
@@ -52,6 +52,12 @@ def menu(header, options, width=gameconfig.MENU_WIDTH, bgnd_color=None, fgnd_col
         libtcod.console_print_ex(window, 1, y, libtcod.BKGND_NONE, libtcod.LEFT, text)
         y += 1
         letter_index += 1
+
+    if icons:
+        y = header_height
+        for i in icons:
+            draw_object_at(i, 4, y, window)
+            y += 1
 
     #blit window contents
     x = gameconfig.SCREEN_WIDTH/2 - width/2
@@ -121,7 +127,7 @@ def inventory_menu(header, inventory):
     # inventory menu
     if len(inventory) == 0: options = [game_messages.EMPTY_INVENTORY]
     else: options = [item.inv_id + ' [' + str(item.count) +']' for item in inventory]
-    index = menu(header, options)
+    index = menu(header, options, icons=[item.item.owner for item in inventory])
     if index is None or len(inventory) == 0: return None
     return inventory[index].item
 

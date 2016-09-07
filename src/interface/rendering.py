@@ -14,6 +14,13 @@ def draw_object(obj, con):
     libtcod.console_put_char(con, obj.x, obj.y, obj.char, libtcod.BKGND_NONE)
 
 
+def draw_object_at(obj, x, y, con):
+    # draws a object (char) at x, y to specified screenspace
+    libtcod.console_set_default_foreground(con, obj.color)
+    libtcod.console_set_char_background(con, x, y, obj.color, libtcod.BKGND_SET)
+    libtcod.console_put_char(con, x, y, obj.char, libtcod.BKGND_NONE)
+
+
 def clear_object(obj, con):
     # sets objt char to blank
     libtcod.console_put_char(con, obj.x, obj.y, ' ', libtcod.BKGND_NONE)
