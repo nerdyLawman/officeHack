@@ -47,7 +47,7 @@ def cli_window(command=None, selector=None):
     bgnd_color = libtcod.dark_azure
     fgnd_color = libtcod.light_sky
     if not command: command = prompt + cursor
-    special_commands = ['exit', 'save', 'read', 'help', 'drone', 'exitdrone', 'remote']
+    special_commands = ['exit', 'save', 'read', 'help', 'drone', 'dronedead', 'exitdrone', 'remote']
     window = libtcod.console_new(width, height)
     libtcod.console_set_default_background(window, bgnd_color)
     libtcod.console_set_default_foreground(window, fgnd_color)
@@ -89,6 +89,10 @@ def cli_window(command=None, selector=None):
         # DRONE -------------------------
         elif command == 'drone':
             text[:] = []
+            running = drone_commander(text)
+
+        elif command == 'dronedead':
+            text[:] = ['Your drone died. EXIT or SELECT ANOTHER.']
             running = drone_commander(text)
 
         # EXIT DRONE ---------------------
@@ -190,8 +194,8 @@ def fetch_drone(name):
     return None
 
 def drone_commander(text):
-    text.append('WELCOME TO DRONE COMMANDER V0.75')
-    text.append('enter name of drone to drone into.')
+    text.insert(0, 'WELCOME TO DRONE COMMANDER V0.75')
+    text.insert(1, 'enter name of drone to drone into.')
     command = prompt + cursor
     selected_drone = None
     running = True

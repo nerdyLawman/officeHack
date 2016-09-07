@@ -32,5 +32,5 @@ def drone_death(drone):
     gameconfig.level_drones.remove(drone)
     npc_death(drone)
     gameconfig.DRONE_FLAG = False
-    cli_window('drone') # spits you back to the drone commander window
+    cli_window('dronedead') # spits you back to the drone commander window
     gameconfig.player_at_computer = True

@@ -74,7 +74,7 @@ def render_all(fov_recompute):
     libtcod.console_blit(gameconfig.panel, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.PANEL_HEIGHT, 0, 0, gameconfig.PANEL_Y)
 
     # filters
-    if gameconfig.DRONE_FLAG:
+    if gameconfig.DRONE_FLAG and not gameconfig.REMOTE_FLAG:
         render_drone_filter()
         libtcod.console_blit(gameconfig.filter, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.SCREEN_HEIGHT, 0, 0, 0, 0.2, 0.2)
         libtcod.console_clear(gameconfig.filter)
