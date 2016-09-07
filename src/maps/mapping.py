@@ -2,7 +2,7 @@ from libtcod import libtcodpy as libtcod
 import gameconfig
 from random import randint
 from maps.components import Tile, RectRoom
-from maps.helpers import random_choice, random_choice_index, random_dict_entry, make_person, true_or_false, closest_wall
+from maps.helpers import random_choice, random_choice_index, random_dict_entry, make_person, true_or_false, get_room_walls, get_map_bounds
 from interface.rendering import send_to_back
 from game import color_themes, game_items, game_npcs
 from objects.Player import Player
@@ -100,11 +100,15 @@ def place_objects(room):
                     interact=dice.get('interact'),special=dice.get('special')))
                 if dice.get('interact') == 'terminal':
                     gameconfig.level_terminals.append(stationary)
+                    print(gameconfig.level_terminals)
                     stationary.name = 'TERMINAL STATION 1X00G5-00' + str(len(gameconfig.level_terminals))
                 elif dice.get('interact') == 'gaze':
                     stationary.ai.special = game_npcs.views[randint(0, len(game_npcs.views)-1)]
                 if dice.get('wall'):
-                    stationary.x, stationary.y = closest_wall(x, y, room)
+                    bounds = get_room_walls(room)
+                    xy = bounds[randint(0, len(bounds)-1)]
+                    stationary.x = xy[0]
+                    stationary.y = xy[1]
                 gameconfig.objects.append(stationary)
                 send_to_back(stationary)
 
@@ -195,9 +199,24 @@ def make_map():
             rooms.append(new_room)
             num_rooms += 1
 
-    # create stairs in the last room
+    # place a single window to the outside -------------------
+    bounds = get_map_bounds()
+    xy = bounds[randint(0, len(bounds)-1)]
+    #if object in this position
+    for obj in gameconfig.objects:
+        if obj.x == xy[0] and obj.y == xy[1]:
+            gameconfig.objects.remove(obj)
+    win = game_npcs.window
+    window = Object(xy[0], xy[1], win.get('char'), win.get('name'),
+        win.get('color'), blocks=True,
+        ai=StationaryNPC(base_color=win.get('color'),
+        interact=win.get('interact'),special=win.get('special')))
+    window.ai.special = game_npcs.views[randint(0, len(game_npcs.views)-1)]
+    gameconfig.objects.append(window)
+    send_to_back(window)
+
+    # create stairs in the last room --------------------------
     gameconfig.stairs_down = Object(new_x, new_y, '<', 'stairs down', gameconfig.STAIRS_COLOR)
     gameconfig.objects.append(gameconfig.stairs_down)
     send_to_back(gameconfig.stairs_down)
-
     initialize_fov()

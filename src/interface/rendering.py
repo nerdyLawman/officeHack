@@ -47,7 +47,13 @@ def render_all(fov_recompute):
     level_map = gameconfig.level_map
     fov_map = gameconfig.fov_map
 
-    if fov_recompute: render_map(level_map, fov_map, player)
+    if gameconfig.REMOTE_FLAG: #I kinda don't like having this special case so prominent, but it works
+        render_map(level_map, fov_map, gameconfig.remote_target)
+        single_message('REMOTE VIEWING: ' + gameconfig.remote_target.name + '.\nPRESS ANY KEY TO EXIT')
+
+    else: # main render case
+        if fov_recompute: render_map(level_map, fov_map, player)
+
     # draw all objects in the list
     render_objects(objects, player, fov_map)
     libtcod.console_blit(gameconfig.con, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.SCREEN_HEIGHT, 0, 0, 0)
@@ -55,8 +61,7 @@ def render_all(fov_recompute):
     # panel - HUD + messages
     libtcod.console_set_default_background(gameconfig.panel, gameconfig.LEVEL_BKGND)
     libtcod.console_clear(gameconfig.panel)
-    if gameconfig.REMOTE_FLAG: single_message('REMOTE VIEWING: ' + gameconfig.remote_target + '.\nPRESS ANY KEY TO EXIT')
-    else:
+    if not gameconfig.REMOTE_FLAG:
         render_hud()
         render_messages()
     libtcod.console_blit(gameconfig.panel, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.PANEL_HEIGHT, 0, 0, gameconfig.PANEL_Y)
@@ -124,7 +129,7 @@ def render_hud():
     # health bar -----------------------
     render_bar(1, 1, gameconfig.BAR_WIDTH, 'HP', player.fighter.hp, player.fighter.max_hp, libtcod.red, libtcod.darker_flame)
     # NPCs bar ------------------------
-    render_bar(1, 3, gameconfig.BAR_WIDTH, 'CO-WORKERS', gameconfig.npc_count, gameconfig.level_npc_count, libtcod.azure, libtcod.darker_blue)
+    render_bar(1, 3, gameconfig.BAR_WIDTH, 'ASSOCIATES', gameconfig.npc_count, gameconfig.level_npc_count, libtcod.azure, libtcod.darker_blue)
     # items bar -------------------------
     render_bar(1, 5, gameconfig.BAR_WIDTH, 'ITEMS', gameconfig.item_count, gameconfig.level_item_count, libtcod.light_violet, libtcod.darker_violet)
 
@@ -156,10 +161,11 @@ def render_station_filter():
     libtcod.console_rect(gameconfig.filter, 0, 0, gameconfig.SCREEN_WIDTH,
         gameconfig.SCREEN_HEIGHT, False, libtcod.BKGND_SCREEN)
 
+
 def render_vision(image_path):
     img = libtcod.image_load(image_path)
     libtcod.image_blit_2x(img, 0, 0, 0)
-    
+
 
 # ---------------------------------------------------------------------
 # [ MESSAGES ] --------------------------------------------------------

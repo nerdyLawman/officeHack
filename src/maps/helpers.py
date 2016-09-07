@@ -67,22 +67,64 @@ def is_blocked(x, y):
 
 
 def check_map_blocked(x, y):
-    if level_map[x][y].blocked: return True
+    if gameconfig.level_map[x][y].blocked: return True
     return False
 
 
-def closest_wall(x, y, room):
+def get_map_bounds():
+    # THIS FUNCTION IS UGLY - UPDATE
+    bounds = []
+    bounded = False #top bounds
+    y = 0
+    while bounded is False:
+        for x in range(gameconfig.MAP_WIDTH):
+            if check_map_blocked(x, y) is False:
+                bounded = True
+                bounds.append([x,y-1])
+        if y < gameconfig.MAP_HEIGHT: y += 1
+        else: bounded = True
+
+    bounded = False #bottom bounds
+    y = gameconfig.MAP_HEIGHT-1
+    while bounded is False:
+        for x in range(gameconfig.MAP_WIDTH):
+            if check_map_blocked(x, y) is False:
+                bounded = True
+                bounds.append([x,y+1])
+        if y > 0: y -= 1
+        else: bounded = True
+
+    bounded = False #left bounds
+    x = 0
+    while bounded is False:
+        for y in range(gameconfig.MAP_HEIGHT):
+            if check_map_blocked(x, y) is False:
+                bounded = True
+                bounds.append([x-1,y])
+        if x < gameconfig.MAP_WIDTH: x += 1
+        else: bounded = True
+
+    bounded = False #right bounds
+    x = gameconfig.MAP_WIDTH-1
+    while bounded is False:
+        for y in range(gameconfig.MAP_HEIGHT):
+            if check_map_blocked(x, y) is False:
+                bounded = True
+                bounds.append([x+1,y])
+        if x > 0: x -= 1
+        else: bounded = True
+    return bounds
+
+def get_room_walls(room):
     roomx = [room.x1, room.x2]
     roomy = [room.y1, room.y2]
-    closest_wall = []
-    closest_dist = gameconfig.SCREEN_WIDTH
-    for rx in roomx:
-        for ry in roomy:
-            dx = rx - x
-            dy = ry - y
-            if math.sqrt(dx ** 2 + dy ** 2) < closest_dist:
-                closest_wall[:] = [rx, ry]
-    if x < closest_wall[0]:
-        closest_wall[0] = x
-    else: closest_wall[1] = y
-    return closest_wall[0], closest_wall[1]
+    wall_tiles = []
+    for x in range(room.x1+1, room.x2-1):
+        if gameconfig.level_map[x][room.y1].blocked: wall_tiles.append([x,room.y1])
+    for x in range(room.x1+1, room.x2-1):
+        if gameconfig.level_map[x][room.y2].blocked: wall_tiles.append([x,room.y2])
+    for y in range(room.y1+1, room.y2-1):
+        if gameconfig.level_map[room.x1][y].blocked: wall_tiles.append([room.x1,y])
+    for y in range(room.y1+1, room.y2-1):
+        if gameconfig.level_map[room.x2][y].blocked: wall_tiles.append([room.x2,y])
+    return wall_tiles

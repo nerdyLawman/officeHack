@@ -10,8 +10,9 @@ def floppy_write(floppy, name):
 
 def remote_look(target):
     # move FOV to another location for a turn
+    # NEED TO MOVE FOV!!!!
     gameconfig.REMOTE_FLAG = True
-    gameconfig.remote_target = target.name
+    gameconfig.remote_target = target
     render_all(True)
     libtcod.console_wait_for_keypress(True)
     gameconfig.REMOTE_FLAG = False

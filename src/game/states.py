@@ -5,6 +5,7 @@ from game import game_messages
 from interface.rendering import render_all, clear_console, message, fetch_message
 from game.controls import handle_keys
 from maps.mapping import make_map
+from maps.helpers import get_map_bounds
 from objects.Player import Player
 from objects.Fighter import Fighter
 from objects.Object import Object
@@ -29,7 +30,7 @@ def new_game():
         fighter = fighter_component)
 
     make_map() # create level map
-
+    
     # add first level to game_levels
     first_level = [gameconfig.objects,
         gameconfig.level_map,

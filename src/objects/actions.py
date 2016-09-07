@@ -60,6 +60,7 @@ def gaze_upon(view):
 
 # DOCUMENT --------------------
 def read_document(document):
+    #gameconfig.player.player.identify_item_inventory(document, document.special[:6] + '.doc')
     message('The document reads: ' + document.special)
 
 

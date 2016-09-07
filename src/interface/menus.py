@@ -128,8 +128,8 @@ def inventory_menu(header, inventory):
 
 def terminal_menu(station):
     # computer terminal station
-    gameconfig.player_at_computer = True
-    header = game_messages.TERMINAL_WELCOME + station.owner.name # give it a name eventually
+    gameconfig.player_at_computer = station.owner
+    header = game_messages.TERMINAL_WELCOME + station.owner.name
     options = ['read_', 'write_', 'remote_', 'drone_']
 
     index = menu(header, options, bgnd_color=gameconfig.TERMINAL_BKGND,

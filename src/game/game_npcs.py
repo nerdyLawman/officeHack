@@ -54,8 +54,8 @@ NPC_classes = [ npc_generic_1, npc_generic_2, npc_talker, npc_boss ]
 computer = {
     'char' : '#',
     'name' : 'computer',
-    'color' : libtcod.dark_pink,
-    'base_col' : libtcod.dark_pink,
+    'color' : libtcod.dark_chartreuse,
+    'base_col' : libtcod.dark_chartreuse,
     'interact' : 'terminal',
     'special' : None,
     'wall' : True,
@@ -66,12 +66,12 @@ window = {
     'char' : 'H',
     'name' : 'window',
     'color' : libtcod.sky,
-    'base_col' : libtcod.lightest_sky,
+    'base_col' : libtcod.lightest_cyan,
     'interact' : 'gaze',
     'special' : None,
     'wall' : True,
     'chance' : 30,
 }
 
-stationary_objects = [computer, window]
+stationary_objects = [computer]
 views = ['data/img/window1.png', 'data/img/window2.png', 'data/img/window3.png']

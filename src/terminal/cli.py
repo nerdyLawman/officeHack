@@ -285,8 +285,13 @@ def remote_patch(text):
         #if valid_station_name(command):
         text.append(prompt+command)
         if command == 'random':
-            selected_station = gameconfig.level_terminals[randint(0, len(gameconfig.level_terminals)-1)]
-            running = False
+            if len(gameconfig.level_terminals) > 1:
+                gameconfig.level_terminals.remove(gameconfig.player_at_computer)
+                selected_station = gameconfig.level_terminals[randint(0, len(gameconfig.level_terminals)-1)]
+                gameconfig.level_terminals.append(gameconfig.player_at_computer)
+                running = False
+            else:
+                text.append('No other terminal stations on this level')
         elif command == 'listing' or command == 'list':
             if len(gameconfig.level_terminals) > 1:
                 for station in gameconfig.level_terminals:
