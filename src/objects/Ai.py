@@ -3,6 +3,7 @@ import gameconfig
 from dialogue import dialogues
 from dialogue.Dialogue import Dialogue
 from interface.menus import terminal_menu
+from objects.actions import gaze_upon
 
 # ---------------------------------------------------------------------
 # [ BASE NPC ] --------------------------------------------------------
@@ -48,9 +49,10 @@ class TalkerNPC:
 # ---------------------------------------------------------------------
 class StationaryNPC:
     # stationary NPC
-    def __init__(self, base_color, blink_color=gameconfig.WHITE, interact=None):
+    def __init__(self, base_color, blink_color=gameconfig.WHITE, special=None, interact=None):
         self.blink_color = blink_color
         self.base_color = base_color
+        self.special = special
         self.interact = interact
 
     def take_turn(self):
@@ -62,6 +64,8 @@ class StationaryNPC:
     def interact_function(self):
         if self.interact == 'terminal':
             terminal_menu(self)
+        elif self.interact == 'gaze':
+            gaze_upon(self)
         else:
             return None
 

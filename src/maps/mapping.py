@@ -59,7 +59,7 @@ def place_objects(room):
     num_npcs = libtcod.random_get_int(0, 0, gameconfig.MAX_ROOM_NPCS)
     num_items = libtcod.random_get_int(0, 0, gameconfig.MAX_ROOM_ITEMS)
 
-    # add NPCS
+    # add NPCS -----------------------------
     for i in range(num_npcs):
         x = libtcod.random_get_int(0, room.x1+1, room.x2-1)
         y = libtcod.random_get_int(0, room.y1+1, room.y2-1)
@@ -84,7 +84,7 @@ def place_objects(room):
 
     gameconfig.npc_count = gameconfig.level_npc_count
 
-    # stationary objects
+    # add stationary objects -------------------------
     for i in range(1):
         x = libtcod.random_get_int(0, room.x1+1, room.x2-1)
         y = libtcod.random_get_int(0, room.y1+1, room.y1-1)
@@ -94,14 +94,14 @@ def place_objects(room):
             dice = random_dict_entry(game_npcs.stationary_objects)
             if dice:
                 item = Object(x, y, dice.get('char'), dice.get('name'), dice.get('color'), blocks=True,
-                    ai=StationaryNPC(base_color=dice.get('color'),interact=dice.get('interact')))
+                    ai=StationaryNPC(base_color=dice.get('color'),interact=dice.get('interact'),special=dice.get('special')))
                 if dice.get('interact') == 'terminal':
                     gameconfig.level_terminals.append(item)
-                    item.name = 'TERMINAL STATION 1X00G5-00' + str(len(gameconfig.level_terminals)) 
+                    item.name = 'TERMINAL STATION 1X00G5-00' + str(len(gameconfig.level_terminals))
                 gameconfig.objects.append(item)
                 send_to_back(item)
 
-    # add Items
+    # add Items ---------------------------
     for i in range(num_items):
         x = libtcod.random_get_int(0, room.x1+1, room.x2-1)
         y = libtcod.random_get_int(0, room.y1+1, room.y1-1)

@@ -1,6 +1,9 @@
 from libtcod import libtcodpy as libtcod
 import gameconfig
 from objects.death import npc_death, drone_death, player_death
+from sound.SoundPlayer import SoundPlayer
+from random import randint
+
 
 # ---------------------------------------------------------------------
 # [ FIGHTER CLASS ] ---------------------------------------------------
@@ -21,8 +24,10 @@ class Fighter:
 
 
     def take_damage(self, damage):
+        attack_sound = SoundPlayer(gameconfig.SOUND_FX['attack'])
+        attack_sound.play()
         if damage > 0: self.hp -= damage
-        
+
         if self.hp <= 0:
             self.hp = 0
             if self.owner.player == None: return npc_death(self.owner)

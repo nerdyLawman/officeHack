@@ -3,9 +3,9 @@ import gameconfig
 from interface.rendering import render_all, message
 
 def floppy_write(floppy, name):
-    #if in_computer()
-    floppy.inv_id = name # have to change this to handle having quantities of floppies but can't be bothered at the moment
-    gameconfig.saved_discs.append(floppy)
+    # save/ID an unknown disc
+    identified_disc = gameconfig.player.player.identify_item_inventory(floppy.item, name)
+    gameconfig.saved_discs.append(identified_disc)
     floppy.item.use()
 
 def remote_look(target):
@@ -26,7 +26,7 @@ def revert_control(drone, real_player):
     drone.player.owner = None
     drone.player = None
     gameconfig.level_drones.append(drone) #put em back in the running
-    
+
     gameconfig.player.player = real_player.player
     gameconfig.player.player.inventory = list(gameconfig.real_inventory)
     gameconfig.real_inventory = None #just so we're not storing a useless list
@@ -42,16 +42,16 @@ def remote_control(target):
     gameconfig.drone_holder.ai.owner = target
     gameconfig.drone_holder.fighter.owner = target
     gameconfig.level_drones.remove(target)
-    
+
     gameconfig.player_at_computer = False
     gameconfig.real_player = gameconfig.player
     gameconfig.real_inventory = list(gameconfig.player.player.inventory)
-    
+
     target.player = gameconfig.player.player
     target.player.inventory = []
     target.player.owner = target
     target.ai = None
-    
+
     gameconfig.player = target
     gameconfig.DRONE_FLAG = True
     render_all(True)

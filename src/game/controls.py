@@ -1,7 +1,7 @@
 from libtcod import libtcodpy as libtcod
 import gameconfig
 from game import game_messages
-from interface.rendering import render_all, message
+from interface.rendering import render_all, message, fetch_message
 from interface.menus import inventory_menu, main_menu, message_box, menu
 from objects.actions import objects_in_fov
 from terminal.cli import cli_window
@@ -37,7 +37,7 @@ def handle_keys():
     elif gameconfig.key.vk == libtcod.KEY_KP3:
         _p.player.move_or_attack(1, 1)
     elif gameconfig.key.vk == libtcod.KEY_KP5:
-        message(game_messages.WAIT_MESSAGE, libtcod.white)
+        fetch_message('WAIT_MESSAGE')
         pass
 
     else: # additional game commands  -------------------------------------
@@ -93,7 +93,7 @@ def handle_keys():
             message_box(_p.name.upper() + ' Information\n\nLevel: ' + str(_p.player.level) + '\nExperience: ' + str(_p.fighter.xp) +
                 '\nExperience to level up: ' + str(level_up_xp) + '\n\nMaximum HP: ' + str(_p.fighter.max_hp) +
                 '\nAttack: ' + str(_p.fighter.power) + '\nDefense: ' + str(_p.fighter.defense), 24)
-        
+
         # UP OR DOWN STAIRS --------------------------------------- [,] [.]
         elif gameconfig.key_char == ',' or gameconfig.key_char == '.':
             if gameconfig.stairs_up.x == _p.x and gameconfig.stairs_up.y == _p.y:
@@ -108,6 +108,6 @@ def handle_keys():
         # TOGGLE FULLSCREEN ---------------- [f]
         elif gameconfig.key_char == 'f':
             libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
-        
+
         return('no turn') # nothing valid happened
     return('playing') # carry on

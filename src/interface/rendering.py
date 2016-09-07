@@ -1,6 +1,7 @@
 from libtcod import libtcodpy as libtcod
-import gameconfig
 import textwrap
+import gameconfig
+from game import game_messages
 from maps.helpers import in_fov
 
 # ---------------------------------------------------------------------
@@ -40,7 +41,7 @@ def send_to_back(item):
 # ---------------------------------------------------------------------
 def render_all(fov_recompute):
     # main fucntion which draws all objects on the screen every cycle
-    
+
     player = gameconfig.player #local renders for convenience
     objects = gameconfig.objects
     level_map = gameconfig.level_map
@@ -65,11 +66,14 @@ def render_all(fov_recompute):
         render_drone_filter()
         libtcod.console_blit(gameconfig.filter, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.SCREEN_HEIGHT, 0, 0, 0, 0.2, 0.2)
         libtcod.console_clear(gameconfig.filter)
-    
+
     if gameconfig.REMOTE_FLAG:
         render_station_filter()
         libtcod.console_blit(gameconfig.filter, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.SCREEN_HEIGHT, 0, 0, 0, 0.2, 0.2)
         libtcod.console_clear(gameconfig.filter)
+
+    if gameconfig.VISION_FLAG:
+        render_vision(gameconfig.VISION_FLAG)
 
     # clean up
     libtcod.console_flush()
@@ -78,7 +82,7 @@ def render_all(fov_recompute):
 
 def render_map(level_map, fov_map, position):
     theme = gameconfig.color_theme
-    
+
     libtcod.map_compute_fov(fov_map, position.x, position.y,
         gameconfig.TORCH_RADIUS, gameconfig.FOV_LIGHT_WALLS, gameconfig.FOV_ALGO)
     # go through all tiles, and set their background color
@@ -152,6 +156,10 @@ def render_station_filter():
     libtcod.console_rect(gameconfig.filter, 0, 0, gameconfig.SCREEN_WIDTH,
         gameconfig.SCREEN_HEIGHT, False, libtcod.BKGND_SCREEN)
 
+def render_vision(image_path):
+    img = libtcod.image_load(image_path)
+    libtcod.image_blit_2x(img, gameconfig.filter, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.SCREEN_HEIGHT, -1, -1)
+
 
 # ---------------------------------------------------------------------
 # [ MESSAGES ] --------------------------------------------------------
@@ -166,8 +174,10 @@ def message(new_msg, color=libtcod.white):
 
 
 def fetch_message(msg):
-    #coming soon
-    return gamemessages.SET_MESSAGES.get(msg)[0], 
+    if msg in game_messages.DEFINED_MESSAGES:
+        mess = game_messages.DEFINED_MESSAGES.get(msg)
+        if len(mess) > 1: message(mess[0], mess[1])
+    else: message(mess)
 
 
 def render_messages():

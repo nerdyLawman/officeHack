@@ -57,7 +57,18 @@ computer = {
     'color' : libtcod.dark_pink,
     'base_col' : libtcod.dark_pink,
     'interact' : 'terminal',
+    'special' : None,
     'chance' : 80,
 }
 
-stationary_objects = [computer]
+window = {
+    'char' : 'H',
+    'name' : 'window',
+    'color' : libtcod.sky,
+    'base_col' : libtcod.sky,
+    'interact' : 'gaze',
+    'special' : 'data/img/bg.png',
+    'chance' : 30,
+}
+
+stationary_objects = [computer, window]

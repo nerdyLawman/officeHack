@@ -1,18 +1,19 @@
 from libtcod import libtcodpy as libtcod
 import gameconfig
 from interface.menus import main_menu, message_box
-from interface.rendering import message
+from interface.rendering import message, fetch_message
 from game.states import new_game, play_game, save_game, load_game
 from game import game_messages
+from sound.SoundPlayer import SoundPlayer
 
 choice = main_menu()
+
 
 while not libtcod.console_is_window_closed():
     # NEW GAME
     if choice == 0:
         new_game()
-        message(game_messages.WELCOME_MESSAGE, libtcod.light_orange)
-        #fetch_message('WELCOME_MESSAGE')
+        fetch_message('WELCOME_MESSAGE')
         play_game()
         break
     # CONTINUE

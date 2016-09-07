@@ -90,7 +90,40 @@ remote_target = None
 # FILTER FLAGS ----------------------------
 DRONE_FLAG = False
 REMOTE_FLAG = False
+VISION_FLAG = None # takes an image unlike the other two
 
+# ---------------------------------------------------------------------
+# [ VOLUME CONFIG VARIABLES ] -----------------------------------------
+# ---------------------------------------------------------------------
+
+SOUND = 'enabled' # 'enabled', 'disabled'
+
+VOLUME = {
+    'MUSIC': 0.1,
+    'SOUND_FX': 0.2
+}
+
+CURRENT_TRACK = None
+
+BACKGROUND_MUSIC = {
+  'terminal': 'terminal',
+  'level_1' : 'intro'
+}
+
+## if sound type has multiple randomly generated effects, include name prefix and
+## the number of files with the given prefix. if there is only one file associated
+## with the sound type, include the filename minus the extension as a string.
+
+SOUND_FX = {
+   'dialogue': {
+       'name': 'blip',
+       'number': 6
+   },
+   'attack': {
+       'name': 'hit',
+       'number': 3
+   }
+}
 
 # ---------------------------------------------------------------------
 # [ GAMEPLAY CONFIG VARIABLES ] ---------------------------------------
