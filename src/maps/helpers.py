@@ -1,5 +1,6 @@
 from libtcod import libtcodpy as libtcod
 import gameconfig
+import math
 from random import randint
 
 def random_choice_index(chances):
@@ -68,3 +69,20 @@ def is_blocked(x, y):
 def check_map_blocked(x, y):
     if level_map[x][y].blocked: return True
     return False
+
+
+def closest_wall(x, y, room):
+    roomx = [room.x1, room.x2]
+    roomy = [room.y1, room.y2]
+    closest_wall = []
+    closest_dist = gameconfig.SCREEN_WIDTH
+    for rx in roomx:
+        for ry in roomy:
+            dx = rx - x
+            dy = ry - y
+            if math.sqrt(dx ** 2 + dy ** 2) < closest_dist:
+                closest_wall[:] = [rx, ry]
+    if x < closest_wall[0]:
+        closest_wall[0] = x
+    else: closest_wall[1] = y
+    return closest_wall[0], closest_wall[1]

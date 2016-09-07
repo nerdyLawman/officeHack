@@ -58,6 +58,7 @@ computer = {
     'base_col' : libtcod.dark_pink,
     'interact' : 'terminal',
     'special' : None,
+    'wall' : True,
     'chance' : 80,
 }
 
@@ -65,10 +66,12 @@ window = {
     'char' : 'H',
     'name' : 'window',
     'color' : libtcod.sky,
-    'base_col' : libtcod.sky,
+    'base_col' : libtcod.lightest_sky,
     'interact' : 'gaze',
-    'special' : 'data/img/bg.png',
+    'special' : None,
+    'wall' : True,
     'chance' : 30,
 }
 
 stationary_objects = [computer, window]
+views = ['data/img/window1.png', 'data/img/window2.png', 'data/img/window3.png']

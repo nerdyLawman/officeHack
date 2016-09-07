@@ -52,7 +52,11 @@ def objects_in_fov():
 def gaze_upon(view):
     #display image in render_all
     gameconfig.VISION_FLAG = view.special
-    message('You look peacefully out the window.')
+    render_all(True)
+    libtcod.console_wait_for_keypress(True)
+    gameconfig.VISION_FLAG = None
+    message('You GAZE peacefully out the WINDOW.')
+    render_all(True)
 
 # DOCUMENT --------------------
 def read_document(document):

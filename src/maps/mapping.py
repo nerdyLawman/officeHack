@@ -1,7 +1,8 @@
 from libtcod import libtcodpy as libtcod
 import gameconfig
+from random import randint
 from maps.components import Tile, RectRoom
-from maps.helpers import random_choice, random_choice_index, random_dict_entry, make_person, true_or_false
+from maps.helpers import random_choice, random_choice_index, random_dict_entry, make_person, true_or_false, closest_wall
 from interface.rendering import send_to_back
 from game import color_themes, game_items, game_npcs
 from objects.Player import Player
@@ -93,13 +94,19 @@ def place_objects(room):
             # place stationary object
             dice = random_dict_entry(game_npcs.stationary_objects)
             if dice:
-                item = Object(x, y, dice.get('char'), dice.get('name'), dice.get('color'), blocks=True,
-                    ai=StationaryNPC(base_color=dice.get('color'),interact=dice.get('interact'),special=dice.get('special')))
+                stationary = Object(x, y, dice.get('char'), dice.get('name'),
+                    dice.get('color'), blocks=True,
+                    ai=StationaryNPC(base_color=dice.get('color'),
+                    interact=dice.get('interact'),special=dice.get('special')))
                 if dice.get('interact') == 'terminal':
-                    gameconfig.level_terminals.append(item)
-                    item.name = 'TERMINAL STATION 1X00G5-00' + str(len(gameconfig.level_terminals))
-                gameconfig.objects.append(item)
-                send_to_back(item)
+                    gameconfig.level_terminals.append(stationary)
+                    stationary.name = 'TERMINAL STATION 1X00G5-00' + str(len(gameconfig.level_terminals))
+                elif dice.get('interact') == 'gaze':
+                    stationary.ai.special = game_npcs.views[randint(0, len(game_npcs.views)-1)]
+                if dice.get('wall'):
+                    stationary.x, stationary.y = closest_wall(x, y, room)
+                gameconfig.objects.append(stationary)
+                send_to_back(stationary)
 
     # add Items ---------------------------
     for i in range(num_items):

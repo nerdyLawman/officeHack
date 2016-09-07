@@ -158,8 +158,8 @@ def render_station_filter():
 
 def render_vision(image_path):
     img = libtcod.image_load(image_path)
-    libtcod.image_blit_2x(img, gameconfig.filter, 0, 0, gameconfig.SCREEN_WIDTH, gameconfig.SCREEN_HEIGHT, -1, -1)
-
+    libtcod.image_blit_2x(img, 0, 0, 0)
+    
 
 # ---------------------------------------------------------------------
 # [ MESSAGES ] --------------------------------------------------------
