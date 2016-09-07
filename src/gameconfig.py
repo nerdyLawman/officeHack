@@ -90,6 +90,7 @@ remote_target = None
 # FILTER FLAGS ----------------------------
 DRONE_FLAG = False
 REMOTE_FLAG = False
+WORK_FLAG = False
 VISION_FLAG = None # takes an image unlike the other two
 
 # ---------------------------------------------------------------------

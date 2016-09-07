@@ -80,6 +80,10 @@ def render_all(fov_recompute):
     if gameconfig.VISION_FLAG:
         render_vision(gameconfig.VISION_FLAG)
 
+    if gameconfig.WORK_FLAG:
+        render_vision('data/img/work.png')
+        gameconfig.WORK_FLAG = False
+
     # clean up
     libtcod.console_flush()
     clear_all(objects, gameconfig.con)

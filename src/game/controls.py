@@ -109,5 +109,13 @@ def handle_keys():
         elif gameconfig.key_char == 'f':
             libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
 
+        elif gameconfig.key_char == 'w':
+            gameconfig.WORK_FLAG = True
+            render_all(True)
+            libtcod.console_wait_for_keypress(True)
+            gameconfig.WORK_FLAG = None
+            message('You RESUME to REAL WORK.')
+            render_all(True)
+
         return('no turn') # nothing valid happened
     return('playing') # carry on
