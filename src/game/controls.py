@@ -98,14 +98,14 @@ def handle_keys():
 
         # UP OR DOWN STAIRS --------------------------------------- [,] [.]
         elif gameconfig.key_char == ',' or gameconfig.key_char == '.':
-            if gameconfig.stairs_up.x == _p.x and gameconfig.stairs_up.y == _p.y:
+            if gameconfig.stairs_down.x == _p.x and gameconfig.stairs_down.y == _p.y:
                 if gameconfig.game_level - 1 > 0:
-                    return('stairs up')
-            if  gameconfig.stairs_down.x == _p.x and gameconfig.stairs_down.y == _p.y:
+                    return('stairs down')
+            if  gameconfig.stairs_up.x == _p.x and gameconfig.stairs_up.y == _p.y:
                 if gameconfig.game_level >= len(gameconfig.game_levels):
                     return('stairs new')
                 else:
-                    return('stairs down')
+                    return('stairs up')
 
         # TOGGLE FULLSCREEN ---------------- [f]
         elif gameconfig.key_char == 'f':

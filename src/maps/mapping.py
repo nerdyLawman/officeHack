@@ -72,7 +72,7 @@ def place_objects(room):
             else:
                 npc_ai = BaseNPC()
             npc_name, npc_gender, npc_portrait = make_person()
-            npc = Object(x, y, dice.get('char'), npc_name, dice.get('color'), blocks=True,
+            npc = Object(x, y, dice.get('char'), npc_name, dice.get('color'), dice.get('info'), blocks=True,
                 fighter=Fighter(hp=dice.get('hp'), defense=dice.get('defense'),
                 power=dice.get('power'), xp=dice.get('xp'), drone=true_or_false(30),
                 gender=npc_gender, portrait=npc_portrait), ai=npc_ai)
@@ -95,7 +95,7 @@ def place_objects(room):
             dice = random_dict_entry(game_npcs.stationary_objects)
             if dice:
                 stationary = Object(x, y, dice.get('char'), dice.get('name'),
-                    dice.get('color'), blocks=True,
+                    dice.get('color'), dice.get('info'), blocks=True,
                     ai=StationaryNPC(base_color=dice.get('color'),
                     interact=dice.get('interact'),special=dice.get('special')))
                 if dice.get('interact') == 'terminal':
@@ -120,7 +120,7 @@ def place_objects(room):
         if not is_blocked(x, y):
             # place item
             dice = random_dict_entry(game_items.ITEMS)
-            item = Object(x, y, dice.get('char'), dice.get('name'), dice.get('color'),
+            item = Object(x, y, dice.get('char'), dice.get('name'), dice.get('color'), dice.get('info'),
                 item=Item(special=dice.get('special'), use_function=dice.get('use'), is_instant=dice.get('instant')))
 
             gameconfig.objects.append(item)
@@ -179,9 +179,9 @@ def make_map():
                 gameconfig.player.y = new_y
 
                 # create stairs in the first room
-                gameconfig.stairs_up = Object(new_x, new_y, '<', 'stairs up', gameconfig.STAIRS_COLOR)
-                gameconfig.objects.append(gameconfig.stairs_up)
-                send_to_back(gameconfig.stairs_up)
+                gameconfig.stairs_down = Object(new_x, new_y, '<', 'stairs down', gameconfig.STAIRS_COLOR)
+                gameconfig.objects.append(gameconfig.stairs_down)
+                send_to_back(gameconfig.stairs_down)
 
             else:
                 #all rooms after the first:
@@ -208,7 +208,7 @@ def make_map():
             gameconfig.objects.remove(obj)
     win = game_npcs.window
     window = Object(xy[0], xy[1], win.get('char'), win.get('name'),
-        win.get('color'), blocks=True,
+        win.get('color'), win.get('info'), blocks=True,
         ai=StationaryNPC(base_color=win.get('color'),
         interact=win.get('interact'),special=win.get('special')))
     window.ai.special = game_npcs.views[randint(0, len(game_npcs.views)-1)]
@@ -216,7 +216,7 @@ def make_map():
     send_to_back(window)
 
     # create stairs in the last room --------------------------
-    gameconfig.stairs_down = Object(new_x, new_y, '<', 'stairs down', gameconfig.STAIRS_COLOR)
-    gameconfig.objects.append(gameconfig.stairs_down)
-    send_to_back(gameconfig.stairs_down)
+    gameconfig.stairs_up = Object(new_x, new_y, '<', 'stairs up', gameconfig.STAIRS_COLOR)
+    gameconfig.objects.append(gameconfig.stairs_up)
+    send_to_back(gameconfig.stairs_up)
     initialize_fov()

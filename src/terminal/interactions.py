@@ -26,6 +26,7 @@ def revert_control(drone, real_player):
     drone.fighter.owner = gameconfig.drone_holder
     drone.player.owner = None
     drone.player = None
+    gameconfig.DRONE_FLAE = False
     gameconfig.level_drones.append(drone) #put em back in the running
 
     gameconfig.player.player = real_player.player

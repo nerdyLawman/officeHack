@@ -48,7 +48,8 @@ def menu(header, options, width=gameconfig.MENU_WIDTH, bgnd_color=None, fgnd_col
     y = header_height
     letter_index = ord('a')
     for option_text in options:
-        text = '(' + chr(letter_index) + ') ' + option_text
+        if icons: text = '(' + chr(letter_index) + ')   ' + option_text # formatting for icons
+        else: text = '(' + chr(letter_index) + ') ' + option_text
         libtcod.console_print_ex(window, 1, y, libtcod.BKGND_NONE, libtcod.LEFT, text)
         y += 1
         letter_index += 1
@@ -56,7 +57,7 @@ def menu(header, options, width=gameconfig.MENU_WIDTH, bgnd_color=None, fgnd_col
     if icons:
         y = header_height
         for i in icons:
-            draw_object_at(i, 4, y, window)
+            draw_object_at(i, 5, y, window)
             y += 1
 
     #blit window contents

@@ -25,12 +25,13 @@ def new_game():
         char = gameconfig.HERO_CHAR,
         name = gameconfig.HERO_NAME,
         color = gameconfig.HERO_COLOR,
+        info = 'I can\'t believe I work at this INSANE GOVERNMENT OFFICE! I am the IT GUY, but I suspect they may be up to SOMETHING!',
         blocks=True,
         player = player_component,
         fighter = fighter_component)
 
     make_map() # create level map
-    
+
     # add first level to game_levels
     first_level = [gameconfig.objects,
         gameconfig.level_map,
