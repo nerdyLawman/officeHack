@@ -100,8 +100,8 @@ VISION_FLAG = None # takes an image unlike the other two
 SOUND = 'enabled' # 'enabled', 'disabled'
 
 VOLUME = {
-    'MUSIC': 0.0,
-    'SOUND_FX': 0.0
+    'MUSIC': 0.1,
+    'SOUND_FX': 0.1
 }
 
 CURRENT_TRACK = None
