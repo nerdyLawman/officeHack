@@ -62,7 +62,7 @@ def cli_refresh(text, command, header_height=2):
 
 
 def command_entry(command):
-    key = libtcod.console_wait_for_keypress(True)
+    #key = libtcod.console_wait_for_keypress(True)
     command = command[len(prompt):] #takeout prompt
     if key.vk == libtcod.KEY_ESCAPE:
         return command, False
@@ -102,7 +102,9 @@ def cli_window(command=None, selector=None):
         cli_refresh(text, command) #update screen
         flag = True
         while flag is True and command not in special_commands:
-            command, flag = command_entry(command)
+            #command, flag = command_entry(command)
+            key = libtcod_console_check_for_keypress()
+            if key: command, flag = command_entry(key)
             cur.x = len(command)+1
             cli_refresh(text, command)
 
