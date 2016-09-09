@@ -100,7 +100,6 @@ def place_objects(room):
                     interact=dice.get('interact'),special=dice.get('special')))
                 if dice.get('interact') == 'terminal':
                     gameconfig.level_terminals.append(stationary)
-                    print(gameconfig.level_terminals)
                     stationary.name = 'TERMINAL STATION 1X00G5-00' + str(len(gameconfig.level_terminals))
                 elif dice.get('interact') == 'gaze':
                     stationary.ai.special = game_npcs.views[randint(0, len(game_npcs.views)-1)]
