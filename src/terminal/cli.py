@@ -16,6 +16,8 @@ x = gameconfig.SCREEN_WIDTH/2 - width/2
 y = gameconfig.SCREEN_HEIGHT/2 - height/2
 window = libtcod.console_new(width, height)
 
+
+
 class Cursor():
     def __init__(self, x, y, color, char='_'):
         self.x = x
@@ -125,8 +127,8 @@ def cli_window(command=None, selector=None):
         # REMOTE -----------------------
         elif command == 'remote':
             text[:] = []
-            #running = remote_patch(text)
-            run_program('remote')
+            running = remote_patch(text)
+            #run_program('remote')
 
         # DRONE -------------------------
         elif command == 'drone':
