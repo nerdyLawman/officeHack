@@ -30,6 +30,7 @@ cur = Cursor(len(prompt), 1, fgnd_color)
 class BlinkingCursor(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
+        self.daemon = True
         self.running = True
 
     def run(self):
@@ -40,7 +41,7 @@ class BlinkingCursor(threading.Thread):
             libtcod.console_put_char(window, cur.x, cur.y, '_', flag=libtcod.BKGND_DEFAULT)
             libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 1.0)
             libtcod.console_flush()
-            time.sleep(0.25)
+            time.sleep(0.35)
 
     def stop(self):
         self.running = False
@@ -60,7 +61,7 @@ def cli_refresh(text, command, header_height=2):
 
 def command_entry(command):
     key = libtcod.console_wait_for_keypress(True)
-    command = command[len(prompt):] #takeout cursor
+    command = command[len(prompt):] #takeout prompt
     if key.vk == libtcod.KEY_ESCAPE:
         return command, False
     if key.vk == libtcod.KEY_BACKSPACE:
@@ -71,7 +72,7 @@ def command_entry(command):
         return command, False
     if key.c >= 64 and key.c <= 127:
         command += chr(key.c)
-    return prompt + command, True #redraw cursor
+    return prompt + command, True
 
 
 def cli_window(command=None, selector=None):
@@ -87,7 +88,7 @@ def cli_window(command=None, selector=None):
     fgnd_color = libtcod.light_sky
     if not command: command = prompt
     special_commands = ['exit', 'save', 'read', 'help', 'drone', 'dronedead', 'exitdrone', 'remote']
-    #window = libtcod.console_new(width, height)
+    #window = libtcod.console_new(width, height) declared up top as global
     libtcod.console_set_default_background(window, bgnd_color)
     libtcod.console_set_default_foreground(window, fgnd_color)
     # header
@@ -124,7 +125,8 @@ def cli_window(command=None, selector=None):
         # REMOTE -----------------------
         elif command == 'remote':
             text[:] = []
-            running = remote_patch(text)
+            #running = remote_patch(text)
+            run_program('remote')
 
         # DRONE -------------------------
         elif command == 'drone':
@@ -319,6 +321,21 @@ def fetch_station(name):
     return None
 
 
+def remote_program(command):
+    if command == 'random':
+        if len(gameconfig.level_terminals) > 1:
+            gameconfig.level_terminals.remove(gameconfig.player_at_computer)
+            remote_look(gameconfig.level_terminals[randint(0, len(gameconfig.level_terminals)-1)])
+            gameconfig.level_terminals.append(gameconfig.player_at_computer)
+            running = False
+        else:
+            return('No other terminal stations on this level')
+    elif command == 'listing' or command == 'list':
+        if len(gameconfig.level_terminals) > 1:
+            return([station.name.upper() for station in gameconfig.level_terminals])
+        else:
+            return('no other stations on this level')
+
 def remote_patch(text):
     text.append('WELCOME TO REMOTE LOOK V0.75')
     text.append('enter name of station to patch.')
@@ -359,3 +376,30 @@ def remote_patch(text):
 
     if selected_station: remote_look(selected_station)
     return running
+
+
+def run_program(program):
+    text = []
+    text.append('WELCOME TO ' + program + ' NAME')
+    #text.append('enter name of station to patch.')
+    command = prompt
+    cur.x = len(command)+1
+    selected_station = None
+    running = True
+    while running:
+        cli_refresh(text, command)
+        flag = True
+        while flag is True:
+            command, flag = command_entry(command)
+            cur.x = len(command)+1
+            cli_refresh(text, command)
+            #specific program stuff
+            if program == 'remote':
+                text.append(remote_program(command))
+            if command == 'exit':
+                text.append('PROGRAM EXITED.')
+                return None
+            else:
+                text.append('Invalid entry.')
+            command = prompt
+            cur.x = len(command)+1
