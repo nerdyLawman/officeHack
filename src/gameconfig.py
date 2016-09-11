@@ -146,7 +146,7 @@ MAX_MENU_OPTIONS = 26
 
 # TERMINAL ---------------------------
 TERMINAL_CURSOR = '_'
-TERMINAL_PROMPT = '$ '
+TERMINAL_PROMPT = '$'
 
 # STATUS --------------------------------------------
 CONFUSE_NUM_TURNS = 5

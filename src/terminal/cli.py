@@ -60,9 +60,10 @@ def command_entry(command):
     key = libtcod.console_check_for_keypress()
     if key.vk == libtcod.KEY_NONE: return command, True
     elif key.vk == libtcod.KEY_ESCAPE:
+        cur.x = len(prompt)
         return command, False
     elif key.vk == libtcod.KEY_BACKSPACE:
-        command = command[:-1]
+        if len(command) > 1: command = command[:-1]
     elif key.vk == libtcod.KEY_SPACE:
         command += ' '
     elif key.vk == libtcod.KEY_ENTER:
@@ -71,22 +72,19 @@ def command_entry(command):
     elif key.c >= 64 and key.c <= 127:
         command += chr(key.c)
 
-    cur.x = len(prompt+command)
+    cur.x = len(prompt)+len(command)
     return command, True #redraw cursor
 
 def cli_window(command=None, selector=None):
-    global window, BLINK
     running = True
-    BLINK = True
-
-        
+  
     gameconfig.CURRENT_TRACK.switch_track(gameconfig.BACKGROUND_MUSIC['terminal'])
 
     bgnd_color = libtcod.dark_azure
     fgnd_color = libtcod.light_sky
     if not command: command = prompt
+    
     special_commands = ['exit', 'save', 'read', 'help', 'drone', 'dronedead', 'exitdrone', 'remote']
-    #window = libtcod.console_new(width, height) declared up top as global
     libtcod.console_set_default_background(window, bgnd_color)
     libtcod.console_set_default_foreground(window, fgnd_color)
     # header
@@ -94,18 +92,17 @@ def cli_window(command=None, selector=None):
     libtcod.console_print_ex(window, 1, 1, libtcod.BKGND_NONE, libtcod.LEFT, game_messages.TERMINAL_TITLE)
     text = [game_messages.TERMINAL_START_MESSAGE]
     gameconfig.CURRENT_TRACK.switch_track(gameconfig.BACKGROUND_MUSIC['terminal'])
-
+    
     while running:
-        cli_refresh(text, command) #update screen
+        command = prompt
         flag = True
+        cli_refresh(text, command) #update screen
         while flag is True and command not in special_commands:
-
-            #key = libtcod.console_check_for_keypress(True)
             command, flag = command_entry(command)
             cli_refresh(text, command)
         
+        text.append(command)
         command = command[len(prompt):]
-        #if command != '': text.append(prompt+command)
         if len(text) > height/2 - 7: del text[:2]
         
         # EXIT -------------------------
@@ -151,12 +148,8 @@ def cli_window(command=None, selector=None):
         
         # INVALID COMMAND ----------------
         else:
-            text.append('invalid command')
-        command = prompt
-
-        
-        #if running is True:
-        #    cli_refresh(text, command)
+            if command != '': text.append('invalid command')
+ 
         if running is False: gameconfig.CURRENT_TRACK.switch_track(gameconfig.BACKGROUND_MUSIC['level_1'])
     
 # ---------------------------------------------------------------------
