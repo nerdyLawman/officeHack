@@ -17,6 +17,8 @@ x = gameconfig.SCREEN_WIDTH/2 - width/2
 y = gameconfig.SCREEN_HEIGHT/2 - height/2
 window = libtcod.console_new(width, height)
 
+
+
 class Cursor():
     def __init__(self, x, y, color, char='_'):
         self.x = x
@@ -38,7 +40,6 @@ def b_cursor(blink_interval):
         return 0
     else: return blink_interval + 1
 
-
 def cli_refresh(text, command, header_height=2):
     global blink_interval
     libtcod.console_rect(window, 0, header_height, width, height, True, libtcod.BKGND_SET)
@@ -46,6 +47,7 @@ def cli_refresh(text, command, header_height=2):
     for line in text:
         libtcod.console_print_ex(window, 1, header_height+line_pos, libtcod.BKGND_NONE, libtcod.LEFT, line)
         line_pos += 2
+    cur.y = header_height + line_pos
     libtcod.console_print_ex(window, 1, header_height+line_pos, libtcod.BKGND_NONE, libtcod.LEFT, command)
     cur.y = header_height+line_pos
     blink_interval = b_cursor(blink_interval)
@@ -54,6 +56,7 @@ def cli_refresh(text, command, header_height=2):
 
 
 def command_entry(command):
+
     key = libtcod.console_check_for_keypress()
     if key.vk == libtcod.KEY_NONE: return command, True
     elif key.vk == libtcod.KEY_ESCAPE:
@@ -67,35 +70,38 @@ def command_entry(command):
         return command, False
     elif key.c >= 64 and key.c <= 127:
         command += chr(key.c)
+
     cur.x = len(prompt+command)
     return command, True #redraw cursor
-	
 
 def cli_window(command=None, selector=None):
     global window, BLINK
     running = True
     BLINK = True
+
         
     gameconfig.CURRENT_TRACK.switch_track(gameconfig.BACKGROUND_MUSIC['terminal'])
+
     bgnd_color = libtcod.dark_azure
     fgnd_color = libtcod.light_sky
     if not command: command = prompt
     special_commands = ['exit', 'save', 'read', 'help', 'drone', 'dronedead', 'exitdrone', 'remote']
-    #window = libtcod.console_new(width, height)
+    #window = libtcod.console_new(width, height) declared up top as global
     libtcod.console_set_default_background(window, bgnd_color)
     libtcod.console_set_default_foreground(window, fgnd_color)
     # header
     libtcod.console_rect(window, 0, 0, width, height, True, libtcod.BKGND_SET)
     libtcod.console_print_ex(window, 1, 1, libtcod.BKGND_NONE, libtcod.LEFT, game_messages.TERMINAL_TITLE)
     text = [game_messages.TERMINAL_START_MESSAGE]
-    
+    gameconfig.CURRENT_TRACK.switch_track(gameconfig.BACKGROUND_MUSIC['terminal'])
+
     while running:
         cli_refresh(text, command) #update screen
         flag = True
         while flag is True and command not in special_commands:
+
             #key = libtcod.console_check_for_keypress(True)
             command, flag = command_entry(command)
-            #b_cursor()
             cli_refresh(text, command)
         
         command = command[len(prompt):]
@@ -121,7 +127,8 @@ def cli_window(command=None, selector=None):
         elif command == 'remote':
             text[:] = []
             running = remote_patch(text)
-        
+
+
         # DRONE -------------------------
         elif command == 'drone':
             text[:] = []
@@ -146,11 +153,11 @@ def cli_window(command=None, selector=None):
         else:
             text.append('invalid command')
         command = prompt
+
         
         #if running is True:
         #    cli_refresh(text, command)
         if running is False: gameconfig.CURRENT_TRACK.switch_track(gameconfig.BACKGROUND_MUSIC['level_1'])
-    
     
 # ---------------------------------------------------------------------
 # [ FILE I/O ] --------------------------------------------------------
@@ -171,6 +178,7 @@ def file_rw(text, infloppy=None):
     #if in_computer()
     text.append('WELCOME TO DRONE FILE RW V0.75')
     command = prompt
+    cur.x = len(command)+1
     if infloppy: floppy = infloppy
     else: floppy = next((inv for inv in gameconfig.player.player.inventory if inv.inv_id == 'floppy disc'), None)
     running = True
@@ -188,6 +196,7 @@ def file_rw(text, infloppy=None):
         flag = True
         while flag is True:
             command, flag = command_entry(command)
+            cur.x = len(command)+1
             cli_refresh(text, command)
         text.append(prompt+command)
         if save_flag:
@@ -210,7 +219,7 @@ def file_rw(text, infloppy=None):
             else:
                 text.append('invalid command')
         command = prompt
-        if running is True: cli_refresh(text, command)
+        cur.x = len(command)+1
     return running
 
 
@@ -231,6 +240,7 @@ def drone_commander(text):
     text.insert(0, 'WELCOME TO DRONE COMMANDER V0.75')
     text.insert(1, 'enter name of drone to drone into.')
     command = prompt
+    cur.x = len(command)+1
     selected_drone = None
     running = True
     while running:
@@ -238,6 +248,7 @@ def drone_commander(text):
         flag = True
         while flag is True:
             command, flag = command_entry(command)
+            cur.x = len(command)+1
             cli_refresh(text, command)
         text.append(prompt+command)
         if selected_drone:
@@ -263,7 +274,7 @@ def drone_commander(text):
             else:
                 text.append('No DRONES match this entry.')
         command = prompt
-        if running is True: cli_refresh(text, command)
+        cur.x = len(command)+1
 
     if selected_drone: remote_control(selected_drone)
     return running
@@ -272,6 +283,7 @@ def drone_exit(text):
     text.append('WELCOME TO DRONE COMMANDER V0.75')
     text.append('QUIT or RESUME')
     command = prompt
+    cur.x = len(command)+1
     selected_drone = None
     running = True
     while running:
@@ -279,6 +291,7 @@ def drone_exit(text):
         flag = True
         while flag is True:
             command, flag = command_entry(command)
+            cur.x = len(command)+1
             cli_refresh(text, command)
         text.append(prompt+command)
         if command == 'exit' or command == 'quit':
@@ -289,7 +302,7 @@ def drone_exit(text):
         elif command == 'resume':
             running = False
         command = prompt
-        if running is True: cli_refresh(text, command)
+        cur.x = len(command)+1
     return running
 
 
@@ -308,10 +321,26 @@ def fetch_station(name):
     return None
 
 
+def remote_program(command):
+    if command == 'random':
+        if len(gameconfig.level_terminals) > 1:
+            gameconfig.level_terminals.remove(gameconfig.player_at_computer)
+            remote_look(gameconfig.level_terminals[randint(0, len(gameconfig.level_terminals)-1)])
+            gameconfig.level_terminals.append(gameconfig.player_at_computer)
+            running = False
+        else:
+            return('No other terminal stations on this level')
+    elif command == 'listing' or command == 'list':
+        if len(gameconfig.level_terminals) > 1:
+            return([station.name.upper() for station in gameconfig.level_terminals])
+        else:
+            return('no other stations on this level')
+
 def remote_patch(text):
     text.append('WELCOME TO REMOTE LOOK V0.75')
     text.append('enter name of station to patch.')
     command = prompt
+    cur.x = len(command)+1
     selected_station = None
     running = True
     while running:
@@ -319,6 +348,7 @@ def remote_patch(text):
         flag = True
         while flag is True:
             command, flag = command_entry(command)
+            cur.x = len(command)+1
             cli_refresh(text, command)
         #if valid_station_name(command):
         text.append(prompt+command)
@@ -342,7 +372,34 @@ def remote_patch(text):
         else:
             text.append('Invalid entry.')
         command = prompt
-        if running is True: cli_refresh(text, command)
+        cur.x = len(command)+1
 
     if selected_station: remote_look(selected_station)
     return running
+
+
+def run_program(program):
+    text = []
+    text.append('WELCOME TO ' + program + ' NAME')
+    #text.append('enter name of station to patch.')
+    command = prompt
+    cur.x = len(command)+1
+    selected_station = None
+    running = True
+    while running:
+        cli_refresh(text, command)
+        flag = True
+        while flag is True:
+            command, flag = command_entry(command)
+            cur.x = len(command)+1
+            cli_refresh(text, command)
+            #specific program stuff
+            if program == 'remote':
+                text.append(remote_program(command))
+            if command == 'exit':
+                text.append('PROGRAM EXITED.')
+                return None
+            else:
+                text.append('Invalid entry.')
+            command = prompt
+            cur.x = len(command)+1
