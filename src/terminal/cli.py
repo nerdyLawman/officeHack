@@ -9,7 +9,7 @@ from terminal.interactions import remote_control, revert_control, remote_look, f
 from interface.rendering import draw_object
 
 cursor = gameconfig.TERMINAL_CURSOR
-BLINK = True
+blink_interval = 0
 prompt = gameconfig.TERMINAL_PROMPT
 width = gameconfig.SCREEN_WIDTH
 height = gameconfig.SCREEN_HEIGHT
@@ -29,61 +29,53 @@ fgnd_color = libtcod.light_sky
 cur = Cursor(len(prompt), 6, fgnd_color)
 
 
-def b_cursor():
-    while BLINK is True:
-        cur.color = fgnd_color
-        libtcod.console_set_char_background(window, cur.x, cur.y, cur.color, flag=libtcod.BKGND_SET)
-        libtcod.console_put_char(window, cur.x, cur.y, '_', flag=libtcod.BKGND_DEFAULT)
-        libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 1.0)
-        #libtcod.console_blit(window, cur.x, cur.y, cur.x, cur.y, 0, cur.x, cur.y, 1.0, 1.0)
-        libtcod.console_flush()
-        time.sleep(0.25)
-        cur.color = bgnd_color
-        libtcod.console_set_char_background(window, cur.x, cur.y, cur.color, flag=libtcod.BKGND_SET)
-        libtcod.console_put_char(window, cur.x, cur.y, ' ', flag=libtcod.BKGND_DEFAULT)
-        libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 1.0)
-        libtcod.console_flush()
-        time.sleep(0.25)
+def b_cursor(blink_interval):
+    libtcod.console_set_char_background(window, cur.x, cur.y, cur.color, flag=libtcod.BKGND_SET)
+    libtcod.console_put_char(window, cur.x, cur.y, '_', flag=libtcod.BKGND_DEFAULT)
+    if blink_interval > 90:
+        if cur.color == fgnd_color: cur.color = bgnd_color
+        else: cur.color = fgnd_color
+        return 0
+    else: return blink_interval + 1
 
 
 def cli_refresh(text, command, header_height=2):
+    global blink_interval
     libtcod.console_rect(window, 0, header_height, width, height, True, libtcod.BKGND_SET)
     line_pos = 2
     for line in text:
         libtcod.console_print_ex(window, 1, header_height+line_pos, libtcod.BKGND_NONE, libtcod.LEFT, line)
         line_pos += 2
     libtcod.console_print_ex(window, 1, header_height+line_pos, libtcod.BKGND_NONE, libtcod.LEFT, command)
+    cur.y = header_height+line_pos
+    blink_interval = b_cursor(blink_interval)
     libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 1.0)
     libtcod.console_flush()
 
 
 def command_entry(command):
-    key = libtcod.console_wait_for_keypress(True)
-    command = command[len(prompt):] #takeout cursor
-    if key.vk == libtcod.KEY_ESCAPE:
+    key = libtcod.console_check_for_keypress()
+    if key.vk == libtcod.KEY_NONE: return command, True
+    elif key.vk == libtcod.KEY_ESCAPE:
         return command, False
-    if key.vk == libtcod.KEY_BACKSPACE:
+    elif key.vk == libtcod.KEY_BACKSPACE:
         command = command[:-1]
-    if key.vk == libtcod.KEY_SPACE:
+    elif key.vk == libtcod.KEY_SPACE:
         command += ' '
-    if key.vk == libtcod.KEY_ENTER:
-        cur.y += 3
+    elif key.vk == libtcod.KEY_ENTER:
+        cur.x = len(prompt)
         return command, False
-    if key.c >= 64 and key.c <= 127:
+    elif key.c >= 64 and key.c <= 127:
         command += chr(key.c)
-    cur.x = len(prompt+command)+1
-    return prompt + command, True #redraw cursor
-
+    cur.x = len(prompt+command)
+    return command, True #redraw cursor
+	
 
 def cli_window(command=None, selector=None):
     global window, BLINK
     running = True
     BLINK = True
-    
-    d = threading.Thread(target=b_cursor)
-    d.setDaemon(True)
-    d.start()
-    
+        
     gameconfig.CURRENT_TRACK.switch_track(gameconfig.BACKGROUND_MUSIC['terminal'])
     bgnd_color = libtcod.dark_azure
     fgnd_color = libtcod.light_sky
@@ -101,63 +93,63 @@ def cli_window(command=None, selector=None):
         cli_refresh(text, command) #update screen
         flag = True
         while flag is True and command not in special_commands:
+            #key = libtcod.console_check_for_keypress(True)
             command, flag = command_entry(command)
+            #b_cursor()
             cli_refresh(text, command)
-
-        if command != '': text.append(prompt+command)
+        
+        command = command[len(prompt):]
+        #if command != '': text.append(prompt+command)
         if len(text) > height/2 - 7: del text[:2]
-
+        
         # EXIT -------------------------
         if command == 'exit' or command == 'quit':
             text.append('exited')
             running = False
-
+        
         # SAVE --------------------------
         elif command == 'save':
             text.append('saved!')
-
+        
         # READ ----------------------
         elif command == 'read':
             text[:] = []
             if hasattr(selector, 'special'): text.append(selector.special)
             running = file_rw(text)
-
+        
         # REMOTE -----------------------
         elif command == 'remote':
             text[:] = []
             running = remote_patch(text)
-
+        
         # DRONE -------------------------
         elif command == 'drone':
             text[:] = []
             running = drone_commander(text)
-
+        
         elif command == 'dronedead':
             text[:] = ['Your drone died. EXIT or SELECT ANOTHER.']
             running = drone_commander(text)
-
+        
         # EXIT DRONE ---------------------
         elif command == 'exitdrone':
             text[:] = []
             running = drone_exit(text)
-
+        
         # HELP ------------------------
         elif command == 'help':
             helptext = ['type help for options', 'type save to save', 'type exit to exit', 'press ANY KEY.']
             text[:] = helptext
             cli_refresh(text, command)
-
+        
         # INVALID COMMAND ----------------
         else:
             text.append('invalid command')
         command = prompt
-
-        if running is True:
-            cli_refresh(text, command)
-        else:
-            gameconfig.CURRENT_TRACK.switch_track(gameconfig.BACKGROUND_MUSIC['level_1'])
-
-    BLINK = False
+        
+        #if running is True:
+        #    cli_refresh(text, command)
+        if running is False: gameconfig.CURRENT_TRACK.switch_track(gameconfig.BACKGROUND_MUSIC['level_1'])
     
     
 # ---------------------------------------------------------------------

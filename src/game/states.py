@@ -10,6 +10,7 @@ from objects.Player import Player
 from objects.Fighter import Fighter
 from objects.Object import Object
 from sound.SoundPlayer import SoundPlayer
+from terminal.cli import cli_window
 
 
 def new_game():
@@ -107,6 +108,10 @@ def play_game():
             # move AI
             for obj in gameconfig.objects:
                 if obj.ai: obj.ai.take_turn()
+        
+        # cli
+        #if game_state == 'terminal':
+        #    cli_window()
 
 def up_level():
     # go up 1 game level

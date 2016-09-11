@@ -8,7 +8,7 @@ GAME_AUTHOR = 'Nord Mulman & Chairvan Arocstore'
 # SCREEN --------------------------
 SCREEN_WIDTH = 80
 SCREEN_HEIGHT = 50
-LIMIT_FPS = 20
+LIMIT_FPS = 0
 
 # LIBTCOD SETTINGS ---------------------------------------
 libtcod.console_set_custom_font('data/fonts/arial10x10.png',
