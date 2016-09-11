@@ -150,7 +150,7 @@ def cli_window(command=None, selector=None):
         else:
             if command != '': text.append('invalid command')
  
-        if running is False: gameconfig.CURRENT_TRACK.switch_track(gameconfig.BACKGROUND_MUSIC['level_1'])
+    gameconfig.CURRENT_TRACK.switch_track(gameconfig.BACKGROUND_MUSIC['level_1'])
     
 # ---------------------------------------------------------------------
 # [ FILE I/O ] --------------------------------------------------------
@@ -191,7 +191,8 @@ def file_rw(text, infloppy=None):
             command, flag = command_entry(command)
             cur.x = len(command)+1
             cli_refresh(text, command)
-        text.append(prompt+command)
+        text.append(command)
+        command = command[len(prompt):]
         if save_flag:
             floppy_write(floppy, command + ' disc')
             text.append('saved floppy as: ' + command + ' disc.')
@@ -243,7 +244,8 @@ def drone_commander(text):
             command, flag = command_entry(command)
             cur.x = len(command)+1
             cli_refresh(text, command)
-        text.append(prompt+command)
+        text.append(command)
+        command = command[len(prompt):]
         if selected_drone:
             if command == 'spam':
                 running = False
@@ -332,25 +334,26 @@ def remote_program(command):
 def remote_patch(text):
     text.append('WELCOME TO REMOTE LOOK V0.75')
     text.append('enter name of station to patch.')
-    command = prompt
-    cur.x = len(command)+1
+    #cur.x = len(command)+1
     selected_station = None
     running = True
     while running:
-        cli_refresh(text, command)
+        command = prompt
         flag = True
+        cli_refresh(text, command)
         while flag is True:
             command, flag = command_entry(command)
             cur.x = len(command)+1
             cli_refresh(text, command)
         #if valid_station_name(command):
-        text.append(prompt+command)
+        text.append(command)
+        command = command[len(prompt):]
         if command == 'random':
             if len(gameconfig.level_terminals) > 1:
                 gameconfig.level_terminals.remove(gameconfig.player_at_computer)
                 selected_station = gameconfig.level_terminals[randint(0, len(gameconfig.level_terminals)-1)]
                 gameconfig.level_terminals.append(gameconfig.player_at_computer)
-                running = False
+                running = True
             else:
                 text.append('No other terminal stations on this level')
         elif command == 'listing' or command == 'list':
@@ -367,8 +370,9 @@ def remote_patch(text):
         command = prompt
         cur.x = len(command)+1
 
-    if selected_station: remote_look(selected_station)
-    return running
+        if selected_station: remote_look(selected_station)
+        selected_station = None
+    return True
 
 
 def run_program(program):

@@ -97,7 +97,7 @@ VISION_FLAG = None # takes an image unlike the other two
 # [ VOLUME CONFIG VARIABLES ] -----------------------------------------
 # ---------------------------------------------------------------------
 
-SOUND = False
+SOUND = True
 
 VOLUME = {
     'MUSIC': 0.1,
