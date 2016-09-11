@@ -109,9 +109,6 @@ def play_game():
             for obj in gameconfig.objects:
                 if obj.ai: obj.ai.take_turn()
         
-        # cli
-        #if game_state == 'terminal':
-        #    cli_window()
 
 def up_level():
     # go up 1 game level
