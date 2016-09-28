@@ -19,7 +19,7 @@ EMPTY_INVENTORY = 'INVENTORY is EMPTY.'
 
 # TERMINALS MESSAGES
 TERMINAL_WELCOME = 'Welcome to '
-TERMINAL_TITLE = 'HAPPY TERMINAL V1.0 - 1993'
+TERMINAL_TITLE = 'HAPPY TERMINAL V1.0 - 1993\nEnter a command to begin. Help for options.'
 TERMINAL_START_MESSAGE = 'Enter a command to begin. Help for options.'
 
 # MENU HEADERS
